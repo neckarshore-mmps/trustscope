@@ -84,16 +84,22 @@ async function resolveReport(parsed: {
     }
 
     const { report, scorecardSource } = await generateReport(parsed.owner, parsed.repo);
-    await store.put({
-      key: {
-        owner: parsed.owner,
-        repo: parsed.repo,
-        commit: report.repo.commit ?? "unknown",
-      },
-      report,
-      scorecardSource,
-      fetchedAt: new Date().toISOString(),
-    });
+    // Persist as a best-effort cache — a write failure (e.g. a read-only serverless FS) must
+    // NEVER turn a successfully generated report into an error.
+    try {
+      await store.put({
+        key: {
+          owner: parsed.owner,
+          repo: parsed.repo,
+          commit: report.repo.commit ?? "unknown",
+        },
+        report,
+        scorecardSource,
+        fetchedAt: new Date().toISOString(),
+      });
+    } catch (storeErr) {
+      console.error("ReportStore.put failed (serving report anyway):", storeErr);
+    }
     return { kind: "ok", report, source: scorecardSource, cached: false };
   } catch (err) {
     if (err instanceof RepoNotFoundError) {
