@@ -1,0 +1,59 @@
+name: CodeQL
+
+# Static analysis (SAST) for TrustScope's own TypeScript/JavaScript source.
+# Public-repo supply-chain hardening — #270 estate standard, §3 control 1.
+#
+# Language: javascript-typescript ONLY. The repo is pure JS/TS (Next.js 16);
+# the sole non-TS script (scripts/fetch-scorecard.mjs) is a Node build-time
+# tooling module, already covered by the js/ts analysis — no other CodeQL
+# language applies.
+#
+# `languages:` is PLURAL on codeql-action/init — the singular `language:` is
+# silently ignored and analyzes nothing (#270 §1.3, pilot-caught).
+#
+# build-mode: none — js/ts is interpreted, no compilation step to trace.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly Monday 03:17 UTC — off the top-of-hour free-tier congestion.
+    - cron: "17 3 * * 1"
+
+# Least-privilege default; the analyze job re-declares what it needs.
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Job-scoped write — the SARIF upload needs security-events:write; nothing
+    # else does. Job-level permissions REPLACE the workflow default, so
+    # contents:read is restated here (#270 §1.3).
+    permissions:
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@dd903d2e4f5405488e5ef1422510ee31c8b32357 # v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@dd903d2e4f5405488e5ef1422510ee31c8b32357 # v3
+        with:
+          category: "/language:${{ matrix.language }}"
