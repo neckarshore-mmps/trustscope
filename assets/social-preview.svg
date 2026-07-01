@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <radialGradient id="glow" gradientUnits="userSpaceOnUse" cx="640" cy="-30" r="640">
+      <stop offset="0" stop-color="#2dd4bf" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="80" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#223041" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#223041" stop-opacity="0"/>
+    </linearGradient>
+    <style>
+      .sans { font-family: 'Geist','SF Pro Display',-apple-system,'Helvetica Neue',Arial,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Base -->
+  <rect width="1280" height="640" fill="#090d13"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- Watermark shield, bleeding off the right edge -->
+  <g transform="translate(1236 316) scale(19)" opacity="0.06">
+    <path d="M0 -10 L8.5 -6.4 V0.6 C8.5 6.2 5 10.6 0 12.6 C-5 10.6 -8.5 6.2 -8.5 0.6 V-6.4 Z"
+          fill="none" stroke="#2dd4bf" stroke-width="0.8"/>
+  </g>
+
+  <!-- Wordmark row -->
+  <rect x="80" y="84" width="64" height="64" rx="14" fill="#2dd4bf" fill-opacity="0.14"/>
+  <rect x="80.5" y="84.5" width="63" height="63" rx="13.5" fill="none" stroke="#2dd4bf" stroke-opacity="0.34"/>
+  <g transform="translate(112 116) scale(1.5)">
+    <path d="M0 -11 L9 -6.9 V0.8 C9 6.6 5.2 10.8 0 13.2 C-5.2 10.8 -9 6.6 -9 0.8 V-6.9 Z"
+          fill="#2dd4bf" fill-opacity="0.14" stroke="#2dd4bf" stroke-width="1.4"/>
+    <path d="M-4.2 0.4 L-1.2 3.4 L4.6 -3" fill="none" stroke="#2dd4bf" stroke-width="1.6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="168" y="130" class="sans" font-size="40" font-weight="600" letter-spacing="-0.8" fill="#e6edf3">TrustScope</text>
+
+  <!-- Headline -->
+  <text x="80" y="266" class="sans" font-size="78" font-weight="700" letter-spacing="-2.4" fill="#e6edf3">Four pillars of trust.</text>
+  <text x="80" y="356" class="sans" font-size="78" font-weight="700" letter-spacing="-2.4" fill="#2dd4bf">No single fake score.</text>
+
+  <!-- Subline -->
+  <text x="80" y="428" class="sans" font-size="28" font-weight="400" letter-spacing="-0.2" fill="#90a1b6">Paste a public GitHub repo &#8594; a deterministic four-pillar trust report.</text>
+
+  <!-- Hairline -->
+  <rect x="80" y="474" width="1120" height="1" fill="url(#hair)"/>
+
+  <!-- Pillars -->
+  <text x="80" y="516" class="sans" font-size="23" font-weight="500" letter-spacing="0.2" fill="#90a1b6">Security &amp; Supply Chain&#160;&#160;&#183;&#160;&#160;Trust &amp; Governance&#160;&#160;&#183;&#160;&#160;Community&#160;&#160;&#183;&#160;&#160;Functional Quality</text>
+
+  <!-- Footer -->
+  <text x="80" y="566" class="sans" font-size="23" font-weight="600" letter-spacing="0" fill="#2dd4bf">trustscope.neckarshore.ai<tspan dx="30" fill="#90a1b6" font-weight="400">Built on the OpenSSF Scorecard&#160;&#160;&#183;&#160;&#160;by Neckarshore AI</tspan></text>
+</svg>
