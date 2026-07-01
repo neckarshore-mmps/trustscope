@@ -77,7 +77,7 @@ export default function AboutPage() {
             <span className="text-brand">open-source projects</span>.
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            {PRODUCT_NAME} checks a public GitHub repository and reflects it back across four
+            {PRODUCT_NAME}{" "}checks a public GitHub repository and reflects it back across four
             pillars — security &amp; supply chain, governance, and community — without hiding the
             trade-offs behind a single score.
           </p>
@@ -105,7 +105,7 @@ export default function AboutPage() {
             The four pillars
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-center text-[15px] leading-relaxed text-muted">
-            {PRODUCT_NAME} answers each question separately, because each one is different.
+            {PRODUCT_NAME}{" "}answers each question separately, because each one is different.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {PILLARS.map((p) => (
@@ -136,7 +136,7 @@ export default function AboutPage() {
           Because each pillar answers a different question. A brilliant, secure library maintained
           by one person is not “7 out of 10” — it is strong on security and early on community.
           Collapsing that into one number hides exactly the trade-off you are trying to weigh. So{" "}
-          {PRODUCT_NAME} doesn&apos;t.
+          {PRODUCT_NAME}{" "}doesn&apos;t.
         </p>
       </section>
 
