@@ -14,10 +14,9 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 // Report generation touches the network — never cache/prerender.
 export const dynamic = "force-dynamic";
-// 60s is safe on every Vercel plan. The ~90s on-demand Scorecard run happens OFF the request
-// path once a container host / Fluid-Compute function is provisioned (§7 #4); on serverless the
-// deploy runs fast-path-only (SCORECARD_RUNNER=fastpath), which returns in seconds.
-export const maxDuration = 60;
+// 300s (Vercel Pro): headroom for the ~90s on-demand Scorecard run to happen ON Vercel via a
+// Fluid-Compute function running the scorecard binary (§7 #4). Fast-path returns in seconds.
+export const maxDuration = 300;
 
 type SearchParams = Promise<{ repo?: string }>;
 
