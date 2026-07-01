@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "node scripts/fetch-scorecard.mjs && next build",
+    "fetch:scorecard": "node scripts/fetch-scorecard.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

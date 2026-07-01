@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Scorecard capture stderr logs
 fixtures/*.err.log
+
+# Fetched scorecard binary (fetched at build via scripts/fetch-scorecard.mjs)
+/bin/
