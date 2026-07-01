@@ -1,65 +1,128 @@
-import Image from "next/image";
+import { RepoForm } from "@/components/RepoForm";
+import { PRODUCT_NAME } from "@/config/product";
+
+const PILLARS = [
+  {
+    id: 1,
+    title: "Functional Quality",
+    q: "Is it well-built?",
+    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
+    accent: "text-slate-400",
+  },
+  {
+    id: 2,
+    title: "Security & Supply Chain",
+    q: "Is it built securely?",
+    body: "The full OpenSSF Scorecard — token permissions, pinned dependencies, SAST, signed releases, and more.",
+    accent: "text-emerald-300",
+  },
+  {
+    id: 3,
+    title: "Trust & Governance",
+    q: "Can I trust the project behind it?",
+    body: "License, security policy, who owns it, and whether there is a way to reach them when something breaks.",
+    accent: "text-sky-300",
+  },
+  {
+    id: 4,
+    title: "Community & Sustainability",
+    q: "Will it be here in a year?",
+    body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
+    accent: "text-amber-300",
+  },
+];
+
+const STEPS = [
+  { n: "1", t: "Paste a repo", d: "Any public GitHub repository — URL or owner/repo." },
+  { n: "2", t: "We assess it", d: "OpenSSF Scorecard plus GitHub governance and lifecycle signals." },
+  { n: "3", t: "Read four pillars", d: "Per-pillar findings and constructive fixes — no single grade." },
+  { n: "4", t: "Send fixes upstream", d: "File a friendly, attributed issue as yourself." },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div>
+      {/* Hero */}
+      <section className="hero-glow">
+        <div className="mx-auto max-w-3xl px-5 pb-8 pt-20 text-center sm:pt-28">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+            Built on the OpenSSF Scorecard
+          </span>
+          <h1 className="mx-auto mt-6 max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            Know how much you can trust an{" "}
+            <span className="text-brand">open-source project</span> — before you adopt it.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
+            Paste a public GitHub repo. {PRODUCT_NAME} returns a four-pillar trust report with
+            constructive, upstream-friendly fixes — and no misleading single score.
           </p>
+
+          <div className="mx-auto mt-8 max-w-xl">
+            <RepoForm autoFocus />
+            <p className="mt-3 text-xs text-muted/70">
+              Try{" "}
+              <span className="font-mono text-muted">ossf/scorecard</span> or{" "}
+              <span className="font-mono text-muted">sindresorhus/got</span>. No sign-in needed to
+              read a report.
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Four pillars */}
+      <section className="mx-auto max-w-5xl px-5 py-14">
+        <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
+          Four questions, four pillars — one synthesis
+        </h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {PILLARS.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-xl border border-border bg-surface/60 p-5 transition-colors hover:border-brand/30"
+            >
+              <div className="flex items-baseline gap-2">
+                <span className={`text-xs font-semibold uppercase tracking-wider ${p.accent}`}>
+                  Pillar {p.id}
+                </span>
+                <span className="text-xs text-muted">· {p.q}</span>
+              </div>
+              <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{p.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* How it works */}
+      <section className="border-t border-border/70 bg-surface/30">
+        <div className="mx-auto max-w-5xl px-5 py-14">
+          <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
+            How it works
+          </h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((s) => (
+              <div key={s.n}>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/25">
+                  {s.n}
+                </div>
+                <h3 className="mt-3 font-semibold tracking-tight">{s.t}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why no single score */}
+      <section className="mx-auto max-w-3xl px-5 py-16 text-center">
+        <h2 className="text-2xl font-semibold tracking-tight">Why no single score?</h2>
+        <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-muted">
+          Each pillar answers a different question. A brilliant, secure library maintained by one
+          person is not “7 out of 10” — it is strong on security and early on community. Collapsing
+          that into one number hides exactly the trade-off you are trying to weigh. So we don&apos;t.
+        </p>
+      </section>
     </div>
   );
 }
