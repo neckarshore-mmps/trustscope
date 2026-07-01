@@ -1,0 +1,5 @@
+# Local-only artifacts — must NOT be uploaded to the Vercel build.
+# The scorecard binary is fetched fresh for linux by `vercel-build` (a local darwin binary
+# here would otherwise be bundled and fail with "cannot execute binary file").
+bin/
+.trustscope-cache/

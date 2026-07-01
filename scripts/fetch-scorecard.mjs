@@ -18,17 +18,21 @@ const BIN_DIR = join(process.cwd(), "bin");
 const BIN_PATH = join(BIN_DIR, "scorecard");
 const STAMP = join(BIN_DIR, ".scorecard-version");
 
+const OS = process.platform === "darwin" ? "darwin" : "linux";
+const ARCH = process.arch === "arm64" ? "arm64" : "amd64";
+// Platform-tagged so a darwin binary uploaded from a dev machine never satisfies a linux build
+// (otherwise "cannot execute binary file" at runtime on Vercel).
+const TAG = `${VERSION}_${OS}_${ARCH}`;
+
 function assetName() {
-  const os = process.platform === "darwin" ? "darwin" : "linux";
-  const arch = process.arch === "arm64" ? "arm64" : "amd64";
-  return `scorecard_${VERSION}_${os}_${arch}.tar.gz`;
+  return `scorecard_${TAG}.tar.gz`;
 }
 
 async function main() {
   if (existsSync(BIN_PATH) && existsSync(STAMP)) {
     const have = await readFile(STAMP, "utf8").catch(() => "");
-    if (have.trim() === VERSION) {
-      console.log(`scorecard ${VERSION} already present at ${BIN_PATH}`);
+    if (have.trim() === TAG) {
+      console.log(`scorecard ${TAG} already present at ${BIN_PATH}`);
       return;
     }
   }
@@ -47,8 +51,8 @@ async function main() {
   await run("tar", ["-xzf", tgz, "-C", BIN_DIR, "scorecard"]);
   await rm(tgz, { force: true });
   await chmod(BIN_PATH, 0o755);
-  await writeFile(STAMP, VERSION);
-  console.log(`scorecard ${VERSION} ready at ${BIN_PATH}`);
+  await writeFile(STAMP, TAG);
+  console.log(`scorecard ${TAG} ready at ${BIN_PATH}`);
 }
 
 main().catch((err) => {
