@@ -12,9 +12,12 @@ import { ReportView } from "@/components/report/ReportView";
 /** Serve a stored report if it was fetched within this window (fast re-runs). */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-// Report generation touches the network (and may run Docker ~90s) — never cache/prerender.
+// Report generation touches the network — never cache/prerender.
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+// 60s is safe on every Vercel plan. The ~90s on-demand Scorecard run happens OFF the request
+// path once a container host / Fluid-Compute function is provisioned (§7 #4); on serverless the
+// deploy runs fast-path-only (SCORECARD_RUNNER=fastpath), which returns in seconds.
+export const maxDuration = 60;
 
 type SearchParams = Promise<{ repo?: string }>;
 
