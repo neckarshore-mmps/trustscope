@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReportModel } from "@/lib/report-core/types";
 import type { ScorecardSource } from "@/lib/adapters";
 import { PillarCard } from "./PillarCard";
@@ -48,12 +49,12 @@ export function ReportView({
             {cached && " · cached"}
           </p>
         </div>
-        <a
+        <Link
           href="/"
           className="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-brand/40"
         >
           ← Assess another repo
-        </a>
+        </Link>
       </div>
 
       {/* No-aggregate rationale — the reputation differentiator, foregrounded */}

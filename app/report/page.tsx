@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { generateReport } from "@/lib/adapters";
+import type { ScorecardSource } from "@/lib/adapters";
 import { RepoNotFoundError } from "@/lib/adapters/github";
 import { ScorecardNotCoveredError } from "@/lib/adapters/scorecard-adapter";
+import type { ReportModel } from "@/lib/report-core/types";
 import { parseRepoInput } from "@/lib/parse-repo-input";
 import { getReportStore } from "@/lib/store";
 import { ReportError } from "@/components/report/ReportError";
@@ -44,15 +46,41 @@ export default async function ReportPage({
     );
   }
 
-  const store = getReportStore();
+  // Resolve to a plain outcome first; render JSX outside the try/catch
+  // (react-hooks/error-boundaries: no JSX construction inside try/catch).
+  const outcome = await resolveReport(parsed);
 
+  if (outcome.kind === "error") {
+    return <ReportError title={outcome.title} message={outcome.message} />;
+  }
+  return (
+    <ReportView
+      report={outcome.report}
+      source={outcome.source}
+      cached={outcome.cached}
+    />
+  );
+}
+
+type ReportOutcome =
+  | { kind: "ok"; report: ReportModel; source: ScorecardSource; cached: boolean }
+  | { kind: "error"; title: string; message: string };
+
+async function resolveReport(parsed: {
+  owner: string;
+  repo: string;
+}): Promise<ReportOutcome> {
+  const store = getReportStore();
   try {
     // Cache-serve: a recent stored report skips the (possibly ~90s) on-demand run.
     const cached = await store.getLatest(parsed.owner, parsed.repo);
     if (cached && Date.now() - Date.parse(cached.fetchedAt) < CACHE_TTL_MS) {
-      return (
-        <ReportView report={cached.report} source={cached.scorecardSource} cached />
-      );
+      return {
+        kind: "ok",
+        report: cached.report,
+        source: cached.scorecardSource,
+        cached: true,
+      };
     }
 
     const { report, scorecardSource } = await generateReport(parsed.owner, parsed.repo);
@@ -66,30 +94,26 @@ export default async function ReportPage({
       scorecardSource,
       fetchedAt: new Date().toISOString(),
     });
-    return <ReportView report={report} source={scorecardSource} />;
+    return { kind: "ok", report, source: scorecardSource, cached: false };
   } catch (err) {
     if (err instanceof RepoNotFoundError) {
-      return (
-        <ReportError
-          title="Repository not found"
-          message={`We couldn’t find github.com/${parsed.owner}/${parsed.repo}. It may be private, renamed, or misspelled — TrustScope assesses public repos only.`}
-        />
-      );
+      return {
+        kind: "error",
+        title: "Repository not found",
+        message: `We couldn’t find github.com/${parsed.owner}/${parsed.repo}. It may be private, renamed, or misspelled — TrustScope assesses public repos only.`,
+      };
     }
     if (err instanceof ScorecardNotCoveredError) {
-      return (
-        <ReportError
-          title="Couldn’t run the Scorecard on demand"
-          message={`${parsed.owner}/${parsed.repo} isn’t in the OpenSSF dataset, and the on-demand runner isn’t available in this environment. A container host is required for arbitrary repos (see the README).`}
-        />
-      );
+      return {
+        kind: "error",
+        title: "Couldn’t run the Scorecard on demand",
+        message: `${parsed.owner}/${parsed.repo} isn’t in the OpenSSF dataset, and the on-demand runner isn’t available in this environment. A container host is required for arbitrary repos (see the README).`,
+      };
     }
-    const message = err instanceof Error ? err.message : "Unexpected error.";
-    return (
-      <ReportError
-        title="Couldn’t generate the report"
-        message={message}
-      />
-    );
+    return {
+      kind: "error",
+      title: "Couldn’t generate the report",
+      message: err instanceof Error ? err.message : "Unexpected error.",
+    };
   }
 }

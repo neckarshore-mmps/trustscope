@@ -8,7 +8,7 @@ import type { ReportModel } from "@/lib/report-core/types";
  */
 
 export function buildIssueTitle(report: ReportModel): string {
-  return `${PRODUCT_NAME}: suggested trust & security improvements`;
+  return `${PRODUCT_NAME}: suggested trust & security improvements for ${report.repo.name}`;
 }
 
 export function buildIssueMarkdown(report: ReportModel): string {
