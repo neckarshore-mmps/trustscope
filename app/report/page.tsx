@@ -3,8 +3,12 @@ import { generateReport } from "@/lib/adapters";
 import { RepoNotFoundError } from "@/lib/adapters/github";
 import { ScorecardNotCoveredError } from "@/lib/adapters/scorecard-adapter";
 import { parseRepoInput } from "@/lib/parse-repo-input";
+import { getReportStore } from "@/lib/store";
 import { ReportError } from "@/components/report/ReportError";
 import { ReportView } from "@/components/report/ReportView";
+
+/** Serve a stored report if it was fetched within this window (fast re-runs). */
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 // Report generation touches the network (and may run Docker ~90s) — never cache/prerender.
 export const dynamic = "force-dynamic";
@@ -40,8 +44,28 @@ export default async function ReportPage({
     );
   }
 
+  const store = getReportStore();
+
   try {
+    // Cache-serve: a recent stored report skips the (possibly ~90s) on-demand run.
+    const cached = await store.getLatest(parsed.owner, parsed.repo);
+    if (cached && Date.now() - Date.parse(cached.fetchedAt) < CACHE_TTL_MS) {
+      return (
+        <ReportView report={cached.report} source={cached.scorecardSource} cached />
+      );
+    }
+
     const { report, scorecardSource } = await generateReport(parsed.owner, parsed.repo);
+    await store.put({
+      key: {
+        owner: parsed.owner,
+        repo: parsed.repo,
+        commit: report.repo.commit ?? "unknown",
+      },
+      report,
+      scorecardSource,
+      fetchedAt: new Date().toISOString(),
+    });
     return <ReportView report={report} source={scorecardSource} />;
   } catch (err) {
     if (err instanceof RepoNotFoundError) {

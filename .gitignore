@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# TrustScope local report cache (FileReportStore)
+.trustscope-cache/

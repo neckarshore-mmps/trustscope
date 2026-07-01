@@ -12,9 +12,11 @@ function fmtDate(iso: string): string {
 export function ReportView({
   report,
   source,
+  cached = false,
 }: {
   report: ReportModel;
   source: ScorecardSource;
+  cached?: boolean;
 }) {
   const totalFixes = report.pillars.reduce((n, p) => n + p.fixes.length, 0);
   const oauthConfigured = Boolean(
@@ -43,6 +45,7 @@ export function ReportView({
               <> · Scorecard {report.scorecard.version}</>
             )}{" "}
             · via {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
+            {cached && " · cached"}
           </p>
         </div>
         <a
