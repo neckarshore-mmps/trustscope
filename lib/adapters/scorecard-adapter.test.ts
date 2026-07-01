@@ -4,6 +4,7 @@ import {
   ScorecardNotCoveredError,
   fetchScorecardFastPath,
   runScorecardDocker,
+  runScorecardBinary,
 } from "./scorecard-adapter";
 
 const FAKE_RESULT = { score: 7, checks: [], date: "2026-07-01", repo: { name: "x", commit: "abc" } };
@@ -63,7 +64,62 @@ describe("runScorecardDocker", () => {
   });
 });
 
+describe("runScorecardBinary", () => {
+  it("runs the scorecard binary directly (no docker), token in env not argv", async () => {
+    const execSpy = vi.fn(async () => ({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" }));
+    await runScorecardBinary("ossf", "scorecard", {
+      githubToken: "secret",
+      scorecardBin: "/usr/local/bin/scorecard",
+      execFileFn: execSpy as never,
+    });
+    const [cmd, args, options] = execSpy.mock.calls[0] as unknown as [
+      string,
+      string[],
+      { env: Record<string, string> },
+    ];
+    expect(cmd).toBe("/usr/local/bin/scorecard");
+    expect(args).toEqual(["--repo=github.com/ossf/scorecard", "--format=json"]);
+    expect(args.join(" ")).not.toContain("secret");
+    expect(options.env.GITHUB_AUTH_TOKEN).toBe("secret");
+  });
+
+  it("requires a token", async () => {
+    const orig = process.env.GITHUB_AUTH_TOKEN;
+    delete process.env.GITHUB_AUTH_TOKEN;
+    await expect(
+      runScorecardBinary("a", "b", { execFileFn: vi.fn() as never }),
+    ).rejects.toThrow(/token is required/);
+    if (orig !== undefined) process.env.GITHUB_AUTH_TOKEN = orig;
+  });
+});
+
 describe("getScorecard runner selection", () => {
+  it("binary: always runs the binary, skips the fast-path", async () => {
+    const execSpy = vi.fn(async () => ({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" }));
+    const fetchSpy = fakeFetch(200);
+    const r = await getScorecard("ossf", "scorecard", {
+      runner: "binary",
+      githubToken: "t",
+      fetchFn: fetchSpy,
+      execFileFn: execSpy as never,
+    });
+    expect(r.source).toBe("binary");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("auto + onDemand=binary: falls back to the binary on a 404", async () => {
+    const execSpy = vi.fn(async () => ({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" }));
+    const r = await getScorecard("x", "y", {
+      runner: "auto",
+      onDemand: "binary",
+      fetchFn: fakeFetch(404),
+      githubToken: "t",
+      execFileFn: execSpy as never,
+    });
+    expect(r.source).toBe("binary");
+    expect(execSpy).toHaveBeenCalledOnce();
+  });
+
   it("auto: uses fast-path when covered", async () => {
     const r = await getScorecard("ossf", "scorecard", { runner: "auto", fetchFn: fakeFetch(200) });
     expect(r.source).toBe("fastpath");

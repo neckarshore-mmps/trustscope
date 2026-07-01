@@ -42,7 +42,7 @@ export function ReportView({
             {report.scorecard && (
               <> · Scorecard {report.scorecard.version}</>
             )}{" "}
-            · via {source === "docker" ? "on-demand run" : "OpenSSF dataset"}
+            · via {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
           </p>
         </div>
         <a
