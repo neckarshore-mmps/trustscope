@@ -42,3 +42,6 @@ next-env.d.ts
 
 # TrustScope local report cache (FileReportStore)
 .trustscope-cache/
+
+# Scorecard capture stderr logs
+fixtures/*.err.log
