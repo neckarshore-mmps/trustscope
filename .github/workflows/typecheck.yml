@@ -1,0 +1,35 @@
+# Type-check gate — `tsc --noEmit` on every PR. TypeScript is the only static
+# type safety net for the pure report-core and the adapter seams; a red type
+# check must block merge. Mirrors the neckarshore.ai estate CI template
+# (#270 §3); one of the three test/lint gates TrustScope was missing.
+name: Typecheck
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default token — this workflow only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: tsc --noEmit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript type check
+        run: npm run typecheck
