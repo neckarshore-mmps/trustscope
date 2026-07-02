@@ -61,8 +61,10 @@ infrastructure seams are scalable from the start; v2 is pure ADD.
 - **Rationale:** the fast-path only covers repos in the OpenSSF dataset (our own repos 404). The
   ~90s on-demand run is not pure-serverless — but it is a deploy-config choice, not a code fork.
   Sharpened work-order §7 #4 prefers a Vercel-native binary run over an external container host.
-- **Affects:** the prod-host decision (§7 #4) is the one open infra fork; the adapter absorbs it via
-  `SCORECARD_RUNNER` / `SCORECARD_ONDEMAND`. Security: `execFile` + array args (no shell), token via child env.
+- **Affects:** the prod-host decision (§7 #4) is **resolved (2026-07-02)** — the Vercel-native
+  Fluid-Compute binary runner is the chosen host (measured on-demand 4–19 s « the 300 s ceiling; see
+  [`docs/scorecard-host-measurement.md`](docs/scorecard-host-measurement.md)). The adapter absorbs it
+  via `SCORECARD_RUNNER` / `SCORECARD_ONDEMAND`. Security: `execFile` + array args (no shell), token via child env.
 
 ## 6. OAuth issue-filing is env-gated; fallbacks are the default
 
