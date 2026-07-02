@@ -93,6 +93,68 @@ describe("runScorecardBinary", () => {
   });
 });
 
+/**
+ * Scorecard exits non-zero when a check errors during execution (e.g. Branch-Protection can't be
+ * read by a fine-grained/OAuth token) but still emits the full JSON report on stdout. Node's
+ * execFile rejects on that non-zero exit; the runner must recover the report from err.stdout
+ * instead of letting one errored check nuke the whole report. See issue #10.
+ */
+describe("scorecard exec: non-zero exit recovery", () => {
+  /** Mimics a Node execFile rejection: an Error carrying stdout/stderr/code. */
+  function rejectWith(stdout: string, stderr = "one or more checks failed during execution") {
+    const err = Object.assign(
+      new Error(`Command failed: scorecard --repo=... --format=json\n${stderr}`),
+      { stdout, stderr, code: 1 },
+    );
+    return vi.fn(async () => {
+      throw err;
+    });
+  }
+
+  it("binary: recovers the report from stdout when the process exits non-zero", async () => {
+    const r = await runScorecardBinary("ossf", "scorecard", {
+      githubToken: "t",
+      execFileFn: rejectWith(JSON.stringify(FAKE_RESULT)) as never,
+    });
+    expect(r.score).toBe(7);
+  });
+
+  it("docker: recovers the report from stdout when the process exits non-zero", async () => {
+    const r = await runScorecardDocker("ossf", "scorecard", {
+      githubToken: "t",
+      execFileFn: rejectWith(JSON.stringify(FAKE_RESULT)) as never,
+    });
+    expect(r.score).toBe(7);
+  });
+
+  it("throws a clearer error (not raw 'Command failed') when there is NO JSON on stdout", async () => {
+    await expect(
+      runScorecardBinary("ossf", "scorecard", {
+        githubToken: "t",
+        execFileFn: rejectWith("") as never,
+      }),
+    ).rejects.toThrow(/Scorecard run failed/);
+  });
+
+  it("throws when stdout is non-JSON garbage (not a scorecard result)", async () => {
+    await expect(
+      runScorecardBinary("ossf", "scorecard", {
+        githubToken: "t",
+        execFileFn: rejectWith("panic: runtime error\nnot json") as never,
+      }),
+    ).rejects.toThrow(/Scorecard run failed/);
+  });
+
+  it("throws when stdout is JSON but lacks a checks array (wrong shape)", async () => {
+    await expect(
+      runScorecardBinary("ossf", "scorecard", {
+        githubToken: "t",
+        execFileFn: rejectWith(JSON.stringify({ message: "boom" })) as never,
+      }),
+    ).rejects.toThrow(/Scorecard run failed/);
+  });
+});
+
 describe("getScorecard runner selection", () => {
   it("binary: always runs the binary, skips the fast-path", async () => {
     const execSpy = vi.fn(async () => ({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" }));
