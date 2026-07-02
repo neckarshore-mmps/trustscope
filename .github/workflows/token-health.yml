@@ -1,25 +1,108 @@
-# Daily token health-check — indirect early-warning for GITHUB_AUTH_TOKEN expiry/revocation.
-# Renders an on-demand report on production; fails (→ GitHub notifies watchers) if the token has
-# stopped working. Rationale + rotation steps: docs/token-rotation-runbook.md.
+# Daily token health-check — now with VISIBLE Issue alerting + proactive expiry pre-warning.
+#
+# On a FAILED check it opens/updates a standing GitHub Issue (deduped by a hidden body marker) AND
+# still ends the job RED, so the run-history stays honest and the default Actions email still fires.
+# On a HEALTHY run it closes the standing issue. It also warns >=14 days before the two E2E PATs
+# expire (the prod GITHUB_AUTH_TOKEN has no expiry and stays covered reactively by the health-check).
+#
+# Spec: docs/token-health-enhancement.md · rotation runbook: docs/token-rotation-runbook.md.
 name: Token Health (daily)
 
 on:
   schedule:
     - cron: "37 6 * * *" # 06:37 UTC daily
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_health_fail:
+        description: "Smoke only: force the health-check to fail (proves the RED + issue path). Leave false."
+        type: boolean
+        default: false
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   health:
     name: On-demand token health-check
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEALTH_MARKER: "<!-- token-health:health-fail -->"
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           persist-credentials: false
 
-      - name: Check on-demand report renders (token healthy)
-        run: bash scripts/token-health-check.sh
+      - name: Run health-check (capture outcome, don't abort the job)
+        id: health
+        continue-on-error: true
+        env:
+          FORCE_HEALTH_FAIL: ${{ inputs.force_health_fail }}
+        run: |
+          if [ "${FORCE_HEALTH_FAIL:-false}" = "true" ]; then
+            echo "::warning::force_health_fail=true — simulating a failed health-check (smoke)."
+            exit 1
+          fi
+          bash scripts/token-health-check.sh
+
+      - name: Alert — open or close the standing health-failure issue
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+        run: |
+          if [ "$HEALTH_OUTCOME" = "failure" ]; then
+            {
+              echo 'The daily token health-check **failed** — `GITHUB_AUTH_TOKEN` is likely expired or revoked.'
+              echo
+              echo "- Run: $RUN_URL"
+              echo '- Rotate it: docs/token-rotation-runbook.md'
+            } > "$RUNNER_TEMP/health-body.md"
+            bash scripts/token-health-issue.sh open-or-update "$HEALTH_MARKER" "⚠️ Token health-check failing" "$RUNNER_TEMP/health-body.md"
+          else
+            bash scripts/token-health-issue.sh close-if-open "$HEALTH_MARKER" "✅ Token healthy again — closing (run: $RUN_URL)." || true
+          fi
+
+      - name: Expiry pre-warning — E2E PATs (14-day lead, best-effort)
+        env:
+          E2E_CLASSIC_PAT: ${{ secrets.E2E_CLASSIC_PAT }}
+          E2E_FINEGRAINED_PAT: ${{ secrets.E2E_FINEGRAINED_PAT }}
+        run: |
+          warn_days=14
+          warn_one() {
+            name="$1"; token="$2"
+            marker="<!-- token-health:expiry:$name -->"
+            if [ -z "$token" ]; then echo "$name: secret not set — skipping"; return 0; fi
+            hdrs=$(curl -sS -I -H "Authorization: Bearer $token" https://api.github.com/ || true)
+            exp=$(printf '%s' "$hdrs" | bash scripts/token-health-issue.sh parse-expiry)
+            if [ -z "$exp" ]; then
+              echo "$name: no expiration header — skipping (token may not expire)"
+              bash scripts/token-health-issue.sh close-if-open "$marker" >/dev/null 2>&1 || true
+              return 0
+            fi
+            if ! days=$(bash scripts/token-health-issue.sh days-until "$exp"); then
+              echo "$name: unparseable expiry '$exp' — skipping"; return 0
+            fi
+            if [ "$days" -lt "$warn_days" ]; then
+              {
+                echo "\`$name\` expires in **$days day(s)** — on $exp."
+                echo
+                echo '- Rotate it before then: docs/token-rotation-runbook.md'
+                echo "- Run: $RUN_URL"
+              } > "$RUNNER_TEMP/expiry-$name.md"
+              bash scripts/token-health-issue.sh open-or-update "$marker" "⚠️ E2E PAT expiring soon: $name" "$RUNNER_TEMP/expiry-$name.md"
+              echo "$name: WARNED — $days day(s) left"
+            else
+              bash scripts/token-health-issue.sh close-if-open "$marker" "✅ \`$name\` has >$warn_days days lead again — closing." >/dev/null || true
+              echo "$name: ok — $days day(s) left"
+            fi
+          }
+          warn_one E2E_CLASSIC_PAT "${E2E_CLASSIC_PAT:-}" || true
+          warn_one E2E_FINEGRAINED_PAT "${E2E_FINEGRAINED_PAT:-}" || true
+
+      - name: Re-fail if the health-check failed (keep run-history honest)
+        if: steps.health.outcome == 'failure'
+        run: |
+          echo "::error::Token health-check failed — see the standing issue and docs/token-rotation-runbook.md"
+          exit 1
