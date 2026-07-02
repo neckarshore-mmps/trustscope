@@ -72,15 +72,18 @@ jobs:
             if ! days=$(bash scripts/token-health-issue.sh days-until "$exp"); then
               echo "$name: unparseable expiry '$exp' — skipping"; return 0
             fi
-            if [ "$days" -lt "$warn_days" ]; then
+            if [ "$days" -le "$warn_days" ]; then
               {
                 echo "\`$name\` expires in **$days day(s)** — on $exp."
                 echo
                 echo '- Rotate it before then: docs/token-rotation-runbook.md'
                 echo "- Run: $RUN_URL"
               } > "$RUNNER_TEMP/expiry-$name.md"
-              bash scripts/token-health-issue.sh open-or-update "$marker" "⚠️ E2E PAT expiring soon: $name" "$RUNNER_TEMP/expiry-$name.md"
-              echo "$name: WARNED — $days day(s) left"
+              if bash scripts/token-health-issue.sh open-or-update "$marker" "⚠️ E2E PAT expiring soon: $name" "$RUNNER_TEMP/expiry-$name.md"; then
+                echo "$name: WARNED — $days day(s) left"
+              else
+                echo "$name: WARN FAILED to open the expiry issue — $days day(s) left"
+              fi
             else
               bash scripts/token-health-issue.sh close-if-open "$marker" "✅ \`$name\` has >$warn_days days lead again — closing." >/dev/null || true
               echo "$name: ok — $days day(s) left"

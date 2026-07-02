@@ -38,7 +38,7 @@ Net: c is a nice-to-have, low urgency — b is the real value.
 
 1. Add an expiry step to `token-health.yml` (or a sibling workflow): for each of `E2E_CLASSIC_PAT`,
    `E2E_FINEGRAINED_PAT`, `curl -sI -H "Authorization: Bearer $TOKEN" https://api.github.com/` and
-   parse `github-authentication-token-expiration`; if `< now + 14d`, flag.
+   parse `github-authentication-token-expiration`; if `<= now + 14d` (≤14 days remaining), flag.
 2. Shared "open/update issue" helper step used by both the health-failure path (b) and the
    expiry-warning path (c).
 3. `permissions: { contents: read, issues: write }`. Secrets only via `env:`.

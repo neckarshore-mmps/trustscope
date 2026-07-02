@@ -87,36 +87,42 @@ _issue_state() {
 cmd_open_or_update() {
   local marker="${1:?marker}" title="${2:?title}" body_file="${3:?body-file}"
   ensure_label
-  local body existing closed
-  body=$(<"$body_file")
+  # Fail-closed: a failed read / list / state-read / mutation MUST return non-zero, never print
+  # "Updated"/"Reopened"/"Created" and exit 0 (that silently drops the alert this monitor exists to
+  # raise). `set -e` stays off on purpose — the list helpers return empty-but-success on a no-match —
+  # so every fallible step propagates explicitly with `|| return`.
+  local body existing existing_state="" closed closed_state=""
+  body=$(<"$body_file") || return
 
-  existing=$(find_open_issue "$marker")
-  if [[ -n "$existing" && "$(_issue_state "$existing")" == "OPEN" ]]; then
-    printf '%s\n' "$body" | gh issue comment "$existing" --body-file -
+  existing=$(find_open_issue "$marker") || return
+  if [[ -n "$existing" ]]; then existing_state=$(_issue_state "$existing") || return; fi
+  if [[ -n "$existing" && "$existing_state" == "OPEN" ]]; then
+    printf '%s\n' "$body" | gh issue comment "$existing" --body-file - || return
     echo "Updated open issue #$existing ($marker)"
     return 0
   fi
 
-  closed=$(find_recent_closed_issue "$marker")
-  if [[ -n "$closed" && "$(_issue_state "$closed")" == "CLOSED" ]]; then
-    gh issue reopen "$closed" >/dev/null
-    printf '%s\n' "$body" | gh issue comment "$closed" --body-file -
+  closed=$(find_recent_closed_issue "$marker") || return
+  if [[ -n "$closed" ]]; then closed_state=$(_issue_state "$closed") || return; fi
+  if [[ -n "$closed" && "$closed_state" == "CLOSED" ]]; then
+    gh issue reopen "$closed" >/dev/null || return
+    printf '%s\n' "$body" | gh issue comment "$closed" --body-file - || return
     echo "Reopened issue #$closed ($marker)"
     return 0
   fi
 
   # create — embed the hidden marker so future runs can find THIS issue
-  printf '%s\n\n%s\n' "$body" "$marker" | gh issue create --title "$title" --label "$LABEL" --body-file -
+  printf '%s\n\n%s\n' "$body" "$marker" | gh issue create --title "$title" --label "$LABEL" --body-file - || return
   echo "Created issue ($marker)"
 }
 
 cmd_close_if_open() {
   local marker="${1:?marker}" comment="${2:-}"
   local existing
-  existing=$(find_open_issue "$marker")
+  existing=$(find_open_issue "$marker") || return
   [[ -n "$existing" ]] || { echo "No open issue for $marker — nothing to close"; return 0; }
   [[ -z "$comment" ]] || gh issue comment "$existing" --body "$comment" >/dev/null || true
-  gh issue close "$existing" >/dev/null
+  gh issue close "$existing" >/dev/null || return
   echo "Closed issue #$existing ($marker)"
 }
 
@@ -131,7 +137,8 @@ cmd_self_test() {
   # empty + garbage -> exit 1, no output
   if days_until "" >/dev/null 2>&1; then echo "FAIL empty should exit 1"; fail=1; fi
   if days_until "not-a-date" >/dev/null 2>&1; then echo "FAIL garbage should exit 1"; fail=1; fi
-  # 14-day threshold: 10 days out flags (<14), 20 days out does not (>=14)
+  # expiry-lead sanity on days_until: 10 days out sits inside the 14-day warn window, 20 days out clears it
+  # (the warn decision itself — days <= 14 — lives in the workflow; here we only sanity-check the day count)
   local ten twenty
   ten=$(days_until "$(_gnu_date -u -d '+10 days' +'%Y-%m-%d %H:%M:%S UTC')")
   twenty=$(days_until "$(_gnu_date -u -d '+20 days' +'%Y-%m-%d %H:%M:%S UTC')")
