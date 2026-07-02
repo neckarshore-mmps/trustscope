@@ -38,7 +38,7 @@ Net: c is a nice-to-have, low urgency — b is the real value.
 
 1. Add an expiry step to `token-health.yml` (or a sibling workflow): for each of `E2E_CLASSIC_PAT`,
    `E2E_FINEGRAINED_PAT`, `curl -sI -H "Authorization: Bearer $TOKEN" https://api.github.com/` and
-   parse `github-authentication-token-expiration`; if `< now + 14d`, flag.
+   parse `github-authentication-token-expiration`; if `<= now + 14d` (≤14 days remaining), flag.
 2. Shared "open/update issue" helper step used by both the health-failure path (b) and the
    expiry-warning path (c).
 3. `permissions: { contents: read, issues: write }`. Secrets only via `env:`.
@@ -52,3 +52,28 @@ Net: c is a nice-to-have, low urgency — b is the real value.
   OTHER repos (e.g. `neckarshore-stats-action` expiring Jul 7 2026, `phonesis-voicebank` already
   expired). That is an org-wide concern across multiple products → **MASCHIN scope**, captured in the
   Linus session report (letter -e).
+
+## Implementation (built 2026-07-02 — branch `feat/token-health-issue-alerts`)
+
+Built to this spec with these locked decisions:
+
+- **Helper as a script**, not inline YAML: `scripts/token-health-issue.sh`
+  (`open-or-update` / `close-if-open` / `days-until` / `parse-expiry` / `self-test`). The pure
+  logic is locally smoke-testable via `bash scripts/token-health-issue.sh self-test`.
+- **b — RED + issue** (Founder-confirmed): a failed check opens/updates the standing issue **and**
+  the job still ends red (`exit 1`), so the run-history stays honest and the default mail still
+  fires. A green run closes the standing issue.
+- **Dedup by a hidden body marker**, not the label alone (`<!-- token-health:health-fail -->`,
+  `<!-- token-health:expiry:<name> -->`), so the health and expiry issues never overwrite each
+  other. Lookups use the primary-consistent REST list plus a strongly-consistent single-issue
+  state re-check, so the rare close-together race fails toward a benign duplicate, never a lost alert.
+- **c — expiry pre-warn** is best-effort and never fails the run; a missing
+  `github-authentication-token-expiration` header is skipped cleanly. Verified live: both E2E PATs
+  report 89 days left (Sep 30 2026), correctly no warning at the 14-day threshold.
+- **Security:** `permissions: { contents: read, issues: write }`; secrets and issue bodies flow via
+  `env:` / body-files only, never inline `${{ }}` in `run:`. Triggers stay `schedule` + `workflow_dispatch`
+  (no attacker-controlled event payloads).
+
+Smoke (all green, 2026-07-02): local `self-test`; a live `gh` full cycle (create → dedup-comment →
+close → reopen); a `workflow_dispatch` fail-path (run RED + issue opened) and healthy-path (run green
++ issue closed).
