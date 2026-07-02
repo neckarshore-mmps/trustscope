@@ -79,6 +79,6 @@ See [DECISIONS.md](DECISIONS.md) for the locked product decisions and the AP-1 s
 |---|--------|--------|
 | 1 | Lock the name "TrustScope" | ✅ locked (the subdomain slug). |
 | 2 | Subdomain `trustscope.neckarshore.ai` | ✅ DNS live (CNAME → Vercel). **Add the domain to the Vercel project so the TLS cert issues.** |
-| 3 | GitHub OAuth App creds (`GITHUB_CLIENT_ID/SECRET` + `AUTH_SECRET`) | 🔲 open — until then Copy-Markdown / pre-filled issue cover it. |
+| 3 | GitHub OAuth App creds (`GITHUB_CLIENT_ID/SECRET` + `AUTH_SECRET`) | ✅ set in Vercel **Production** — one-click "file as yourself" is live. Not in Preview/Dev (those fall back to Copy-Markdown / pre-filled issue). Callback URL must track the final production domain (see #2). |
 | 4 | **Scorecard-run host** (the ~90s job is not pure-serverless) | 🔲 the one open infra fork. Evaluate Vercel-native first (Sandbox / Fluid-Compute running the `scorecard` **binary**) before an external host. The adapter absorbs the choice via `SCORECARD_RUNNER`. |
 | 5 | Hosting (Vercel project) | ✅ confirmed. |
