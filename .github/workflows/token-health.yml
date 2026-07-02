@@ -1,0 +1,25 @@
+# Daily token health-check — indirect early-warning for GITHUB_AUTH_TOKEN expiry/revocation.
+# Renders an on-demand report on production; fails (→ GitHub notifies watchers) if the token has
+# stopped working. Rationale + rotation steps: docs/token-rotation-runbook.md.
+name: Token Health (daily)
+
+on:
+  schedule:
+    - cron: "37 6 * * *" # 06:37 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    name: On-demand token health-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Check on-demand report renders (token healthy)
+        run: bash scripts/token-health-check.sh
