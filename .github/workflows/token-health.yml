@@ -11,12 +11,7 @@ name: Token Health (daily)
 on:
   schedule:
     - cron: "37 6 * * *" # 06:37 UTC daily
-  workflow_dispatch:
-    inputs:
-      force_health_fail:
-        description: "Smoke only: force the health-check to fail (proves the RED + issue path). Leave false."
-        type: boolean
-        default: false
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -39,14 +34,7 @@ jobs:
       - name: Run health-check (capture outcome, don't abort the job)
         id: health
         continue-on-error: true
-        env:
-          FORCE_HEALTH_FAIL: ${{ inputs.force_health_fail }}
-        run: |
-          if [ "${FORCE_HEALTH_FAIL:-false}" = "true" ]; then
-            echo "::warning::force_health_fail=true — simulating a failed health-check (smoke)."
-            exit 1
-          fi
-          bash scripts/token-health-check.sh
+        run: bash scripts/token-health-check.sh
 
       - name: Alert — open or close the standing health-failure issue
         env:
