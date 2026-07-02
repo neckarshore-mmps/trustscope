@@ -48,14 +48,22 @@ function Header() {
             {PRODUCT_NAME}
           </span>
         </Link>
-        <a
-          href="https://github.com/neckarshore-mmps/trustscope"
-          className="text-sm text-muted transition-colors hover:text-foreground"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub ↗
-        </a>
+        <nav className="flex items-center gap-5">
+          <Link
+            href="/about"
+            className="text-sm text-muted transition-colors hover:text-foreground"
+          >
+            How it works
+          </Link>
+          <a
+            href="https://github.com/neckarshore-mmps/trustscope"
+            className="text-sm text-muted transition-colors hover:text-foreground"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub ↗
+          </a>
+        </nav>
       </div>
     </header>
   );
