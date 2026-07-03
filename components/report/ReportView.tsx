@@ -4,6 +4,7 @@ import type { ScorecardSource } from "@/lib/adapters";
 import { PillarCard } from "./PillarCard";
 import { IssueActions } from "./IssueActions";
 import { ReportSummary } from "./ReportSummary";
+import { DueDiligencePanel } from "./DueDiligencePanel";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -60,6 +61,9 @@ export function ReportView({
 
       {/* Orientation layer — the 2-second read: synthesis + coverage + good-case (§A slot 2) */}
       <ReportSummary report={report} />
+
+      {/* Due-diligence panel — quiet signals worth a second look (§A slot 3) */}
+      <DueDiligencePanel report={report} />
 
       {/* No-aggregate rationale — the reputation differentiator, foregrounded */}
       <div className="mt-6 rounded-xl border border-brand/20 bg-brand/[0.04] p-5">
