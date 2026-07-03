@@ -1,0 +1,99 @@
+# Daily token health-check — now with VISIBLE Issue alerting + proactive expiry pre-warning.
+#
+# On a FAILED check it opens/updates a standing GitHub Issue (deduped by a hidden body marker) AND
+# still ends the job RED, so the run-history stays honest and the default Actions email still fires.
+# On a HEALTHY run it closes the standing issue. It also warns >=14 days before the two E2E PATs
+# expire (the prod GITHUB_AUTH_TOKEN has no expiry and stays covered reactively by the health-check).
+#
+# Spec: docs/token-health-enhancement.md · rotation runbook: docs/token-rotation-runbook.md.
+name: Token Health (daily)
+
+on:
+  schedule:
+    - cron: "37 6 * * *" # 06:37 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  health:
+    name: On-demand token health-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEALTH_MARKER: "<!-- token-health:health-fail -->"
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Run health-check (capture outcome, don't abort the job)
+        id: health
+        continue-on-error: true
+        run: bash scripts/token-health-check.sh
+
+      - name: Alert — open or close the standing health-failure issue
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+        run: |
+          if [ "$HEALTH_OUTCOME" = "failure" ]; then
+            {
+              echo 'The daily token health-check **failed** — `GITHUB_AUTH_TOKEN` is likely expired or revoked.'
+              echo
+              echo "- Run: $RUN_URL"
+              echo '- Rotate it: docs/token-rotation-runbook.md'
+            } > "$RUNNER_TEMP/health-body.md"
+            bash scripts/token-health-issue.sh open-or-update "$HEALTH_MARKER" "⚠️ Token health-check failing" "$RUNNER_TEMP/health-body.md"
+          else
+            bash scripts/token-health-issue.sh close-if-open "$HEALTH_MARKER" "✅ Token healthy again — closing (run: $RUN_URL)." || true
+          fi
+
+      - name: Expiry pre-warning — E2E PATs (14-day lead, best-effort)
+        env:
+          E2E_CLASSIC_PAT: ${{ secrets.E2E_CLASSIC_PAT }}
+          E2E_FINEGRAINED_PAT: ${{ secrets.E2E_FINEGRAINED_PAT }}
+        run: |
+          warn_days=14
+          warn_one() {
+            name="$1"; token="$2"
+            marker="<!-- token-health:expiry:$name -->"
+            if [ -z "$token" ]; then echo "$name: secret not set — skipping"; return 0; fi
+            hdrs=$(curl -sS -I -H "Authorization: Bearer $token" https://api.github.com/ || true)
+            exp=$(printf '%s' "$hdrs" | bash scripts/token-health-issue.sh parse-expiry)
+            if [ -z "$exp" ]; then
+              echo "$name: no expiration header — skipping (token may not expire)"
+              bash scripts/token-health-issue.sh close-if-open "$marker" >/dev/null 2>&1 || true
+              return 0
+            fi
+            if ! days=$(bash scripts/token-health-issue.sh days-until "$exp"); then
+              echo "$name: unparseable expiry '$exp' — skipping"; return 0
+            fi
+            if [ "$days" -le "$warn_days" ]; then
+              {
+                echo "\`$name\` expires in **$days day(s)** — on $exp."
+                echo
+                echo '- Rotate it before then: docs/token-rotation-runbook.md'
+                echo "- Run: $RUN_URL"
+              } > "$RUNNER_TEMP/expiry-$name.md"
+              if bash scripts/token-health-issue.sh open-or-update "$marker" "⚠️ E2E PAT expiring soon: $name" "$RUNNER_TEMP/expiry-$name.md"; then
+                echo "$name: WARNED — $days day(s) left"
+              else
+                echo "$name: WARN FAILED to open the expiry issue — $days day(s) left"
+              fi
+            else
+              bash scripts/token-health-issue.sh close-if-open "$marker" "✅ \`$name\` has >$warn_days days lead again — closing." >/dev/null || true
+              echo "$name: ok — $days day(s) left"
+            fi
+          }
+          warn_one E2E_CLASSIC_PAT "${E2E_CLASSIC_PAT:-}" || true
+          warn_one E2E_FINEGRAINED_PAT "${E2E_FINEGRAINED_PAT:-}" || true
+
+      - name: Re-fail if the health-check failed (keep run-history honest)
+        if: steps.health.outcome == 'failure'
+        run: |
+          echo "::error::Token health-check failed — see the standing issue and docs/token-rotation-runbook.md"
+          exit 1

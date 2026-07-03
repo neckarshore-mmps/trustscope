@@ -1,0 +1,37 @@
+# Unit-test gate — runs the Vitest suite (report-core, adapters, store,
+# issue-markdown). The pure report-core (AP-1 anchor) and the swappable
+# adapters must stay green on every PR. Mirrors the neckarshore.ai estate CI
+# template (#270 §3); one of the three test/lint gates TrustScope was missing.
+name: Unit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default token — this workflow only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    name: Vitest unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test

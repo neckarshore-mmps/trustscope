@@ -70,6 +70,55 @@ export async function fetchScorecardFastPath(
   return (await res.json()) as ScorecardResult;
 }
 
+/** A valid Scorecard JSON result always carries a `checks` array. */
+function parseScorecardJson(stdout: string | undefined): ScorecardResult | null {
+  if (!stdout) return null;
+  try {
+    const parsed = JSON.parse(stdout) as ScorecardResult;
+    return Array.isArray(parsed?.checks) ? parsed : null;
+  } catch {
+    return null; // not JSON (a panic trace, an empty stream, …)
+  }
+}
+
+/**
+ * Run a `scorecard` command and return its parsed JSON result.
+ *
+ * Scorecard exits NON-ZERO whenever any check errors during execution — e.g. `Branch-Protection`
+ * cannot be read by a fine-grained / OAuth / App token ("some github tokens can't read classic
+ * branch protection rules"). Crucially, it still writes the FULL report to stdout, with the errored
+ * check at `score: -1`. Node's execFile rejects on that non-zero exit, so without this recovery a
+ * single unreadable check would nuke the entire report — fatal for a tool that scores third-party
+ * repos, where admin-gated checks are routinely unreadable. See issue #10.
+ *
+ * A run that produces NO parseable Scorecard JSON (repo unreachable, invalid token, binary crash)
+ * is a genuine failure and is re-thrown with a message clearer than the raw "Command failed: …".
+ */
+async function execScorecard(
+  execFileImpl: typeof execFileAsync,
+  cmd: string,
+  args: string[],
+  token: string,
+): Promise<ScorecardResult> {
+  const options = {
+    maxBuffer: RUN_MAX_BUFFER,
+    env: { ...process.env, GITHUB_AUTH_TOKEN: token },
+  };
+  try {
+    const { stdout } = await execFileImpl(cmd, args, options);
+    return JSON.parse(stdout) as ScorecardResult;
+  } catch (err) {
+    const stdout = (err as { stdout?: string | Buffer })?.stdout?.toString();
+    const recovered = parseScorecardJson(stdout);
+    if (recovered) return recovered; // partial-but-valid report (an errored check, exit != 0)
+    const detail = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Scorecard run failed and produced no report (${cmd}). If this mentions branch ` +
+        `protection, the GITHUB_AUTH_TOKEN cannot read it — use a classic PAT. Cause: ${detail}`,
+    );
+  }
+}
+
 export async function runScorecardDocker(
   owner: string,
   repo: string,
@@ -93,11 +142,7 @@ export async function runScorecardDocker(
     `--repo=github.com/${owner}/${repo}`,
     "--format=json",
   ];
-  const { stdout } = await execFileImpl("docker", args, {
-    maxBuffer: RUN_MAX_BUFFER,
-    env: { ...process.env, GITHUB_AUTH_TOKEN: token },
-  });
-  return JSON.parse(stdout) as ScorecardResult;
+  return execScorecard(execFileImpl, "docker", args, token);
 }
 
 /**
@@ -118,11 +163,7 @@ export async function runScorecardBinary(
     );
   }
   const args = [`--repo=github.com/${owner}/${repo}`, "--format=json"];
-  const { stdout } = await execFileImpl(bin, args, {
-    maxBuffer: RUN_MAX_BUFFER,
-    env: { ...process.env, GITHUB_AUTH_TOKEN: token },
-  });
-  return JSON.parse(stdout) as ScorecardResult;
+  return execScorecard(execFileImpl, bin, args, token);
 }
 
 function runOnDemand(
