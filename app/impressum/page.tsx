@@ -45,11 +45,12 @@ export default function ImpressumPage() {
           </p>
         </div>
         {/*
-          << TODO: vom Founder bestätigen — Betreiber juristisch: German Rauhut (Einzelperson)
-             ODER "Neckarshore AI" als registrierte Entity? Falls Entity: Rechtsform,
-             Registergericht, Handelsregisternummer und USt-IdNr. (§ 27a UStG) ergänzen.
-             Prüfen, ob "Postanschrift auf Anfrage" für ein Software-Angebot ausreicht oder die
-             vollständige ladungsfähige Anschrift genannt werden muss. >>
+          Betreiber bestätigt (2026-07-03): German Rauhut als Einzelperson — keine
+          eingetragene Gesellschaft, daher keine Handelsregister-Angaben.
+          << TODO Founder/dr-sommer: Prüfen, ob "Postanschrift auf Anfrage" für ein (ggf.
+             kommerzielles) Software-Angebot genügt oder die vollständige ladungsfähige
+             Anschrift nach § 5 DDG genannt werden muss. Falls eine USt-IdNr existiert
+             (§ 27a UStG), hier ergänzen. >>
         */}
       </section>
 
@@ -65,7 +66,7 @@ export default function ImpressumPage() {
               german@rauhut.com
             </a>
           </p>
-          {/* << TODO: Telefonnummer ergänzen, falls gewünscht — nicht zwingend erforderlich. >> */}
+          {/* Kontakt bestätigt (2026-07-03): E-Mail als einzige Kontaktangabe — § 5 DDG genügt. */}
         </div>
       </section>
 

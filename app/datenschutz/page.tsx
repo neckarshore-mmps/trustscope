@@ -4,12 +4,14 @@ import { PRODUCT_NAME } from "@/config/product";
 
 export const metadata: Metadata = {
   title: "Datenschutz",
-  description: `Wie ${PRODUCT_NAME} personenbezogene Daten verarbeitet — anonyme Nutzung, öffentliche GitHub-Daten, Hosting bei Vercel. Keine Konten, kein Tracking.`,
+  description: `Wie ${PRODUCT_NAME} personenbezogene Daten verarbeitet — anonyme Nutzung, öffentliche GitHub-Daten, Hosting bei Vercel, optionaler GitHub-Login. Kein Tracking.`,
   robots: { index: true, follow: true },
 };
 
 const LINK =
   "text-foreground/80 underline decoration-border underline-offset-4 hover:text-brand";
+const CODE =
+  "rounded bg-surface-2 px-1 py-0.5 text-[13px] text-foreground/80";
 
 export default function DatenschutzPage() {
   return (
@@ -26,18 +28,18 @@ export default function DatenschutzPage() {
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
             {PRODUCT_NAME} ist so gebaut, dass es fast keine personenbezogenen Daten
-            verarbeitet: keine Konten, kein Tracking, keine Newsletter. Bewertet werden
-            öffentliche Repositories, nicht Sie.
+            verarbeitet: kein Tracking, keine Analyse-Cookies, kein Newsletter und kein
+            verpflichtendes Konto. Bewertet werden öffentliche Repositories, nicht Sie.
           </p>
         </div>
       </section>
 
       {/*
-        << V2-Update nötig, sobald Accounts/E-Mail/OAuth live sind — D7 >>
-        Diese Erklärung beschreibt den aktuellen anonymen Stand. Kommen Nutzerkonten,
-        E-Mail-Versand oder ein aktiver OAuth-Login hinzu, müssen die betroffenen
-        Verarbeitungen (Identität, Kontaktdaten, Session-Cookies, Auftragsverarbeiter)
-        hier ergänzt werden.
+        << V2-Update nötig, sobald PERSISTENTE Nutzerkonten oder E-Mail-Versand hinzukommen — D7 >>
+        Der optionale GitHub-Login ("file as yourself") ist bereits live (GITHUB_CLIENT_ID/SECRET
+        in Prod gesetzt, verifiziert 2026-07-03 via `vercel env ls production`) und in § 5
+        beschrieben. Kommen darüber hinaus gespeicherte Konten, Kontaktdaten oder E-Mail-Versand
+        hinzu, müssen die betroffenen Verarbeitungen hier ergänzt werden.
       */}
 
       {/* § 1 Verantwortlicher */}
@@ -107,14 +109,12 @@ export default function DatenschutzPage() {
         <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Die Kernfunktion von {PRODUCT_NAME} ist das Bewerten öffentlicher
           GitHub-Repositories. Geben Sie ein Repository ein (URL oder{" "}
-          <code className="rounded bg-surface-2 px-1 py-0.5 text-[13px] text-foreground/80">
-            owner/repo
-          </code>
-          ), rufen wir öffentlich zugängliche Daten über die GitHub-API ab und lassen die
-          OpenSSF Scorecard darauf laufen. Verarbeitet werden ausschließlich bereits
-          öffentliche Informationen des jeweiligen Projekts — dazu können auch
-          personenbezogene Daten von Maintainern und Mitwirkenden gehören (etwa Namen,
-          GitHub-Benutzernamen oder Angaben aus Governance-Dateien).
+          <code className={CODE}>owner/repo</code>), rufen wir öffentlich zugängliche
+          Daten über die GitHub-API ab und lassen die OpenSSF Scorecard darauf laufen.
+          Verarbeitet werden ausschließlich bereits öffentliche Informationen des
+          jeweiligen Projekts — dazu können auch personenbezogene Daten von Maintainern
+          und Mitwirkenden gehören (etwa Namen, GitHub-Benutzernamen oder Angaben aus
+          Governance-Dateien).
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Rechtsgrundlage ist unser berechtigtes Interesse sowie das der Nutzer an einer
@@ -129,27 +129,41 @@ export default function DatenschutzPage() {
             Maintainern zu dokumentieren ist. >> */}
       </section>
 
-      {/* § 5 Keine Konten, kein Tracking */}
+      {/* § 5 Anmeldung mit GitHub (optional "file as yourself") */}
       <section className="mx-auto max-w-3xl px-5 pb-12">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">
-          § 5 · Keine Konten, kein Tracking
+          § 5 · Anmeldung mit GitHub (optional)
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-muted">
-          {PRODUCT_NAME} funktioniert ohne Benutzerkonto. Es gibt derzeit keine
-          Registrierung, kein Login und keine Newsletter-Anmeldung. Wir setzen keine
-          Analyse- oder Tracking-Cookies und binden keine Werbe- oder Tracking-Dienste
-          Dritter ein.
+          {PRODUCT_NAME} funktioniert vollständig ohne Anmeldung. Optional können Sie
+          sich mit Ihrem GitHub-Konto anmelden, um einen Verbesserungsvorschlag direkt
+          als GitHub-Issue in Ihrem Namen zu eröffnen („file as yourself“). Ohne
+          Anmeldung stehen gleichwertige Alternativen bereit — Markdown kopieren oder ein
+          vorbefülltes Issue-Formular öffnen; dabei werden keine Anmeldedaten verarbeitet.
         </p>
-        {/*
-          << TODO Founder/DPO — WICHTIG: Der Code enthält bereits einen env-gated
-             GitHub-OAuth-Flow ("file as yourself", Route /api/file-issue, next-auth,
-             Scope "read:user public_repo"). Ist GITHUB_CLIENT_ID/GITHUB_CLIENT_SECRET in
-             Produktion gesetzt, ist der Login AKTIV und es MUSS hier beschrieben werden:
-             Verarbeitung der GitHub-Identität + Access-Token (nur zum Öffnen des Issues
-             als der Nutzer, Session-Cookie via next-auth), Empfänger GitHub, Rechtsgrundlage
-             Art. 6 Abs. 1 lit. b/f. Ist die Variable NICHT gesetzt, ist der Flow dormant —
-             dann bitte hier bestätigen. Vor Verbindlichkeit klären. — D7 >>
-        */}
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Melden Sie sich an, nutzen wir GitHub OAuth (Auth.js/NextAuth) mit dem minimalen
+          Berechtigungsumfang <code className={CODE}>read:user public_repo</code>.
+          Verarbeitet werden Ihre GitHub-Identität (Benutzername/ID) und ein Access-Token,
+          das ausschließlich dazu dient, das von Ihnen ausgelöste Issue in Ihrem Namen bei
+          GitHub zu erstellen. Empfänger des Tokens ist GitHub. Das Token wird in einer
+          technisch notwendigen, signierten Session (Cookie via NextAuth) gehalten und
+          nicht dauerhaft in einer Datenbank gespeichert; mit Abmeldung oder Ablauf der
+          Session endet die Nutzung.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Rechtsgrundlage ist die Durchführung der von Ihnen angeforderten Funktion
+          (Art. 6 Abs. 1 lit. b DSGVO) sowie unser berechtigtes Interesse an deren
+          sicherer Umsetzung (Art. 6 Abs. 1 lit. f DSGVO); das notwendige Session-Cookie
+          stützt sich auf § 25 Abs. 2 Nr. 2 TDDDG. Unabhängig davon setzt {PRODUCT_NAME}
+          keine Analyse- oder Tracking-Cookies und bindet keine Werbe- oder
+          Tracking-Dienste Dritter ein.
+        </p>
+        {/* << DRAFT/TODO Founder/DPO — Der GitHub-OAuth-Login ist in Produktion AKTIV
+            (GITHUB_CLIENT_ID/GITHUB_CLIENT_SECRET gesetzt, verifiziert 2026-07-03 via
+            `vercel env ls production`). Bitte final prüfen: exakte Session-/Token-Lebensdauer,
+            ob eine Auftragsverarbeitung bzw. gemeinsame Verantwortlichkeit mit GitHub zu
+            benennen ist, sowie die Formulierung zur Speicherdauer. — D7 >> */}
       </section>
 
       {/* § 6 Ihre Rechte */}
