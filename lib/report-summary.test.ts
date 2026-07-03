@@ -66,13 +66,13 @@ describe("isCleanReport", () => {
           : p,
       ),
     };
-    expect(isCleanReport(dirty as typeof report)).toBe(false);
+    expect(isCleanReport(dirty as unknown as typeof report)).toBe(false);
   });
   it("is true when no finding is fail or warn", () => {
     const clean = {
       ...report,
       pillars: report.pillars.map((p) => ({ ...p, findings: [] })),
     };
-    expect(isCleanReport(clean as typeof report)).toBe(true);
+    expect(isCleanReport(clean as unknown as typeof report)).toBe(true);
   });
 });
