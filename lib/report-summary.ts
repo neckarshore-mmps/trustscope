@@ -58,3 +58,28 @@ export function reportSynthesis(report: ReportModel): string {
   }
   return s;
 }
+
+export interface CoverageSummary {
+  assessed: string[];
+  notAssessed: string[];
+  inconclusive: string[];
+}
+
+export function reportCoverage(report: ReportModel): CoverageSummary {
+  const assessed: string[] = [];
+  const notAssessed: string[] = [];
+  const inconclusive: string[] = [];
+  for (const p of report.pillars) {
+    (p.status === "scored" ? assessed : notAssessed).push(p.title);
+    for (const f of p.findings) {
+      if (f.status === "inconclusive") inconclusive.push(f.label);
+    }
+  }
+  return { assessed, notAssessed, inconclusive };
+}
+
+export function isCleanReport(report: ReportModel): boolean {
+  return report.pillars.every((p) =>
+    p.findings.every((f) => f.status !== "fail" && f.status !== "warn"),
+  );
+}
