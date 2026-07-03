@@ -13,6 +13,9 @@ const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: "./e2e",
+  // Seed the offline fixture report (fixture-org/fixture-repo) into the FileReportStore before any
+  // spec runs, so the report-page e2e are deterministic and token-free (V2 amendment §E).
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
