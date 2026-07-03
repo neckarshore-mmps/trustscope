@@ -155,8 +155,8 @@ export default function DatenschutzPage() {
           Rechtsgrundlage ist die Durchführung der von Ihnen angeforderten Funktion
           (Art. 6 Abs. 1 lit. b DSGVO) sowie unser berechtigtes Interesse an deren
           sicherer Umsetzung (Art. 6 Abs. 1 lit. f DSGVO); das notwendige Session-Cookie
-          stützt sich auf § 25 Abs. 2 Nr. 2 TDDDG. Unabhängig davon setzt {PRODUCT_NAME}
-          keine Analyse- oder Tracking-Cookies und bindet keine Werbe- oder
+          stützt sich auf § 25 Abs. 2 Nr. 2 TDDDG. Unabhängig davon setzt{" "}
+          {PRODUCT_NAME} keine Analyse- oder Tracking-Cookies und bindet keine Werbe- oder
           Tracking-Dienste Dritter ein.
         </p>
         {/* << DRAFT/TODO Founder/DPO — Der GitHub-OAuth-Login ist in Produktion AKTIV
