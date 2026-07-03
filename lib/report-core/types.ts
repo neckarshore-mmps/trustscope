@@ -138,4 +138,6 @@ export interface ReportModel {
   aggregateScore: null;
   aggregateNote: string;
   pillars: [Pillar, Pillar, Pillar, Pillar];
+  /** Quiet "due diligence" signals — qualitative, never a score (TS16). */
+  dueDiligence: DueDiligenceSignal[];
 }

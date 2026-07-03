@@ -1,4 +1,5 @@
 import { PRODUCT_NAME } from "@/config/product";
+import { detectDueDiligence } from "./due-diligence";
 import { FIX_TEXT } from "./fix-text";
 import { PILLAR_META, pillarForCheck } from "./pillars";
 import type {
@@ -266,6 +267,8 @@ export function buildReport(input: BuildReportInput): ReportModel {
     communityPillar(scorecard.checks ?? [], github, scorecard.date),
   ];
 
+  const dueDiligence = detectDueDiligence(github, scorecard.date);
+
   return {
     product: PRODUCT_NAME,
     repo: {
@@ -283,5 +286,6 @@ export function buildReport(input: BuildReportInput): ReportModel {
     aggregateNote:
       "By design, TrustScope shows no single aggregate score. Each pillar answers a different question; collapsing them into one number hides the trade-offs that matter for an adoption decision.",
     pillars,
+    dueDiligence,
   };
 }
