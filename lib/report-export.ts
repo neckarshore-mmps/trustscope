@@ -64,6 +64,60 @@ export function reportToMarkdown(report: ReportModel): string {
   return lines.join("\n");
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(
+    /[&<>"]/g,
+    (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[m] as string,
+  );
+}
+
+export function reportToHtml(report: ReportModel): string {
+  const r = report.repo;
+  const e = escapeHtml;
+  const pillars = report.pillars
+    .map((p) => {
+      const findings = p.findings
+        .map((f) => {
+          const sc = f.score === null ? "" : ` (${f.score}/10)`;
+          return `<li><strong>${e(f.label)}</strong> — ${e(f.status)}${sc}: ${e(f.reason)}</li>`;
+        })
+        .join("");
+      const fixes = p.fixes.length
+        ? `<p class="fixes-h">Suggested fixes</p><ul>${p.fixes.map((fx) => `<li>${e(fx.text)}</li>`).join("")}</ul>`
+        : "";
+      const status =
+        p.status === "not-assessed"
+          ? `not assessed — ${e(p.scoreBasis)}`
+          : `assessed (${e(p.scoreBasis)})`;
+      return `<section><h2>Pillar ${p.id} — ${e(p.title)}</h2><p class="q">${e(p.question)}</p><p class="status">${status}</p><ul>${findings}</ul>${fixes}</section>`;
+    })
+    .join("");
+  // §B: synthesis line + due-diligence signals travel with the export (escaped like all content).
+  const synthesis = `<section><h2>In short</h2><p>${e(reportSynthesis(report))}</p></section>`;
+  const dueDiligence = report.dueDiligence.length
+    ? `<section><h2>Due diligence</h2><ul>${report.dueDiligence
+        .map(
+          (s) =>
+            `<li><strong>${e(s.title)}</strong> — ${e(s.detail)}${s.mitigation ? ` <em>Mitigation: ${e(s.mitigation)}</em>` : ""}</li>`,
+        )
+        .join("")}</ul></section>`
+    : "";
+  const sc = report.scorecard ? ` · OpenSSF Scorecard ${e(report.scorecard.version)}` : "";
+  const commit = r.commit ? ` · commit ${e(r.commit)}` : "";
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trust report — ${e(r.owner)}/${e(r.name)}</title>
+<style>body{font-family:system-ui,-apple-system,sans-serif;max-width:44rem;margin:2rem auto;padding:0 1rem;line-height:1.55;color:#1b1916}h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}.q{color:#666;font-style:italic;margin:.2rem 0}.status{font-size:.9rem;color:#444}.fixes-h{font-weight:600;margin-top:.6rem}blockquote{border-left:3px solid #ccc;margin:0;padding-left:1rem;color:#333}footer{margin-top:2rem;border-top:1px solid #ddd;padding-top:1rem;color:#666;font-size:.85rem}</style>
+</head><body>
+<h1>Trust report — ${e(r.owner)}/${e(r.name)}</h1>
+<blockquote>${e(report.aggregateNote)}</blockquote>
+<p>Repository: <a href="${e(r.url)}">${e(r.url)}</a><br>Assessed: ${e(report.assessedAt)}${sc}${commit}</p>
+${synthesis}${dueDiligence}${pillars}
+<footer>Assessed via ${e(report.product)} — no single aggregate score, by design. Deterministic: the same repository produces the same report.</footer>
+</body></html>`;
+}
+
 export function exportFilename(report: ReportModel, ext: "md" | "html"): string {
   const slug = `${report.repo.owner}-${report.repo.name}`
     .toLowerCase()
