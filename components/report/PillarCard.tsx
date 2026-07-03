@@ -1,4 +1,5 @@
 import type { Finding, Pillar } from "@/lib/report-core/types";
+import { findingHasEvidence } from "@/lib/finding-evidence";
 import { STATUS_META } from "@/lib/ui";
 import { ScoreBadge } from "./ScoreBadge";
 import { StatusPill } from "./StatusPill";
@@ -19,6 +20,37 @@ function FindingRow({ finding }: { finding: Finding }) {
           </span>
         </div>
         <p className="mt-0.5 text-sm leading-relaxed text-muted">{finding.reason}</p>
+        {findingHasEvidence(finding) && (
+          <details data-testid="finding-evidence" className="mt-1.5">
+            <summary className="cursor-pointer text-xs text-muted/80 hover:text-foreground">
+              Details / evidence
+            </summary>
+            <div className="mt-1.5 rounded-md border border-border/60 bg-surface-2/50 p-2.5">
+              <p className="font-mono text-[11px] text-muted/70">
+                check: {finding.check} · source: {finding.source}
+              </p>
+              {finding.details && finding.details.length > 0 && (
+                <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                  {finding.details.map((line, i) => (
+                    <li key={i} className="font-mono text-[11px] leading-relaxed text-muted">
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {finding.docUrl && (
+                <a
+                  href={finding.docUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1.5 inline-block text-xs text-brand hover:underline"
+                >
+                  Scorecard check reference ↗
+                </a>
+              )}
+            </div>
+          </details>
+        )}
       </div>
     </li>
   );
