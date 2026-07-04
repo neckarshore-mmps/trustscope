@@ -141,3 +141,12 @@ export interface ReportModel {
   /** Quiet "due diligence" signals — qualitative, never a score (TS16). */
   dueDiligence: DueDiligenceSignal[];
 }
+
+/** npm lifecycle hooks that run automatically on `npm install`. */
+export type InstallHook = "preinstall" | "install" | "postinstall";
+
+/** Minimal facts read from a package's root package.json (batch-2 manifest seam). */
+export interface ManifestData {
+  /** Which auto-run install hooks are present, in canonical order. */
+  installHooks: InstallHook[];
+}
