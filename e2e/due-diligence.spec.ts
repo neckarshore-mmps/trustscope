@@ -15,3 +15,13 @@ test("renders the due-diligence panel with real signals", async ({ page }) => {
     "#pillar-3",
   );
 });
+
+test("shows the install-scripts signal linked to the security pillar", async ({ page }) => {
+  await page.goto("/report?repo=fixture-org/fixture-repo");
+  const panel = page.getByTestId("due-diligence");
+  await expect(panel).toContainText("Runs scripts on install");
+  await expect(panel.getByRole("link", { name: "Runs scripts on install" })).toHaveAttribute(
+    "href",
+    "#pillar-2",
+  );
+});

@@ -1,5 +1,5 @@
 import { PILLAR_META } from "./pillars";
-import type { DueDiligenceSignal, GitHubData, PillarKey } from "./types";
+import type { DueDiligenceSignal, GitHubData, ManifestData, PillarKey } from "./types";
 
 const ACTIVITY_WINDOW_DAYS = 90;
 
@@ -22,6 +22,7 @@ function pillarId(key: PillarKey): 1 | 2 | 3 | 4 {
  */
 export function detectDueDiligence(
   github: GitHubData,
+  manifest: ManifestData | null,
   assessedAt: string,
 ): DueDiligenceSignal[] {
   const signals: DueDiligenceSignal[] = [];
@@ -70,6 +71,19 @@ export function detectDueDiligence(
       mitigation: null,
       pillarKey: "community-sustainability",
       pillarId: pillarId("community-sustainability"),
+    });
+  }
+
+  if (manifest && manifest.installHooks.length > 0) {
+    const hooks = manifest.installHooks.join(", ");
+    signals.push({
+      id: "install-scripts",
+      title: "Runs scripts on install",
+      detail: `This package runs its own steps automatically when it is installed (${hooks}) — arbitrary code runs during npm install. Often legitimate (native builds, setup), but worth a look before you adopt it.`,
+      mitigation:
+        "Review what the install steps do — installing with the --ignore-scripts flag lets you hold them back and inspect first.",
+      pillarKey: "security-supply-chain",
+      pillarId: pillarId("security-supply-chain"),
     });
   }
 

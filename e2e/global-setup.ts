@@ -33,6 +33,7 @@ export default async function globalSetup(): Promise<void> {
       read("github-community-snakeoil.json"),
     ),
     generatedAt: "2026-07-01T00:00:00.000Z",
+    manifest: { installHooks: ["postinstall"] },
   });
 
   // Make the stored report self-consistent with the slug it is served under (key + URL + header).

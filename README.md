@@ -19,6 +19,15 @@ across security, governance, and community — and never hides the trade-offs be
 **No single aggregate score, by design** — each pillar answers a different question; collapsing them
 hides exactly the trade-off you are weighing.
 
+### Due-diligence signals
+
+Alongside the pillars, the report surfaces a few quiet **due-diligence notes** — calm nudges
+derived from existing data, never a score. One example: **install scripts.** Some npm packages
+run their own steps automatically the moment they are installed (`preinstall` / `install` /
+`postinstall`) — arbitrary code runs during `npm install`. Often legitimate (native builds), but
+worth a look before adopting. The note points to a constructive next step
+(`npm install --ignore-scripts` to inspect first) and never accuses.
+
 ## How it works
 
 1. **Input** — one public GitHub repo (URL or `owner/repo`).

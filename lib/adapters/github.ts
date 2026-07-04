@@ -7,7 +7,7 @@ import type { GitHubData } from "@/lib/report-core/types";
  * then hands the raw payloads to the pure normalizeGitHubData transform.
  */
 
-const GITHUB_API = "https://api.github.com";
+export const GITHUB_API = "https://api.github.com";
 
 export class RepoNotFoundError extends Error {
   constructor(slug: string) {
@@ -22,7 +22,7 @@ export interface GitHubFetchOptions {
   fetchFn?: typeof fetch;
 }
 
-function ghHeaders(token?: string): Record<string, string> {
+export function ghHeaders(token?: string): Record<string, string> {
   const headers: Record<string, string> = {
     accept: "application/vnd.github+json",
     "x-github-api-version": "2022-11-28",

@@ -6,6 +6,7 @@ import type {
   Finding,
   Fix,
   GitHubData,
+  ManifestData,
   Pillar,
   ReportModel,
   ScorecardCheck,
@@ -254,10 +255,12 @@ export interface BuildReportInput {
   github: GitHubData;
   /** ISO timestamp; caller supplies it so the core stays deterministic/pure. */
   generatedAt: string;
+  /** Root package.json facts (batch-2 seam); null when unread. */
+  manifest?: ManifestData | null;
 }
 
 export function buildReport(input: BuildReportInput): ReportModel {
-  const { scorecard, github, generatedAt } = input;
+  const { scorecard, github, generatedAt, manifest = null } = input;
   const { owner, name } = parseOwnerRepo(scorecard.repo?.name ?? "");
 
   const pillars: [Pillar, Pillar, Pillar, Pillar] = [
@@ -267,7 +270,7 @@ export function buildReport(input: BuildReportInput): ReportModel {
     communityPillar(scorecard.checks ?? [], github, scorecard.date),
   ];
 
-  const dueDiligence = detectDueDiligence(github, scorecard.date);
+  const dueDiligence = detectDueDiligence(github, manifest, scorecard.date);
 
   return {
     product: PRODUCT_NAME,
