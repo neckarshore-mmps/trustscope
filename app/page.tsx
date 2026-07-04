@@ -1,3 +1,4 @@
+import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
 import { PRODUCT_NAME } from "@/config/product";
 
@@ -66,6 +67,7 @@ export default function Home() {
               <span className="font-mono text-muted">sindresorhus/got</span>. No sign-in needed to
               read a report.
             </p>
+            <RecentRepos />
           </div>
         </div>
       </section>
