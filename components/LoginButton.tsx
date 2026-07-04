@@ -10,6 +10,10 @@ import { useState } from "react";
  * onClick OPENS (does not toggle): a real click fires focus first (open), so a
  * toggling onClick would immediately close the hint again and hide it. Open-only
  * keeps click and keyboard focus both revealing the hint. Blur / Escape close it.
+ *
+ * onClick also focuses the button explicitly: Safari does not focus a button on
+ * mouse click, so without this the blur/Escape dismissal paths would never run
+ * and the hint could stay open indefinitely after a click.
  */
 export function LoginButton() {
   const [open, setOpen] = useState(false);
@@ -18,7 +22,10 @@ export function LoginButton() {
       <button
         type="button"
         aria-describedby={open ? "login-soon" : undefined}
-        onClick={() => setOpen(true)}
+        onClick={(e) => {
+          e.currentTarget.focus();
+          setOpen(true);
+        }}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         onKeyDown={(e) => {
