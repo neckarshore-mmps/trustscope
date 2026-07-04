@@ -5,6 +5,7 @@ import { PillarCard } from "./PillarCard";
 import { IssueActions } from "./IssueActions";
 import { ReportSummary } from "./ReportSummary";
 import { DueDiligencePanel } from "./DueDiligencePanel";
+import { ExportActions } from "./ExportActions";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -94,6 +95,9 @@ export function ReportView({
           oauthConfigured={oauthConfigured}
         />
       )}
+
+      {/* Export — always shown, independent of totalFixes (§A slot 7) */}
+      <ExportActions report={report} />
 
       <p className="mt-8 text-center text-xs text-muted/70">
         Report generated {fmtDate(report.generatedAt)} · commit{" "}
