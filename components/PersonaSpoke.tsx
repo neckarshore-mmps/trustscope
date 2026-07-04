@@ -1,9 +1,32 @@
 import Link from "next/link";
 import type { Persona } from "@/config/personas";
+import { PRODUCT_SUBDOMAIN } from "@/config/product";
+import { JsonLd } from "@/components/JsonLd";
 
 export function PersonaSpoke({ persona, other }: { persona: Persona; other: Persona }) {
+  const base = `https://${PRODUCT_SUBDOMAIN}`;
   return (
     <div>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Who is TrustScope for?",
+              item: `${base}/for`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: persona.spoke.title,
+              item: `${base}${persona.spokeHref}`,
+            },
+          ],
+        }}
+      />
       <section className="hero-glow">
         <div className="mx-auto max-w-3xl px-5 pb-6 pt-20 text-center sm:pt-28">
           <span className="text-xs font-semibold uppercase tracking-wider text-muted">

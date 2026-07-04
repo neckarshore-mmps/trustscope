@@ -1,0 +1,13 @@
+# TrustScope
+
+> Paste a public GitHub repo and get a deterministic four-pillar trust report — security & supply chain, governance, community — with constructive, upstream-friendly fixes and no single score. A reputation surface by Neckarshore AI, made in Germany.
+
+## Audience
+- [Who is TrustScope for?](https://trustscope.neckarshore.ai/for): the two audiences — adopters and maintainers
+- [For adopters](https://trustscope.neckarshore.ai/for/adopters): vet a third-party project before you depend on it
+- [For maintainers](https://trustscope.neckarshore.ai/for/maintainers): see and close the trust gaps adopters look for
+
+## Product
+- [How it works](https://trustscope.neckarshore.ai/how-it-works): the four pillars and the deterministic method
+- [FAQ](https://trustscope.neckarshore.ai/faq): accounts, no-single-score, data sources, privacy
+- [About](https://trustscope.neckarshore.ai/about): Neckarshore AI, made in Germany
