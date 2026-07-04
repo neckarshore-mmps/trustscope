@@ -74,6 +74,10 @@ test.describe("navigation", () => {
     await page.getByRole("button", { name: /open menu/i }).click();
     await expect(page.getByRole("link", { name: /How it works/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /FAQ/i })).toBeVisible();
+    // external items open in a new tab in the drawer too (parity with desktop)
+    const gh = page.getByRole("link", { name: /GitHub/i });
+    await expect(gh).toHaveAttribute("target", "_blank");
+    await expect(gh).toHaveAttribute("rel", /noreferrer/);
   });
 });
 

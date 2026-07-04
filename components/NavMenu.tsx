@@ -136,14 +136,26 @@ export function NavMenu({ items }: { items: readonly NavItem[] }) {
                     )),
                   ]
                 : [
-                    <Link
-                      key={it.label}
-                      href={it.href!}
-                      onClick={() => setDrawer(false)}
-                      className="rounded-md px-2 py-2 text-sm hover:bg-surface-2"
-                    >
-                      {it.label}
-                    </Link>,
+                    it.external ? (
+                      <a
+                        key={it.label}
+                        href={it.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-md px-2 py-2 text-sm hover:bg-surface-2"
+                      >
+                        {it.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={it.label}
+                        href={it.href!}
+                        onClick={() => setDrawer(false)}
+                        className="rounded-md px-2 py-2 text-sm hover:bg-surface-2"
+                      >
+                        {it.label}
+                      </Link>
+                    ),
                   ],
             )}
           </nav>
