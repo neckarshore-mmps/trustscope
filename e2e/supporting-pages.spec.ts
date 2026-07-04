@@ -38,3 +38,11 @@ test.describe("/faq", () => {
     expect(ld).toContain("FAQPage");
   });
 });
+
+test.describe("/feedback", () => {
+  test("responds 200 and reserves the slug", async ({ page }) => {
+    const res = await page.goto("/feedback");
+    expect(res?.status()).toBe(200);
+    await expect(page.getByRole("heading", { level: 1, name: /Feedback/i })).toBeVisible();
+  });
+});
