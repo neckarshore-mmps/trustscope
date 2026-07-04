@@ -16,3 +16,14 @@ test.describe("Global chrome renders", () => {
     await expect(footer.getByRole("link", { name: /Impressum/i })).toBeVisible();
   });
 });
+
+test.describe("Footer credibility line", () => {
+  for (const path of ["/", "/about"]) {
+    test(`footer shows Neckarshore + Made-in-Germany + link on ${path}`, async ({ page }) => {
+      await page.goto(path);
+      const footer = page.locator("footer");
+      await expect(footer.getByText(/Made in Germany/i)).toBeVisible();
+      await expect(footer.getByRole("link", { name: /neckarshore\.ai/i })).toBeVisible();
+    });
+  }
+});
