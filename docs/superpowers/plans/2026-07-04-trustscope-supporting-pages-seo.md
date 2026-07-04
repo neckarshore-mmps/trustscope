@@ -99,6 +99,8 @@ test.describe("/about company page", () => {
     await expect(page.getByRole("heading", { level: 1, name: /Neckarshore/i })).toBeVisible();
     await expect(page.getByText(/Made in Germany/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /neckarshore\.ai/i }).first()).toBeVisible();
+    // migration contract (spec §3): mechanics-seekers get a link to /how-it-works
+    await expect(page.getByRole("link", { name: /how TrustScope works/i })).toHaveAttribute("href", "/how-it-works");
   });
 });
 ```
@@ -165,6 +167,12 @@ export default function AboutPage() {
             neckarshore.ai →
           </a>
         </div>
+        {/* Migration contract (spec §3): /about was repurposed; send mechanics-seekers to /how-it-works. */}
+        <p className="pt-2 text-sm">
+          <Link href="/how-it-works" className="text-foreground/70 underline decoration-border underline-offset-4 hover:text-brand">
+            Looking for how TrustScope works? →
+          </Link>
+        </p>
         <div className="pt-6">
           <Link href="/" className="inline-flex items-center rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90">
             Try it on a repo →
@@ -365,6 +373,8 @@ test.describe("navigation", () => {
     await page.setViewportSize({ width: 1100, height: 800 });
     await page.goto("/");
     await page.getByRole("button", { name: /For whom/i }).click();
+    // the /for hub is reachable as the first menu item (trigger is button-only, spec §5)
+    await expect(page.getByRole("link", { name: /Overview/i })).toHaveAttribute("href", "/for");
     await expect(page.getByRole("link", { name: /Adopters/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Maintainers/i })).toBeVisible();
   });
@@ -394,7 +404,10 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "For whom", href: "/for", children: [
+  // Parent has NO href — the `For whom ▾` trigger is a button that only opens the menu (single
+  // responsibility, spec §5 a11y). The `/for` hub is reachable as the first menu item ("Overview").
+  { label: "For whom", children: [
+    { label: "Overview", href: "/for", hint: "Who is TrustScope for?" },
     { label: "Adopters", href: "/for/adopters", hint: "Vet a third-party project" },
     { label: "Maintainers", href: "/for/maintainers", hint: "Check your own project" },
   ]},

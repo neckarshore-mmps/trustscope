@@ -80,8 +80,16 @@ back to the input. **Internal linking:** hub↔spokes; each spoke cross-links th
 so the hub concentrates authority and the spokes catch long-tail without going thin.
 
 **Slug conventions (locked):** nested spokes `/for/adopters` · `/for/maintainers` (hierarchy + long-tail). The
-`/about`→`/how-it-works` rename repurposes `/about` for the company; pre-launch, low SEO risk (optional 301 for any
-existing inbound to old `/about`).
+`/about`→`/how-it-works` rename moves the product-mechanics content to `/how-it-works` and repurposes `/about` for
+the company page.
+
+**Migration contract (`/about`) — explicit:** `/about` is **not** server-redirected — it stays a live URL serving
+the new company page. So there is no 301 on the slug (a redirect would kill the repurposed page). The **canonical URL
+for product-mechanics content is now `/how-it-works`**, and it is the sole target of every internal mechanics link.
+For the pre-launch edge case of stray inbound that expected the old product `/about`, the repurposed `/about`
+company page carries a **visible contextual link to `/how-it-works`** ("Looking for how TrustScope works? →"). This is
+low-risk pre-launch (no established external bookmarks yet); if real legacy inbound ever materializes, revisit with a
+dedicated redirect/landing decision. The earlier "optional 301" wording is retired as ambiguous.
 
 ## 4. Page designs (WHAT + structure — final optics belong to the TS30 design session)
 
@@ -119,9 +127,12 @@ only their page-unique questions.
 
 ### 4d. `/how-it-works` (renamed) + `/about` (repurposed)
 
-- `/how-it-works` — the current `/about` product-mechanics content, moved. Internal links updated.
+- `/how-it-works` — the current `/about` product-mechanics content, moved. **Canonical URL for product mechanics;**
+  every internal mechanics link points here. Internal links updated.
 - `/about` — **company / who's-behind-it**: Neckarshore AI, Made-in-Germany/EU, link to neckarshore.ai. This is the
   concrete home for the credibility signal (Goal 1). Carries `Organization` schema (§6). No separate `/about-us`.
+  Carries a **visible contextual link to `/how-it-works`** ("Looking for how TrustScope works? →") for anyone who
+  reached the repurposed slug expecting product mechanics (the migration contract, §3).
 
 ### 4e. `/feedback` (reserved, ITSM-gated)
 
@@ -136,13 +147,17 @@ Today there is **no header nav**. This spec adds a **global header** on every pa
 | Slot | Content |
 |------|---------|
 | Left | Wordmark "TrustScope" → `/`. **Placeholder** — real logo = TS1 branding (gated on Founder design patterns / Neckarshore Brand-Kit). |
-| Center | **`For whom ▾`** dropdown → Adopters (`/for/adopters`) / Maintainers (`/for/maintainers`); the label links to the `/for` hub · `How it works` · `Explore` · `FAQ` · `About`. |
+| Center | **`For whom ▾`** menu **button** — opens the menu only, **does not navigate** (one job, per a11y below). Menu items: **Overview → `/for`** (the hub, first item) · Adopters → `/for/adopters` · Maintainers → `/for/maintainers`. Alongside it: `How it works` · `Explore` · `FAQ` · `About`. |
 | Right | **`Log in`** button → **"Coming soon"** (tooltip/toast, not navigable). Placeholder for TS6 Accounts/Login (a V2 feature not yet built). |
 | Mobile | Hamburger → drawer with the same links + Login. |
 | Footer | Legal (`/impressum`, `/datenschutz`) + Feedback + Neckarshore credibility line (*"A Neckarshore AI product · Made in Germany"* → neckarshore.ai). **Not** in the header. |
 
-**Dropdown chosen (Founder, 2026-07-04)** over a flat link. **A11y is a hard build requirement:** keyboard operable,
-`aria-expanded`/`aria-haspopup`, focus management, Escape-to-close, no hover-only. Roadmap link is added when TS20 ships.
+**Dropdown chosen (Founder, 2026-07-04)** over a flat link. **Single responsibility (a11y):** the `For whom ▾`
+trigger **only toggles the menu — it never navigates**; the `/for` hub is reached as the **first menu item**
+("Overview → `/for`"). This avoids one control doing two jobs (navigate + toggle), which is fragile for
+keyboard/screen-reader users. **A11y is a hard build requirement:** the trigger is a `button` with
+`aria-haspopup`/`aria-expanded`, keyboard operable (Enter/Space toggles, Arrow keys move within, Escape closes),
+focus management, no hover-only. Roadmap link is added when TS20 ships.
 
 ## 6. SEO/GEO treatment
 
