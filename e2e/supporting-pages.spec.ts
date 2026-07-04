@@ -9,3 +9,20 @@ test.describe("/how-it-works", () => {
     ).toBeVisible();
   });
 });
+
+test.describe("/about company page", () => {
+  test("renders the company story + neckarshore link + Made in Germany", async ({ page }) => {
+    const res = await page.goto("/about");
+    expect(res?.status()).toBe(200);
+    const main = page.getByRole("main");
+    await expect(main.getByRole("heading", { level: 1, name: /Neckarshore/i })).toBeVisible();
+    // scope to main: the footer credibility line also says "Made in Germany"
+    await expect(main.getByText(/Made in Germany/i).first()).toBeVisible();
+    await expect(main.getByRole("link", { name: /neckarshore\.ai/i }).first()).toBeVisible();
+    // migration contract (spec §3): mechanics-seekers get a link to /how-it-works
+    await expect(main.getByRole("link", { name: /how TrustScope works/i })).toHaveAttribute(
+      "href",
+      "/how-it-works",
+    );
+  });
+});

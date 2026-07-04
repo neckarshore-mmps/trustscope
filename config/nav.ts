@@ -11,7 +11,7 @@ export type NavItem = {
  * shape and APPENDS to this base — it never rewrites these entries.
  */
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "How it works", href: "/about" }, // Plan 3 renames href -> /how-it-works
+  { label: "How it works", href: "/how-it-works" },
   {
     label: "GitHub ↗",
     href: "https://github.com/neckarshore-mmps/trustscope",
