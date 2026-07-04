@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { parseRepoInput } from "@/lib/parse-repo-input";
 import { resolveReport } from "@/lib/resolve-report";
+import { RecordView } from "@/components/RecordView";
 import { ReportError } from "@/components/report/ReportError";
 import { ReportView } from "@/components/report/ReportView";
 
@@ -48,10 +49,16 @@ export default async function ReportPage({
     return <ReportError title={outcome.title} message={outcome.message} />;
   }
   return (
-    <ReportView
-      report={outcome.report}
-      source={outcome.source}
-      cached={outcome.cached}
-    />
+    <>
+      <RecordView
+        owner={outcome.report.repo.owner}
+        repo={outcome.report.repo.name}
+      />
+      <ReportView
+        report={outcome.report}
+        source={outcome.source}
+        cached={outcome.cached}
+      />
+    </>
   );
 }
