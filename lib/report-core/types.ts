@@ -83,6 +83,20 @@ export interface Fix {
   text: string;
 }
 
+export interface DueDiligenceSignal {
+  /** Stable key, e.g. "no-license". */
+  id: string;
+  title: string;
+  /** Why it matters, from the adopter's side — calm, never accusatory. */
+  detail: string;
+  /** A constructive next step, or null when there is nothing to do. */
+  mitigation: string | null;
+  /** The pillar this signal relates to. */
+  pillarKey: PillarKey;
+  /** The pillar's numeric id — links the signal to its `#pillar-{id}` section (V2 amendment §D). */
+  pillarId: 1 | 2 | 3 | 4;
+}
+
 export type PillarKey =
   | "functional-quality"
   | "security-supply-chain"
@@ -124,4 +138,6 @@ export interface ReportModel {
   aggregateScore: null;
   aggregateNote: string;
   pillars: [Pillar, Pillar, Pillar, Pillar];
+  /** Quiet "due diligence" signals — qualitative, never a score (TS16). */
+  dueDiligence: DueDiligenceSignal[];
 }
