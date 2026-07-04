@@ -19,4 +19,16 @@ describe("buildReport dueDiligence", () => {
     });
     expect(Array.isArray(report.dueDiligence)).toBe(true);
   });
+  it("includes the install-scripts signal when the manifest declares hooks", () => {
+    const report = buildReport({
+      scorecard: read("scorecard-snakeoil.json"),
+      github: normalizeGitHubData(
+        read("github-repo-snakeoil.json"),
+        read("github-community-snakeoil.json"),
+      ),
+      generatedAt: "2026-07-01T00:00:00.000Z",
+      manifest: { installHooks: ["postinstall"] },
+    });
+    expect(report.dueDiligence.map((s) => s.id)).toContain("install-scripts");
+  });
 });
