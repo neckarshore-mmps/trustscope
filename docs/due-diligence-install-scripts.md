@@ -2,7 +2,7 @@
 
 Adds **one** quiet Due-Diligence signal to the shipped panel: a calm note when a package runs
 npm install-time lifecycle scripts. This is the second batch of the Due-Diligence framework
-(batch 1 = no-license / no-security / low-activity, shipped in #639, `lib/report-core/due-diligence.ts`).
+(batch 1 = no-license / no-security-contact / archived / low-activity, shipped in #639, `lib/report-core/due-diligence.ts`).
 
 **Design approved by the Founder 2026-07-04.** The Founder chose the MASCHIN-lock route over a direct
 build, so this is the durable design; **MASCHIN turns it into the locked implementation plan** (task
@@ -29,13 +29,17 @@ manifest-scan (D3 / TS11 dep-ranking) rides the same seam instead of replacing a
 `GitHubData`.
 
 - **New type** `ManifestData` (`lib/report-core/types.ts`): `{ installHooks: InstallHook[] }` where
-  `InstallHook = "preinstall" | "install" | "postinstall"`. `null` = no manifest / not npm / fetch failed.
-- **New adapter** `lib/adapters/manifest.ts`: `fetchPackageManifest(owner, repo, token?) → ManifestData | null`.
+  `InstallHook = "preinstall" | "install" | "postinstall"`. **Shape contract:** `null` = manifest
+  missing / not npm / **failed fetch**; `{ installHooks: [] }` = manifest **parsed, no install hooks**.
+- **New adapter** `lib/adapters/manifest.ts`: `fetchPackageManifest(owner, repo, opts?) → ManifestData | null`.
   One call `GET /repos/{owner}/{repo}/contents/package.json` (reuse the token-header pattern from
   `lib/adapters/github.ts`); base64-decode `content`, `JSON.parse`, read `.scripts`, keep the hook
-  names present. **Any failure** (404 / non-JSON / no `scripts` / rate-limit / network) **→ `null`;
-  never throws to the caller.**
-- **Detector** becomes `detectDueDiligence(github, manifest, assessedAt)` — pushes the signal when
+  names present. A **hard timeout** (`AbortController`, ~5 s deadline) fires an abort so a slow/hanging
+  GitHub response degrades to `null` instead of blocking the report path. **Any failure**
+  (404 / non-JSON / rate-limit / network / **timeout**) **→ `null`; a parsed manifest with no install
+  hooks → `{ installHooks: [] }`; never throws to the caller.**
+- **Detector** becomes `detectDueDiligence(github, manifest, assessedAt)` — `manifest` is the **2nd**
+  argument (`ManifestData | null`, required), `assessedAt` 3rd; pushes the signal when
   `manifest?.installHooks.length`. Stays pure; the fetch lives in the adapter layer, not the core.
 - **`buildReport`** (adapter layer, `lib/adapters/generate-report.ts`) calls `fetchPackageManifest`
   alongside the existing GitHub fetch and passes `manifest` into the detector. A `null` manifest
@@ -57,21 +61,24 @@ manifest-scan (D3 / TS11 dep-ranking) rides the same seam instead of replacing a
 
 > **Note (language):** the in-report string stays **English**, matching batch 1 ("No license", "No
 > security policy"). The approved **German** plain-language version is the source for Deliverables 2 + 3
-> below, not the in-report string. Report-vs-docs language is an open question for the lock (below).
+> below, not the in-report string. Report-vs-docs language LOCKED (below): both English for this slice.
 
 ## Deliverable 2 — documentation
 
 A short doc section that **reuses the approved plain-language copy** (the artifact): what the signal
 means, why it matters to someone evaluating a third-party tool, how to act on it. One design source,
-no duplication (R3). **Placement is a lock question** — a section near the README "four pillars" area,
-or a `docs/` page.
+no duplication (R3). **Placement LOCKED (MASCHIN 2026-07-04):** a section near the README "four pillars"
+area, in **English** (README is English → consistent). The German artifact copy stays the source for a
+later German surface.
 
-## Deliverable 3 — FAQ entry
+## Deliverable 3 — FAQ entry (DEFERRED, LOCKED)
 
 One Q&A — *"Why does TrustScope flag install scripts?"* — plain answer drawn from the same copy.
-**TrustScope has no FAQ surface today** (routes: `/`, `/about`, `/report`, `/impressum`,
-`/datenschutz`). So the surface (in-app `/faq` vs. an `/about` section vs. the neckarshore-website
-product FAQ) **and language are lock questions**.
+**DEFERRED for this slice (MASCHIN 2026-07-04):** TrustScope has no FAQ surface today (routes: `/`,
+`/about`, `/report`, `/impressum`, `/datenschutz`), and a product-FAQ is a **separate, broader V2
+content decision** (a later in-app `/faq` or the neckarshore-website product page). Do **not** build a
+FAQ surface here — the plain-language copy lives in **this spec as the source**. Ship the signal + the
+README doc note; defer the FAQ deliverable.
 
 ## Trust properties (must hold)
 
@@ -84,7 +91,8 @@ product FAQ) **and language are lock questions**.
 ## Testing (TDD — repo's Vitest + Playwright setup)
 
 1. **Unit adapter** (`lib/adapters/manifest.test.ts`): base64-decode + hook extraction; `package.json`
-   with hooks → those hooks; without → `[]`; 404 / non-JSON / no-`scripts` → `null`; never throws.
+   with hooks → those hooks; parsed manifest with no install hooks (incl. no `scripts` key) → `[]`;
+   404 / non-JSON / network / aborted-fetch → `null`; never throws.
 2. **Unit detector** (extend `lib/report-core/due-diligence.test.ts`): manifest with hooks → the
    signal (correct pillar + copy); no hooks / `null` → nothing.
 3. **Unit buildReport** (extend `lib/report-core/build-report.dd.test.ts`): `dueDiligence` contains
@@ -98,11 +106,16 @@ product FAQ) **and language are lock questions**.
 - **Monorepo workspaces + non-npm ecosystems** — the future thin manifest-scan (D3).
 - **`prepare` hook** — consciously excluded (Founder chose the three auto-install hooks only).
 
-## Hand-off to MASCHIN — open questions for the lock
+## Lock decisions (MASCHIN plan-review, 2026-07-04)
 
-1. **Docs placement** (Deliverable 2) — README section vs. a `docs/` page.
-2. **FAQ surface + language** (Deliverable 3) — in-app vs. neckarshore-website product FAQ; DE/EN.
-3. **In-report string language** — English (like batch 1) — confirm.
+1. **Docs placement** (Deliverable 2) — **README section, English** (README is English → consistent).
+2. **FAQ surface + language** (Deliverable 3) — **DEFERRED, not built this slice.** No in-app `/faq`
+   now; the copy is sourced from this spec. A product-FAQ is a separate broader V2 content decision
+   (later `/faq` or the neckarshore-website product page). DE artifact copy stays the source for a
+   later German surface.
+3. **In-report string language** — **English** (like batch 1), confirmed.
+4. **Manifest shape** — `null` = missing / not npm / failed fetch; `{ installHooks: [] }` = parsed,
+   no install hooks. Adapter carries a hard timeout (abort → `null`).
 
-Then: MASCHIN writes the locked task-plan from this spec → Linus builds (TDD, gates green) → Founder
-visual-accepts the live note.
+The locked task-plan is `docs/due-diligence-install-scripts-plan.md` → Linus builds (TDD, gates green)
+→ Founder visual-accepts the live note.

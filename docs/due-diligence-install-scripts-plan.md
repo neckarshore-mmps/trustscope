@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- **Deterministic, no LLM, no `Date.now`** — `assessedAt` is passed in; same repo → same report.
+- **Deterministic, no LLM, no `Date.now`** — both `assessedAt` and `generatedAt` are **passed in by the caller, never synthesized**; same repo + same timestamps → byte-identical report.
 - **No aggregate score** (DECISIONS #4) — a qualitative note, never counted.
 - **Calm + constructive tone** — states the fact + a real next step; never "malicious"/"bought"/"backdoor".
 - **Panel renders `detail`/`mitigation` as PLAIN TEXT** — no markdown, no backticks in the strings (they would render literally).
@@ -91,11 +91,13 @@ describe("fetchPackageManifest", () => {
     expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(fetchFn) }))
       .toEqual({ installHooks: ["preinstall", "postinstall"] });
   });
-  it("returns empty hooks for a manifest without install scripts", async () => {
-    const fetchFn = vi.fn().mockResolvedValue(contents({ scripts: { build: "tsc" } }));
-    expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(fetchFn) })).toEqual({ installHooks: [] });
+  it("returns [] (parsed, no hooks) for scripts without install hooks AND for a manifest with no scripts key", async () => {
+    const withScripts = vi.fn().mockResolvedValue(contents({ scripts: { build: "tsc" } }));
+    expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(withScripts) })).toEqual({ installHooks: [] });
+    const noScripts = vi.fn().mockResolvedValue(contents({ name: "pkg" }));
+    expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(noScripts) })).toEqual({ installHooks: [] });
   });
-  it("returns null on 404, non-JSON, and a rejected fetch — never throws", async () => {
+  it("returns null on 404, non-JSON, and a rejected/aborted fetch — never throws", async () => {
     expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(vi.fn().mockResolvedValue(res(404, {}))) })).toBeNull();
     const bad = res(200, undefined); (bad as { json: () => Promise<unknown> }).json = async () => { throw new Error("bad"); };
     expect(await fetchPackageManifest("o", "r", { fetchFn: asFetch(vi.fn().mockResolvedValue(bad)) })).toBeNull();
@@ -118,10 +120,15 @@ import { GITHUB_API, ghHeaders, type GitHubFetchOptions } from "./github";
 /** The npm hooks that execute automatically on `npm install`, in canonical order. */
 const INSTALL_HOOKS: InstallHook[] = ["preinstall", "install", "postinstall"];
 
+/** Hard deadline so a slow/hanging GitHub response degrades to `null` instead of blocking the report. */
+const MANIFEST_FETCH_TIMEOUT_MS = 5000;
+
 /**
  * Manifest adapter (batch-2 due-diligence seam). Reads the repo's ROOT package.json and reports
  * which auto-run install hooks it declares. Best-effort BY DESIGN: any failure (404, non-JSON,
- * no scripts, rate-limit, network) resolves to null so the report never dies on this source.
+ * rate-limit, network, **timeout**) resolves to `null` so the report never dies on this source.
+ * A successfully-parsed manifest with no install hooks returns `{ installHooks: [] }` (see the shape
+ * contract in the spec): `null` = missing / not npm / failed fetch; `[]` = parsed, no install hooks.
  */
 export async function fetchPackageManifest(
   owner: string,
@@ -130,10 +137,12 @@ export async function fetchPackageManifest(
 ): Promise<ManifestData | null> {
   const fetchImpl = opts.fetchFn ?? fetch;
   const token = opts.githubToken ?? process.env.GITHUB_AUTH_TOKEN;
+  const controller = new AbortController();
+  const deadline = setTimeout(() => controller.abort(), MANIFEST_FETCH_TIMEOUT_MS);
   try {
     const res = await fetchImpl(
       `${GITHUB_API}/repos/${owner}/${repo}/contents/package.json`,
-      { headers: ghHeaders(token) },
+      { headers: ghHeaders(token), signal: controller.signal },
     );
     if (!res.ok) return null;
     const body = (await res.json()) as { content?: unknown };
@@ -148,7 +157,10 @@ export async function fetchPackageManifest(
     );
     return { installHooks };
   } catch {
+    // includes the AbortError thrown when the deadline fires
     return null;
+  } finally {
+    clearTimeout(deadline);
   }
 }
 ```
@@ -175,23 +187,24 @@ git commit -m "feat(manifest): fetchPackageManifest — root package.json instal
 
 **Interfaces:**
 - Consumes: `ManifestData` (Task 1).
-- Produces: `detectDueDiligence(github, assessedAt, manifest?: ManifestData | null)` — the new optional 3rd param keeps all existing 2-arg callers valid.
+- Produces: `detectDueDiligence(github, manifest, assessedAt)` — `manifest` is the **2nd** argument (matches the PR objective), `manifest: ManifestData | null` **required**. The single existing caller (`build-report.ts:270`, today `detectDueDiligence(github, scorecard.date)`) is re-threaded to pass `manifest` in the 2nd slot.
 
 - [ ] **Step 1: Write the failing tests** — append inside the `describe` in `lib/report-core/due-diligence.test.ts`
 
 ```ts
 it("flags install scripts from the manifest, on the security pillar", () => {
-  const s = detectDueDiligence(base, assessedAt, { installHooks: ["postinstall"] });
+  const s = detectDueDiligence(base, { installHooks: ["postinstall"] }, assessedAt);
   const sig = s.find((x) => x.id === "install-scripts");
   expect(sig).toBeTruthy();
   expect(sig?.detail).toContain("postinstall");
   expect(sig?.pillarId).toBe(2); // security-supply-chain
   expect(sig?.mitigation).toContain("--ignore-scripts");
 });
-it("does not flag install scripts when the manifest has none or is absent", () => {
-  expect(detectDueDiligence(base, assessedAt, { installHooks: [] }).map((x) => x.id)).not.toContain("install-scripts");
-  expect(detectDueDiligence(base, assessedAt, null).map((x) => x.id)).not.toContain("install-scripts");
-  expect(detectDueDiligence(base, assessedAt).map((x) => x.id)).not.toContain("install-scripts");
+it("does not flag install scripts when the manifest has no hooks or is null", () => {
+  // manifest parsed, no install hooks → no signal
+  expect(detectDueDiligence(base, { installHooks: [] }, assessedAt).map((x) => x.id)).not.toContain("install-scripts");
+  // manifest missing / fetch failed → no signal
+  expect(detectDueDiligence(base, null, assessedAt).map((x) => x.id)).not.toContain("install-scripts");
 });
 ```
 
@@ -207,8 +220,8 @@ Add `InstallHook, ManifestData` to the `./types` import. Change the signature an
 ```ts
 export function detectDueDiligence(
   github: GitHubData,
+  manifest: ManifestData | null,
   assessedAt: string,
-  manifest: ManifestData | null = null,
 ): DueDiligenceSignal[] {
   // ...existing batch-1 pushes unchanged...
 
@@ -293,7 +306,7 @@ In `buildReport`, change the destructure + detector call:
 ```ts
 const { scorecard, github, generatedAt, manifest = null } = input;
 // ...
-const dueDiligence = detectDueDiligence(github, scorecard.date, manifest);
+const dueDiligence = detectDueDiligence(github, manifest, scorecard.date);
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -303,7 +316,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Wire the orchestrator** — `lib/adapters/generate-report.ts`
 
-Add the import and the concurrent fetch:
+Add the import and the concurrent fetch. **`generatedAt` is a REQUIRED caller input** — the orchestrator never synthesizes it (no `new Date()`), so the report stays deterministic. Make `generatedAt: string` a required field on `generateReport`'s options; its own caller (the route/page) passes a deterministic timestamp:
 
 ```ts
 import { fetchPackageManifest } from "./manifest";
@@ -318,7 +331,7 @@ const report = buildReport({
   scorecard,
   github,
   manifest,
-  generatedAt: opts.generatedAt ?? new Date().toISOString(),
+  generatedAt: opts.generatedAt, // required; never `?? new Date()` — identical inputs → identical report
 });
 ```
 
@@ -430,8 +443,9 @@ git commit -m "docs: document the install-scripts due-diligence signal"
 - [ ] `npm run test:e2e` — all Playwright specs pass.
 - [ ] Visual: the note reads calm + constructive; links to the Security & Supply Chain pillar. → **Founder visual-accept.**
 
-## Open items for the plan review (MASCHIN)
+## Locked decisions (MASCHIN plan-review, 2026-07-04)
 
-1. **FAQ (Deliverable 3) is deferred** — TrustScope has no FAQ surface today (routes: `/`, `/about`, `/report`, `/impressum`, `/datenschutz`). Decide the surface (in-app `/faq` vs. an `/about` section vs. the neckarshore-website product FAQ) + language before it becomes a task. Not built by this plan.
-2. **Docs language** — Task 5 writes the README note in English (README is English). The German artifact copy remains the source for any German surface (e.g. a later product-FAQ).
-3. **`no-scripts → { installHooks: [] }`** (not `null`) — a successfully-read manifest with zero hooks returns an empty list; only an unreadable manifest returns `null`. Behaviour is identical (the detector fires only on a non-empty list); flagged as a conscious refinement of the spec's "no scripts → null" wording.
+1. **FAQ (Deliverable 3) — DEFERRED, not built by this slice.** TrustScope has no FAQ surface today (routes: `/`, `/about`, `/report`, `/impressum`, `/datenschutz`). Do **not** build an in-app `/faq` for this slice — the plain-language copy lives in the **spec as the source**. A product-FAQ is a separate, broader V2 content decision (later `/faq` or the neckarshore-website product page). **Ship the signal + copy; defer the FAQ deliverable.**
+2. **Docs language — English.** Task 5 writes the README note in English (README is English → the install-scripts docs stay EN, consistent). The German artifact copy remains the source for a later German surface.
+3. **Shape contract: `null` = missing / not npm / failed fetch; `[]` = parsed, no install hooks.** A successfully-read manifest with zero install hooks returns `{ installHooks: [] }`; only an unreadable/failed fetch returns `null`. The detector fires only on a non-empty list, so behaviour is unchanged. This resolves the spec's earlier "no scripts → null" wording; the adapter tests assert both branches (Task 1 Step 3).
+4. **In-report string language — English** (like batch 1), confirmed. Detector `detail`/`mitigation` stay English.
