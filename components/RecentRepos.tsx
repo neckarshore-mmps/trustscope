@@ -1,13 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  browserRecentStore,
-  clearRecentRepos,
-  getRecentRepos,
-  type RecentRepo,
-} from "@/lib/recent-repos";
+import { useState } from "react";
+import { clearRecentReposAndNotify, useRecentRepos } from "@/lib/use-recent-repos";
 
 function ago(iso: string, now: number): string {
   const s = Math.max(0, (now - Date.parse(iso)) / 1000);
@@ -18,12 +13,11 @@ function ago(iso: string, now: number): string {
 }
 
 export function RecentRepos() {
-  const [items, setItems] = useState<RecentRepo[]>([]);
-  useEffect(() => {
-    setItems(getRecentRepos(browserRecentStore()));
-  }, []);
+  const items = useRecentRepos();
+  // Captured once at mount (lazy initializer runs client-side) — a fixed reference
+  // point for the relative labels; kept out of the render body to stay pure.
+  const [now] = useState(() => Date.now());
   if (items.length === 0) return null;
-  const now = Date.now();
   return (
     <div className="mx-auto mt-8 max-w-xl text-left">
       <div className="flex items-center justify-between">
@@ -32,10 +26,7 @@ export function RecentRepos() {
         </h2>
         <button
           type="button"
-          onClick={() => {
-            clearRecentRepos(browserRecentStore());
-            setItems([]);
-          }}
+          onClick={() => clearRecentReposAndNotify()}
           className="text-xs text-muted hover:text-foreground"
         >
           Clear

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { addRecentRepo, browserRecentStore } from "@/lib/recent-repos";
+import { recordRecentRepo } from "@/lib/use-recent-repos";
 
 /**
  * Records a successfully-viewed repo into the client-local recent list. Renders
@@ -11,7 +11,7 @@ import { addRecentRepo, browserRecentStore } from "@/lib/recent-repos";
  */
 export function RecordView({ owner, repo }: { owner: string; repo: string }) {
   useEffect(() => {
-    addRecentRepo(browserRecentStore(), { owner, repo }, new Date().toISOString());
+    recordRecentRepo(owner, repo, new Date().toISOString());
   }, [owner, repo]);
   return null;
 }
