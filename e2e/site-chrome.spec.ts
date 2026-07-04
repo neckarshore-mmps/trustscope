@@ -27,3 +27,23 @@ test.describe("Footer credibility line", () => {
     });
   }
 });
+
+test.describe("Login coming-soon", () => {
+  test("Login button reveals 'Coming soon' and never navigates", async ({ page }) => {
+    await page.goto("/");
+    const login = page.getByRole("button", { name: /log in/i });
+    await expect(login).toBeVisible();
+    await login.click();
+    await expect(page.getByText(/coming soon/i)).toBeVisible();
+    await expect(page).toHaveURL(/\/$/); // it is a button, not a link — no navigation
+  });
+
+  test("Escape closes the 'Coming soon' hint", async ({ page }) => {
+    await page.goto("/");
+    const login = page.getByRole("button", { name: /log in/i });
+    await login.click();
+    await expect(page.getByText(/coming soon/i)).toBeVisible();
+    await login.press("Escape");
+    await expect(page.getByText(/coming soon/i)).toBeHidden();
+  });
+});

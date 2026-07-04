@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/config/product";
 import { NAV_ITEMS } from "@/config/nav";
+import { LoginButton } from "@/components/LoginButton";
 
 export function SiteHeader() {
   return (
@@ -14,29 +15,32 @@ export function SiteHeader() {
             {PRODUCT_NAME}
           </span>
         </Link>
-        <nav aria-label="Primary" className="flex items-center gap-5">
-          {NAV_ITEMS.map((item) =>
-            item.external ? (
-              <a
-                key={item.href}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-muted transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </a>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-muted transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
-        </nav>
+        <div className="flex items-center gap-5">
+          <nav aria-label="Primary" className="flex items-center gap-5">
+            {NAV_ITEMS.map((item) =>
+              item.external ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-muted transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm text-muted transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
+          </nav>
+          <LoginButton />
+        </div>
       </div>
     </header>
   );
