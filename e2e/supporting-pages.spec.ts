@@ -76,3 +76,23 @@ test.describe("navigation", () => {
     await expect(page.getByRole("link", { name: /FAQ/i })).toBeVisible();
   });
 });
+
+test.describe("SEO surfaces", () => {
+  test("sitemap.xml lists /for", async ({ page }) => {
+    const res = await page.goto("/sitemap.xml");
+    expect(res?.status()).toBe(200);
+    expect(await res!.text()).toContain("/for");
+  });
+  test("llms.txt is served", async ({ page }) => {
+    const res = await page.goto("/llms.txt");
+    expect(res?.status()).toBe(200);
+    expect(await res!.text()).toMatch(/TrustScope/);
+  });
+  test("spoke carries BreadcrumbList JSON-LD", async ({ page }) => {
+    await page.goto("/for/adopters");
+    const scripts = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents();
+    expect(scripts.join(" ")).toContain("BreadcrumbList");
+  });
+});
