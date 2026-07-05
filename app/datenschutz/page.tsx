@@ -49,17 +49,29 @@ export default function DatenschutzPage() {
         </h2>
         <div className="mt-4 space-y-1 text-[15px] leading-relaxed text-foreground/90">
           <p>Verantwortlich im Sinne der DSGVO ist:</p>
-          <p className="font-medium">German Rauhut</p>
-          <p>Stuttgart, Deutschland</p>
+          <p className="font-medium">
+            German Rauhut IT Consulting &amp; Digital Ventures
+          </p>
+          <p>Einzelunternehmen — Inhaber: German Rauhut</p>
+          <p>Rotebühlstraße 176, 70197 Stuttgart, Deutschland</p>
           <p>
             E-Mail:{" "}
-            <a className={LINK} href="mailto:german@rauhut.com">
-              german@rauhut.com
+            <a className={LINK} href="mailto:info@neckarshore.ai">
+              info@neckarshore.ai
+            </a>
+          </p>
+          <p>
+            Telefon:{" "}
+            <a className={LINK} href="tel:+491603859135">
+              +49 160 385 9135
             </a>
           </p>
         </div>
-        {/* << TODO: Founder/DPO — sobald ein/e Datenschutzbeauftragte/r benannt ist (TS24),
-            hier Kontaktdaten ergänzen. Vollständige Anschrift wie im Impressum. >> */}
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Ein/e Datenschutzbeauftragte/r ist gesetzlich nicht bestellungspflichtig
+          (Art. 37 DSGVO, § 38 BDSG) und daher nicht benannt. Für alle Anliegen zum
+          Datenschutz erreichen Sie uns unter den vorstehenden Kontaktdaten.
+        </p>
       </section>
 
       {/* § 2 Hosting */}
@@ -72,7 +84,9 @@ export default function DatenschutzPage() {
           USA, gehostet. Beim Aufruf der Seiten verarbeitet Vercel technisch notwendige
           Verbindungsdaten (siehe § 3) als Auftragsverarbeiter für uns. Rechtsgrundlage
           ist unser berechtigtes Interesse an einem sicheren und leistungsfähigen
-          Bereitstellen des Angebots (Art. 6 Abs. 1 lit. f DSGVO).
+          Bereitstellen des Angebots (Art. 6 Abs. 1 lit. f DSGVO). Die Verarbeitung
+          erfolgt auf Grundlage eines Auftragsverarbeitungsvertrags nach Art. 28 DSGVO,
+          den wir mit Vercel geschlossen haben.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Dabei können Daten in die USA übermittelt werden. Grundlage der Übermittlung
@@ -81,9 +95,9 @@ export default function DatenschutzPage() {
           US-amerikanischer Behörden lässt sich trotz dieser Garantien nicht vollständig
           ausschließen.
         </p>
-        {/* << TODO: Founder/DPO — Auftragsverarbeitungsvertrag (AVV/DPA) mit Vercel prüfen und
-            als abgeschlossen bestätigen. DPF-Zertifizierung von Vercel vor Verbindlichkeit
-            gegenprüfen. >> */}
+        {/* << Sign-off Founder/Dr.Sommer (vor Entfernen des DRAFT-Markers): den AVV nach
+            Art. 28 DSGVO mit Vercel sowie die aktuelle DPF-Zertifizierung final
+            gegenbestätigen. >> */}
       </section>
 
       {/* § 3 Server-Logfiles */}
@@ -98,6 +112,13 @@ export default function DatenschutzPage() {
           Daten dienen der Auslieferung, Sicherheit und Stabilität des Angebots und
           werden nicht mit anderen Datenquellen zusammengeführt. Rechtsgrundlage ist
           unser berechtigtes Interesse am sicheren Betrieb (Art. 6 Abs. 1 lit. f DSGVO).
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Speicherdauer (Art. 13 Abs. 2 lit. a DSGVO): Diese Zugriffsdaten werden nur so
+          lange gespeichert, wie es für die genannten Zwecke erforderlich ist, und
+          anschließend gelöscht. Serverseitige Zugriffsprotokolle unseres
+          Hosting-Anbieters werden regelmäßig kurzfristig vorgehalten und automatisch
+          überschrieben; darüber hinaus führen wir selbst keine dauerhaften Logfiles.
         </p>
       </section>
 
@@ -123,10 +144,21 @@ export default function DatenschutzPage() {
           die die Projekte selbst öffentlich bereitstellen. Betroffene können der
           Verarbeitung unter den Voraussetzungen des Art. 21 DSGVO widersprechen.
         </p>
-        {/* << TODO: Founder/DPO — Aufbewahrung/Caching der erzeugten Reports beschreiben,
-            sobald festgelegt (aktuell: deterministisch aus öffentlichen Daten neu erzeugt).
-            Prüfen, ob eine Info-Pflicht/Interessenabwägung nach Art. 14 DSGVO gegenüber
-            Maintainern zu dokumentieren ist. >> */}
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Die erzeugten Berichte werden deterministisch aus den öffentlichen Daten
+          abgeleitet und lediglich kurzzeitig zwischengespeichert (technischer Cache,
+          Richtwert 24 Stunden), um wiederholte Abrufe zu beschleunigen; danach werden
+          sie bei erneuter Anfrage neu erzeugt. Eine dauerhafte Profilbildung findet
+          nicht statt.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Da wir diese Daten nicht bei den betroffenen Personen selbst, sondern aus der
+          öffentlich zugänglichen Quelle GitHub erheben, erfolgt die Information nach
+          Art. 14 DSGVO über diese Datenschutzerklärung. Eine gesonderte Benachrichtigung
+          jeder einzelnen betroffenen Person wäre nur mit unverhältnismäßigem Aufwand
+          möglich (Art. 14 Abs. 5 lit. b DSGVO), zumal ausschließlich bereits
+          veröffentlichte Informationen verarbeitet werden.
+        </p>
       </section>
 
       {/* § 5 Anmeldung mit GitHub (optional "file as yourself") */}
@@ -159,17 +191,41 @@ export default function DatenschutzPage() {
           {PRODUCT_NAME} keine Analyse- oder Tracking-Cookies und bindet keine Werbe- oder
           Tracking-Dienste Dritter ein.
         </p>
-        {/* << DRAFT/TODO Founder/DPO — Der GitHub-OAuth-Login ist in Produktion AKTIV
-            (GITHUB_CLIENT_ID/GITHUB_CLIENT_SECRET gesetzt, verifiziert 2026-07-03 via
-            `vercel env ls production`). Bitte final prüfen: exakte Session-/Token-Lebensdauer,
-            ob eine Auftragsverarbeitung bzw. gemeinsame Verantwortlichkeit mit GitHub zu
-            benennen ist, sowie die Formulierung zur Speicherdauer. — D7 >> */}
+        {/* << Sign-off Founder/Dr.Sommer (vor Entfernen des DRAFT-Markers): Der
+            GitHub-OAuth-Login ist in Produktion AKTIV (GITHUB_CLIENT_ID/SECRET gesetzt,
+            verifiziert 2026-07-03 via `vercel env ls production`). Final gegenbestätigen:
+            exakte Session-/Token-Lebensdauer sowie die Einordnung des Verhältnisses zu
+            GitHub (eigenständig Verantwortliche vs. gemeinsame Verantwortlichkeit). — D7 >> */}
       </section>
 
-      {/* § 6 Ihre Rechte */}
+      {/* § 6 Lokale Speicherung (Recently Viewed) */}
       <section className="mx-auto max-w-3xl px-5 pb-12">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">
-          § 6 · Ihre Rechte
+          § 6 · Lokale Speicherung (zuletzt angesehene Repositories)
+        </h2>
+        <p className="mt-4 text-[15px] leading-relaxed text-muted">
+          Damit Sie zuletzt angesehene Repositories schnell wiederfinden, speichert{" "}
+          {PRODUCT_NAME} eine kurze Liste dieser Projekte ausschließlich lokal in Ihrem
+          Browser (<code className={CODE}>localStorage</code>, Schlüssel{" "}
+          <code className={CODE}>trustscope:recent-repos</code>, maximal acht Einträge).
+          Gespeichert werden nur die von Ihnen selbst aufgerufenen Repository-Kennungen
+          (<code className={CODE}>owner/repo</code>) samt Zeitpunkt — keine
+          personenbezogenen Daten über Sie.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Diese Angaben verbleiben auf Ihrem Gerät und werden nicht an unseren Server
+          oder an Dritte übermittelt. Es handelt sich um eine unbedingt für die von Ihnen
+          gewünschte Komfortfunktion erforderliche Speicherung im Sinne des § 25 Abs. 2
+          Nr. 2 TDDDG; eine Einwilligung ist dafür nicht erforderlich. Sie können den
+          Eintrag jederzeit löschen, indem Sie die Liste in der Oberfläche zurücksetzen
+          oder die Websitedaten in Ihrem Browser leeren.
+        </p>
+      </section>
+
+      {/* § 7 Ihre Rechte */}
+      <section className="mx-auto max-w-3xl px-5 pb-12">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">
+          § 7 · Ihre Rechte
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Sie haben im Rahmen der gesetzlichen Voraussetzungen das Recht auf Auskunft
@@ -181,10 +237,10 @@ export default function DatenschutzPage() {
         </p>
       </section>
 
-      {/* § 7 Beschwerderecht */}
+      {/* § 8 Beschwerderecht */}
       <section className="mx-auto max-w-3xl px-5 pb-16">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">
-          § 7 · Beschwerderecht
+          § 8 · Beschwerderecht
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Unbeschadet anderweitiger Rechtsbehelfe haben Sie das Recht, sich bei einer
