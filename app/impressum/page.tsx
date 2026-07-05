@@ -46,18 +46,13 @@ export default function ImpressumPage() {
           <p>70197 Stuttgart</p>
           <p>Deutschland</p>
         </div>
-        <div className="mt-4 space-y-1 text-[15px] leading-relaxed text-foreground/90">
-          <p>
-            <span className="text-muted">USt-IdNr. nach § 27a UStG:</span> wird
-            nachgetragen
-          </p>
-        </div>
         {/*
           Diensteanbieter-Block spiegelt neckarshore.ai/impressum (TrustScope ist ein
           Neckarshore-AI-Produkt) — von MASCHIN 2026-07-05 gegen neckarshore.ai/impressum
           abgeglichen. German Rauhut betreibt als Einzelunternehmen — keine eingetragene
-          Gesellschaft, daher keine Handelsregister-Angaben. USt-IdNr. wird nachgetragen,
-          sobald vergeben (§ 27a UStG).
+          Gesellschaft, daher keine Handelsregister-Angaben. § 27a UStG verlangt eine
+          USt-IdNr. nur, wenn eine vergeben ist — sie wird hier erst genannt, sobald sie
+          existiert (kein Platzhalter; CodeRabbit-Legal-Thread #46, Founder-Sign-off).
         */}
       </section>
 
