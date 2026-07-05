@@ -1,3 +1,5 @@
+// DRAFT — About-Text vom Founder abzunehmen, bevor verbindlich. Keine erfundenen
+// Claims (Zahlen, Daten, Teamgröße); nur belegbare, prinzipienbasierte Aussagen.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PRODUCT_NAME, PRODUCT_ORG, PRODUCT_SUBDOMAIN } from "@/config/product";
@@ -5,7 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `${PRODUCT_NAME} is a reputation surface by ${PRODUCT_ORG} — made in Germany, GDPR-clean, open source. Who is behind it and why.`,
+  description: `${PRODUCT_NAME} is an open-source trust report by ${PRODUCT_ORG} — made in Germany, GDPR-clean, open source. Who is behind it and why.`,
 };
 
 const ORG_SCHEMA = {
@@ -13,6 +15,10 @@ const ORG_SCHEMA = {
   "@type": "Organization",
   name: PRODUCT_ORG,
   url: "https://neckarshore.ai",
+  founder: {
+    "@type": "Person",
+    name: "German Rauhut",
+  },
   subOrganization: {
     "@type": "SoftwareApplication",
     name: PRODUCT_NAME,
@@ -30,8 +36,8 @@ export default function AboutPage() {
             Built by <span className="text-brand">{PRODUCT_ORG}</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
-            {PRODUCT_NAME} is a reputation surface — made in Germany, GDPR-clean, and open
-            source.
+            {PRODUCT_NAME} is an open-source trust report — made in Germany,
+            GDPR-clean, and open source.
           </p>
         </div>
       </section>
@@ -39,8 +45,19 @@ export default function AboutPage() {
       <section className="mx-auto max-w-3xl space-y-4 px-5 py-12 text-[15px] leading-relaxed text-muted">
         <p>
           <span className="font-medium text-foreground/90">Who&apos;s behind it.</span>{" "}
-          {PRODUCT_NAME} is built by {PRODUCT_ORG}, a German software studio. It runs on its own
-          standards — we assess our own repositories with it.
+          {PRODUCT_NAME} is built by {PRODUCT_ORG}, the software studio of{" "}
+          <span className="font-medium text-foreground/90">German Rauhut</span> in
+          Stuttgart, Germany. It runs on its own standards — we assess our own
+          repositories with the same report we hand to everyone else.
+        </p>
+        <p>
+          <span className="font-medium text-foreground/90">Why {PRODUCT_NAME}.</span>{" "}
+          Deciding whether to adopt a third-party open-source dependency usually means
+          guessing — a star count, a gut feeling, or a single number that hides the
+          trade-off you actually care about. {PRODUCT_NAME} grew out of a Product Trust
+          &amp; Quality Framework: turn the public signals a project already emits into a
+          calm, four-pillar read on how much you can trust it — and never fake the one
+          pillar (Functional Quality) that only a human can judge.
         </p>
         <p>
           <span className="font-medium text-foreground/90">Made in Germany.</span> Self-hosted

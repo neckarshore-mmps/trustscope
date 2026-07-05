@@ -38,7 +38,7 @@ export function buildIssueMarkdown(report: ReportModel): string {
 
   lines.push("---");
   lines.push(
-    `_Assessed via ${PRODUCT_NAME} (${url}) — a reputation surface by Neckarshore AI. ` +
+    `_Assessed via ${PRODUCT_NAME} (${url}) — an open-source trust report by Neckarshore AI. ` +
       `These are suggestions, not demands._`,
   );
 

@@ -26,7 +26,7 @@ describe("buildIssueMarkdown", () => {
 
   it("carries the required 'via TrustScope' attribution footer", () => {
     expect(md).toMatch(/Assessed via TrustScope/);
-    expect(md).toMatch(/reputation surface by Neckarshore AI/);
+    expect(md).toMatch(/trust report by Neckarshore AI/);
   });
 
   it("frames the suggestions as optional, not demands", () => {
