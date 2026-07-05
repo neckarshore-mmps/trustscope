@@ -130,7 +130,7 @@ export function RepoForm({ autoFocus = false }: { autoFocus?: boolean }) {
           disabled={busy}
           className="shrink-0 rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-60"
         >
-          {busy ? "Assessing…" : "Assess"}
+          {busy ? "Assessing…" : "Assess this repo →"}
         </button>
       </div>
       {error && (

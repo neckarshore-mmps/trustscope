@@ -1,8 +1,7 @@
 # TrustScope — Decisions
 
 Why TrustScope is built the way it is. Format: **Decision → Rationale → Affects**. Grounds on the
-[v1 Build Work-Order](https://github.com/neckarshore-ai/neckarshore-planning/blob/main/docs/plans/2026-07-01-trustscope-v1-linus-build-workorder.md)
-(#274, Founder-decided).
+internal, Founder-decided v1 build work-order (#274).
 
 ## 1. The six locked product decisions
 

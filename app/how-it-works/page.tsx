@@ -188,7 +188,7 @@ export default function AboutPage() {
             >
               GitHub
             </a>
-            . A reputation surface by {PRODUCT_ORG} — and it runs on itself.
+            . An open-source trust report by {PRODUCT_ORG} — and it runs on itself.
           </p>
         </div>
 
