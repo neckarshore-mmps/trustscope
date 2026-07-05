@@ -46,15 +46,17 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="hero-glow">
-        <div className="mx-auto max-w-3xl px-5 pb-8 pt-20 text-center sm:pt-28">
-          <Image
-            src="/bodo.svg"
-            alt=""
-            width={72}
-            height={72}
-            className="mx-auto mb-6"
-            priority
-          />
+        <div className="mx-auto max-w-3xl px-5 pb-8 pt-8 text-center sm:pt-10">
+          <div className="mx-auto mb-4 flex h-56 w-56 items-center justify-center overflow-hidden rounded-full bg-[#eef4fa] ring-1 ring-black/5 sm:h-64 sm:w-64">
+            <Image
+              src="/bodo.svg"
+              alt="Bodo, the TrustScope mascot"
+              width={300}
+              height={300}
+              className="sm:h-[348px] sm:w-[348px]"
+              priority
+            />
+          </div>
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-brand" />
             Built on the OpenSSF Scorecard
