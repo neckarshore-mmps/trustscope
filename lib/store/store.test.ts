@@ -23,7 +23,7 @@ const report = buildReport({
 
 function stored(commit: string, fetchedAt: string): StoredReport {
   return {
-    key: { owner: "neckarshore-mmps", repo: "snakeoil-check", commit },
+    key: { owner: "fixture-org", repo: "fixture-repo", commit },
     report,
     scorecardSource: "docker",
     fetchedAt,
@@ -58,7 +58,7 @@ describe.each(impls)("%s — ReportStore contract", (_name, make) => {
     const s = stored("aaa111", "2026-07-01T10:00:00.000Z");
     await store.put(s);
     const got = await store.get(s.key);
-    expect(got?.report.repo.name).toBe("snakeoil-check");
+    expect(got?.report.repo.name).toBe("fixture-repo");
     expect(got?.fetchedAt).toBe("2026-07-01T10:00:00.000Z");
   });
 
@@ -67,7 +67,7 @@ describe.each(impls)("%s — ReportStore contract", (_name, make) => {
     await store.put(stored("old", "2026-07-01T08:00:00.000Z"));
     await store.put(stored("new", "2026-07-01T12:00:00.000Z"));
     await store.put(stored("mid", "2026-07-01T10:00:00.000Z"));
-    const latest = await store.getLatest("neckarshore-mmps", "snakeoil-check");
+    const latest = await store.getLatest("fixture-org", "fixture-repo");
     expect(latest?.key.commit).toBe("new");
   });
 

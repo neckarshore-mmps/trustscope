@@ -38,19 +38,26 @@ export default function ImpressumPage() {
           Angaben gemäß § 5 DDG
         </h2>
         <div className="mt-4 space-y-1 text-[15px] leading-relaxed text-foreground/90">
-          <p className="font-medium">German Rauhut</p>
-          <p>Stuttgart, Deutschland</p>
-          <p className="text-muted">
-            Die vollständige Postanschrift stelle ich auf Anfrage zur Verfügung.
+          <p className="font-medium">
+            German Rauhut IT Consulting &amp; Digital Ventures
+          </p>
+          <p>Einzelunternehmen — Inhaber: German Rauhut</p>
+          <p>Rotebühlstraße 176</p>
+          <p>70197 Stuttgart</p>
+          <p>Deutschland</p>
+        </div>
+        <div className="mt-4 space-y-1 text-[15px] leading-relaxed text-foreground/90">
+          <p>
+            <span className="text-muted">USt-IdNr. nach § 27a UStG:</span> wird
+            nachgetragen
           </p>
         </div>
         {/*
-          Betreiber bestätigt (2026-07-03): German Rauhut als Einzelperson — keine
-          eingetragene Gesellschaft, daher keine Handelsregister-Angaben.
-          << TODO Founder/dr-sommer: Prüfen, ob "Postanschrift auf Anfrage" für ein (ggf.
-             kommerzielles) Software-Angebot genügt oder die vollständige ladungsfähige
-             Anschrift nach § 5 DDG genannt werden muss. Falls eine USt-IdNr existiert
-             (§ 27a UStG), hier ergänzen. >>
+          Diensteanbieter-Block spiegelt neckarshore.ai/impressum (TrustScope ist ein
+          Neckarshore-AI-Produkt) — von MASCHIN 2026-07-05 gegen neckarshore.ai/impressum
+          abgeglichen. German Rauhut betreibt als Einzelunternehmen — keine eingetragene
+          Gesellschaft, daher keine Handelsregister-Angaben. USt-IdNr. wird nachgetragen,
+          sobald vergeben (§ 27a UStG).
         */}
       </section>
 
@@ -61,12 +68,19 @@ export default function ImpressumPage() {
         </h2>
         <div className="mt-4 space-y-1 text-[15px] leading-relaxed text-foreground/90">
           <p>
-            E-Mail:{" "}
-            <a className={LINK} href="mailto:german@rauhut.com">
-              german@rauhut.com
+            Telefon:{" "}
+            <a className={LINK} href="tel:+491603859135">
+              +49 160 385 9135
             </a>
           </p>
-          {/* Kontakt bestätigt (2026-07-03): E-Mail als einzige Kontaktangabe — § 5 DDG genügt. */}
+          <p>
+            E-Mail:{" "}
+            <a className={LINK} href="mailto:info@neckarshore.ai">
+              info@neckarshore.ai
+            </a>
+          </p>
+          {/* Zwei schnelle Kontaktkanäle nach § 5 DDG (E-Mail + Telefon).
+              info@neckarshore.ai spiegelt die kanonische neckarshore.ai-Kontaktadresse. */}
         </div>
       </section>
 
