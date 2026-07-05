@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
 import { PRODUCT_NAME } from "@/config/product";
@@ -46,6 +47,14 @@ export default function Home() {
       {/* Hero */}
       <section className="hero-glow">
         <div className="mx-auto max-w-3xl px-5 pb-8 pt-20 text-center sm:pt-28">
+          <Image
+            src="/bodo.svg"
+            alt=""
+            width={72}
+            height={72}
+            className="mx-auto mb-6"
+            priority
+          />
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-brand" />
             Built on the OpenSSF Scorecard
