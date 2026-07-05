@@ -32,6 +32,15 @@ export const metadata: Metadata = {
     description: PRODUCT_TAGLINE,
     siteName: PRODUCT_NAME,
     type: "website",
+    // og:image tags are emitted automatically from app/opengraph-image.png
+    // (Next file-based metadata convention).
+  },
+  twitter: {
+    // twitter:image tags are emitted automatically from app/twitter-image.png;
+    // this block only sets the card type + text so the unfurl renders large.
+    card: "summary_large_image",
+    title: `${PRODUCT_NAME} — open-source trust reports`,
+    description: PRODUCT_TAGLINE,
   },
   robots: { index: true, follow: true },
 };
