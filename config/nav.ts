@@ -12,16 +12,15 @@ export type NavItem = {
 };
 
 /**
- * Primary header navigation. Plan 3 Task 5 owns the final shape. The "For whom"
- * parent has NO href — its trigger is a button that only opens the disclosure
- * (single responsibility, spec §5 a11y); the /for hub is reachable as the first
- * child ("Overview"). Every entry links to a route that exists.
+ * Primary header navigation. The "For whom" parent has NO href — its trigger is
+ * a button that only opens the disclosure (single responsibility, spec §5 a11y).
+ * The /for Overview hub was removed (2026-07-06 redesign); the two persona pages
+ * are the destinations. Every entry links to a route that exists.
  */
 export const NAV_ITEMS: readonly NavItem[] = [
   {
     label: "For whom",
     children: [
-      { label: "Overview", href: "/for", hint: "Who is TrustScope for?" },
       { label: "Adopters", href: "/for/adopters", hint: "Vet a third-party project" },
       { label: "Maintainers", href: "/for/maintainers", hint: "Check your own project" },
     ],
@@ -29,6 +28,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: "How it works", href: "/how-it-works" },
   { label: "FAQ", href: "/faq" },
   { label: "About", href: "/about" },
+  { label: "Feedback", href: "/feedback" },
   {
     label: "GitHub ↗",
     href: "https://github.com/neckarshore-mmps/trustscope",
