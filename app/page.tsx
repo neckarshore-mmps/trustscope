@@ -71,8 +71,12 @@ const PILLARS = [
 
 const STEPS = [
   { n: "1", t: "Paste a repo", d: "Any public GitHub repository — URL or owner/repo." },
-  { n: "2", t: "We assess it", d: "OpenSSF Scorecard plus GitHub governance and lifecycle signals." },
-  { n: "3", t: "Read four pillars", d: "Per-pillar findings and constructive fixes — no single grade." },
+  { n: "2", t: "Assess it with OpenSSF", d: "The full OpenSSF Scorecard, plus GitHub governance and lifecycle signals." },
+  {
+    n: "3",
+    t: "Read your report by pillar",
+    d: "Each pillar answers a different question, with its own findings and constructive fixes. No single grade papers over the trade-offs — you see where the project is strong and where it isn't.",
+  },
   { n: "4", t: "Send fixes upstream", d: "File a friendly, attributed issue as yourself." },
 ];
 
@@ -146,7 +150,7 @@ export default function Home() {
       </section>
 
       {/* Four pillars */}
-      <section className="mx-auto max-w-5xl px-5 py-14">
+      <section className="mx-auto max-w-5xl px-5 py-7 sm:py-14">
         <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Four questions, four pillars — one synthesis
         </h2>
@@ -171,18 +175,20 @@ export default function Home() {
 
       {/* How it works */}
       <section className="border-t border-border/70 bg-surface/30">
-        <div className="mx-auto max-w-5xl px-5 py-14">
+        <div className="mx-auto max-w-5xl px-5 py-7 sm:py-14">
           <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
             How it works
           </h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {STEPS.map((s) => (
-              <div key={s.n}>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/25">
+              <div key={s.n} className="flex gap-3.5">
+                <div className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/25">
                   {s.n}
                 </div>
-                <h3 className="mt-3 font-semibold tracking-tight">{s.t}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted">{s.d}</p>
+                <div>
+                  <h3 className="font-semibold tracking-tight">{s.t}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{s.d}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -190,7 +196,7 @@ export default function Home() {
       </section>
 
       {/* Why no single score */}
-      <section className="mx-auto max-w-3xl px-5 py-16 text-center">
+      <section className="mx-auto max-w-3xl px-5 py-8 sm:py-16 text-center">
         <h2 className="text-2xl font-semibold tracking-tight">Why no single score?</h2>
         <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-muted">
           Each pillar answers a different question. A brilliant, secure library maintained by one
