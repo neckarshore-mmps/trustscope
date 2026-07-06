@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
+import { PILLARS_META } from "@/config/pillars";
 
 /** Adopter path — evaluating someone else's code. */
 function SearchIcon() {
@@ -38,34 +39,28 @@ function WrenchIcon() {
   );
 }
 
+// Landing pillar copy (question + body). Title + hue come from PILLARS_META
+// (config/pillars.ts) so the landing and the persona pages cannot drift.
 const PILLARS = [
   {
     id: 1,
-    title: "Functional Quality",
     q: "Is it well-built?",
     body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
-    accent: "text-slate-400",
   },
   {
     id: 2,
-    title: "Security & Supply Chain",
     q: "Is it built securely?",
     body: "The full OpenSSF Scorecard — token permissions, pinned dependencies, SAST, signed releases, and more.",
-    accent: "text-emerald-300",
   },
   {
     id: 3,
-    title: "Trust & Governance",
     q: "Can I trust the project behind it?",
     body: "License, security policy, who owns it, and whether there is a way to reach them when something breaks.",
-    accent: "text-sky-300",
   },
   {
     id: 4,
-    title: "Community & Sustainability",
     q: "Will it be here in a year?",
     body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
-    accent: "text-amber-300",
   },
 ];
 
@@ -155,21 +150,27 @@ export default function Home() {
           Four questions, four pillars — one synthesis
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {PILLARS.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-xl border border-border bg-surface/60 p-5 transition-colors hover:border-brand/30"
-            >
-              <div className="flex items-baseline gap-2">
-                <span className={`text-xs font-semibold uppercase tracking-wider ${p.accent}`}>
-                  Pillar {p.id}
-                </span>
-                <span className="text-xs text-muted">· {p.q}</span>
+          {PILLARS.map((p) => {
+            const meta = PILLARS_META[p.id - 1];
+            return (
+              <div
+                key={p.id}
+                className="rounded-xl border border-border bg-surface/60 p-5 transition-colors hover:border-brand/30"
+              >
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className="text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: meta.hue }}
+                  >
+                    Pillar {p.id}
+                  </span>
+                  <span className="text-xs text-muted">· {p.q}</span>
+                </div>
+                <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{meta.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
               </div>
-              <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{p.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
