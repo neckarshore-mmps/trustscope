@@ -197,11 +197,11 @@ export default function DatenschutzPage() {
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           GitHub wird von der GitHub, Inc. (USA) als eigenständig Verantwortliche betrieben.
-          Mit der Anmeldung und dem Erstellen des Issues werden daher personenbezogene Daten
-          in die USA übermittelt. Diese Übermittlung erfolgt, weil Sie sie durch die von
-          Ihnen angeforderte Funktion selbst veranlassen und sie zu deren Durchführung
-          erforderlich ist (Art. 49 Abs. 1 lit. b DSGVO); ergänzend ist GitHub, Inc. unter
-          dem EU-U.S. Data Privacy Framework zertifiziert (Art. 45 DSGVO).
+          Mit der Anmeldung und dem Erstellen des Issues werden personenbezogene Daten in
+          die USA übermittelt. Als Rechtsgrundlage kommen die Erforderlichkeit für die von
+          Ihnen veranlasste Funktion (Art. 49 Abs. 1 lit. b DSGVO) sowie die Zertifizierung
+          von GitHub, Inc. unter dem EU-U.S. Data Privacy Framework (Angemessenheit,
+          Art. 45 DSGVO) in Betracht.
         </p>
         {/* << Rechtlicher Stand (Dr. Sommer, DPO-Gutachten 2026-07-05) — Sign-off durch
             Founder + Dr. Sommer vor Entfernen des DRAFT-Markers:
@@ -216,10 +216,13 @@ export default function DatenschutzPage() {
               persistiert werden nur Access-Token + opake Nutzer-ID (sub).
             - GitHub-OAuth-Login ist in Produktion AKTIV (GITHUB_CLIENT_ID/SECRET gesetzt,
               verifiziert 2026-07-03 via `vercel env ls production`).
-            - OFFENE DPO-Frage vor Sign-off: US-Transfer-Primärgrundlage — Art. 49(1)(b)
-              (nutzerveranlasst, immun gegen DPF-Status-Drift) vs. Art. 45 (DPF-Angemessenheit).
-              GitHub, Inc. ist EU-U.S.-DPF-selbstzertifiziert (participant/6174; "Active" beim
-              Sign-off am DPF-Register gegenprüfen). Dr. Sommer entscheidet die Primärgrundlage. — D7 >> */}
+            - OFFENE DPO-Frage vor Sign-off: US-Transfer-Primärgrundlage — Art. 45
+              (DPF-Angemessenheit, rechtlich vorrangig) vs. Art. 49(1)(b) (nutzerveranlasst,
+              immun gegen DPF-Status-Drift). Der § 5-Absatz nennt daher bewusst BEIDE
+              Grundlagen neutral ("kommen in Betracht"); die verbindliche Fassung schärft auf
+              die von Dr. Sommer bestimmte Primärgrundlage. GitHub, Inc. ist EU-U.S.-DPF-
+              selbstzertifiziert (participant/6174; "Active" beim Sign-off am DPF-Register
+              gegenprüfen). — D7 >> */}
       </section>
 
       {/* § 6 Lokale Speicherung (Recently Viewed) */}
