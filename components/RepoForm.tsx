@@ -8,7 +8,18 @@ import { buildSuggestions, filterSuggestions } from "@/lib/repo-suggestions";
 import { useRecentRepos } from "@/lib/use-recent-repos";
 
 /** Accessible searchable repo combobox (seeds ∪ recent). Free entry is always preserved. */
-export function RepoForm({ autoFocus = false }: { autoFocus?: boolean }) {
+export function RepoForm({
+  autoFocus = false,
+  submitClassName = "bg-brand text-background transition-opacity hover:opacity-90",
+  submitLabel = "Assess this repo →",
+  placeholder = "ossf/scorecard  ·  https://github.com/owner/repo",
+}: {
+  autoFocus?: boolean;
+  /** Extra classes for the submit button — lets the landing swap in the dual-role fade fill. */
+  submitClassName?: string;
+  submitLabel?: string;
+  placeholder?: string;
+}) {
   const router = useRouter();
   const listboxId = useId();
   const [value, setValue] = useState("");
@@ -86,7 +97,7 @@ export function RepoForm({ autoFocus = false }: { autoFocus?: boolean }) {
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 120)}
             onKeyDown={onKeyDown}
-            placeholder="ossf/scorecard  ·  https://github.com/owner/repo"
+            placeholder={placeholder}
             className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-[15px] text-foreground placeholder:text-muted/60 outline-none transition-colors focus:border-brand/60 focus:ring-2 focus:ring-brand/20"
             aria-invalid={Boolean(error)}
             aria-describedby={error ? "repo-error" : undefined}
@@ -128,9 +139,9 @@ export function RepoForm({ autoFocus = false }: { autoFocus?: boolean }) {
         <button
           type="submit"
           disabled={busy}
-          className="shrink-0 rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+          className={`shrink-0 rounded-lg px-6 py-3 text-[15px] font-semibold disabled:opacity-60 ${submitClassName}`}
         >
-          {busy ? "Assessing…" : "Assess this repo →"}
+          {busy ? "Assessing…" : submitLabel}
         </button>
       </div>
       {error && (
