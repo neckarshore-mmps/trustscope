@@ -59,6 +59,19 @@ export function reportSynthesis(report: ReportModel): string {
   return s;
 }
 
+/**
+ * Presentational pillar order: scored pillars lead, not-assessed pillars trail (#314 — the N/A
+ * functional-quality pillar must never OPEN the report; a field-tester read the N/A-opener twice as
+ * "is this a bug?"). Stable — relative order within each group is preserved. Display-only: the core
+ * `ReportModel.pillars` order and the deterministic export are untouched, so "same repo → same
+ * report" (D9) still holds.
+ */
+export function orderedPillars(pillars: Pillar[]): Pillar[] {
+  const scored = pillars.filter((p) => p.status === "scored");
+  const trailed = pillars.filter((p) => p.status !== "scored");
+  return [...scored, ...trailed];
+}
+
 export interface CoverageSummary {
   assessed: string[];
   notAssessed: string[];
