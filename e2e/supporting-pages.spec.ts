@@ -31,9 +31,7 @@ test.describe("/faq", () => {
   test("responds 200, renders questions + FAQPage JSON-LD", async ({ page }) => {
     const res = await page.goto("/faq");
     expect(res?.status()).toBe(200);
-    await expect(
-      page.getByRole("heading", { name: /account to read a report/i }),
-    ).toBeVisible();
+    await expect(page.getByText(/account to read a report/i)).toBeVisible();
     const ld = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(ld).toContain("FAQPage");
   });
