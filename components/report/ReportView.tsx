@@ -4,6 +4,7 @@ import type { ScorecardSource } from "@/lib/adapters";
 import { PillarCard } from "./PillarCard";
 import { IssueActions } from "./IssueActions";
 import { ReportSummary } from "./ReportSummary";
+import { orderedPillars } from "@/lib/report-summary";
 import { DueDiligencePanel } from "./DueDiligencePanel";
 import { ExportActions } from "./ExportActions";
 
@@ -80,9 +81,9 @@ export function ReportView({
         </p>
       </div>
 
-      {/* Pillars */}
+      {/* Pillars — scored pillars lead, the not-assessed pillar trails (#314: N/A must not open) */}
       <div className="mt-6 grid gap-4">
-        {report.pillars.map((p) => (
+        {orderedPillars(report.pillars).map((p) => (
           <PillarCard key={p.id} pillar={p} />
         ))}
       </div>
