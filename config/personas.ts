@@ -23,10 +23,6 @@ export type Persona = {
   readonly accent: string; // tailwind border-top accent (PersonaCard)
   readonly spoke: {
     readonly title: string;
-    readonly jtbd: string;
-    readonly pains: readonly string[];
-    readonly perPillar: string;
-    readonly walkthrough: string;
     // --- shared /for template (2026-07-06 redesign) ---
     readonly heroTitle: string;
     readonly heroLede: string;
@@ -57,17 +53,6 @@ export const PERSONAS: Record<PersonaId, Persona> = {
     accent: "border-t-sky-400/70",
     spoke: {
       title: "TrustScope for adopters",
-      jtbd: "Before you depend on a project, decide how much to trust it — is it built securely, well-governed, and likely to be maintained in a year?",
-      pains: [
-        "Raw Scorecard output is cryptic and hard to act on.",
-        "A star count or a green badge says nothing about real risk.",
-        "The trade-offs stay hidden behind one number.",
-        "Supply-chain risk (the xz pattern) is invisible until it isn't.",
-      ],
-      perPillar:
-        "TrustScope reads all four pillars separately — security & supply chain (the full OpenSSF Scorecard), governance, community — and keeps the trade-offs visible instead of averaging them away.",
-      walkthrough:
-        "You get a verdict and the trade-off behind it, so you can decide adopt / proceed with caution / avoid — and file constructive fixes upstream as yourself.",
       heroTitle: "Before you depend on a project, know how far to trust it.",
       heroLede:
         "Secure, well-governed, and still maintained next year? Check any repo before you take on the dependency.",
@@ -137,16 +122,6 @@ export const PERSONAS: Record<PersonaId, Persona> = {
     accent: "border-t-violet-400/70",
     spoke: {
       title: "TrustScope for maintainers",
-      jtbd: "See your own project the way an evaluator does — and get a friendly, concrete list of what to harden.",
-      pains: [
-        "You don't always know what evaluators actually look for.",
-        "Scorecard can feel intimidating rather than actionable.",
-        "You want a fix-list, not a verdict.",
-      ],
-      perPillar:
-        "TrustScope shows the same four-pillar report an adopter would see on your repo — security & supply chain, governance, community — so nothing about how you're perceived is a surprise.",
-      walkthrough:
-        "Every finding comes with a constructive, rule-based fix you can file as an issue on your own project. It's a mirror and a hardening guide — never a badge.",
       heroTitle: "Before you publish, see your project the way evaluators will.",
       heroLede:
         "The same four-pillar report an adopter gets on your repo — plus a friendly, concrete list of what to harden.",
