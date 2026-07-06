@@ -175,13 +175,17 @@ export default function DatenschutzPage() {
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Melden Sie sich an, nutzen wir GitHub OAuth (Auth.js/NextAuth) mit dem minimalen
-          Berechtigungsumfang <code className={CODE}>read:user public_repo</code>.
-          Verarbeitet werden Ihre GitHub-Identität (Benutzername/ID) und ein Access-Token,
-          das ausschließlich dazu dient, das von Ihnen ausgelöste Issue in Ihrem Namen bei
-          GitHub zu erstellen. Empfänger des Tokens ist GitHub. Das Token wird in einer
-          technisch notwendigen, signierten Session (Cookie via NextAuth) gehalten und
-          nicht dauerhaft in einer Datenbank gespeichert; mit Abmeldung oder Ablauf der
-          Session endet die Nutzung.
+          Berechtigungsumfang <code className={CODE}>read:user public_repo</code>. Im Zuge
+          der Anmeldung übermittelt GitHub Angaben zu Ihrer GitHub-Identität (u. a.
+          Benutzername, numerische Nutzer-ID, angezeigter Name, Avatar-URL sowie, sofern bei
+          GitHub öffentlich, Ihre E-Mail-Adresse). Davon speichert {PRODUCT_NAME}{" "}
+          ausschließlich das für die Funktion Notwendige — Ihre Nutzer-ID und ein
+          Access-Token, das allein dazu dient, das von Ihnen ausgelöste Issue in Ihrem Namen
+          bei GitHub zu erstellen (Datenminimierung, Art. 5 Abs. 1 lit. c DSGVO). Empfänger
+          des Tokens ist GitHub. Diese Daten werden in einer technisch notwendigen,
+          verschlüsselten Session (Cookie via NextAuth) gehalten und nicht dauerhaft in einer
+          Datenbank gespeichert; mit Abmeldung oder Ablauf der Session endet die Nutzung
+          durch {PRODUCT_NAME}.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Rechtsgrundlage ist die Durchführung der von Ihnen angeforderten Funktion
@@ -191,11 +195,31 @@ export default function DatenschutzPage() {
           {PRODUCT_NAME} keine Analyse- oder Tracking-Cookies und bindet keine Werbe- oder
           Tracking-Dienste Dritter ein.
         </p>
-        {/* << Sign-off Founder/Dr.Sommer (vor Entfernen des DRAFT-Markers): Der
-            GitHub-OAuth-Login ist in Produktion AKTIV (GITHUB_CLIENT_ID/SECRET gesetzt,
-            verifiziert 2026-07-03 via `vercel env ls production`). Final gegenbestätigen:
-            exakte Session-/Token-Lebensdauer sowie die Einordnung des Verhältnisses zu
-            GitHub (eigenständig Verantwortliche vs. gemeinsame Verantwortlichkeit). — D7 >> */}
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          GitHub wird von der GitHub, Inc. (USA) als eigenständig Verantwortliche betrieben.
+          Mit der Anmeldung und dem Erstellen des Issues werden daher personenbezogene Daten
+          in die USA übermittelt. Diese Übermittlung erfolgt, weil Sie sie durch die von
+          Ihnen angeforderte Funktion selbst veranlassen und sie zu deren Durchführung
+          erforderlich ist (Art. 49 Abs. 1 lit. b DSGVO); ergänzend ist GitHub, Inc. unter
+          dem EU-U.S. Data Privacy Framework zertifiziert (Art. 45 DSGVO).
+        </p>
+        {/* << Rechtlicher Stand (Dr. Sommer, DPO-Gutachten 2026-07-05) — Sign-off durch
+            Founder + Dr. Sommer vor Entfernen des DRAFT-Markers:
+            - Verhältnis zu GitHub: eigenständige/getrennte Verantwortliche (relying-party/IdP-
+              Split), NICHT gemeinsame Verantwortlichkeit (Art. 26) oder Auftragsverarbeitung
+              (Art. 28). § 5 nennt GitHub als "Empfänger des Tokens" -> Art. 13(1)(e) erfüllt.
+            - Token-Custody: JWT-Session-Cookie, KEIN DB-Adapter (auth.ts + types/next-auth.d.ts
+              verifiziert); NextAuth-Default 30 Tage rollierend. TrustScope-seitige Nutzung endet
+              mit Cookie-Ablauf/Logout; das GitHub-OAuth-App-Token bleibt GitHub-seitig gültig,
+              bis der Nutzer es widerruft.
+            - Datenminimierung (Art. 5(1)(c)): der jwt-Callback strippt name/email/avatar;
+              persistiert werden nur Access-Token + opake Nutzer-ID (sub).
+            - GitHub-OAuth-Login ist in Produktion AKTIV (GITHUB_CLIENT_ID/SECRET gesetzt,
+              verifiziert 2026-07-03 via `vercel env ls production`).
+            - OFFENE DPO-Frage vor Sign-off: US-Transfer-Primärgrundlage — Art. 49(1)(b)
+              (nutzerveranlasst, immun gegen DPF-Status-Drift) vs. Art. 45 (DPF-Angemessenheit).
+              GitHub, Inc. ist EU-U.S.-DPF-selbstzertifiziert (participant/6174; "Active" beim
+              Sign-off am DPF-Register gegenprüfen). Dr. Sommer entscheidet die Primärgrundlage. — D7 >> */}
       </section>
 
       {/* § 6 Lokale Speicherung (Recently Viewed) */}
