@@ -28,22 +28,32 @@ test.describe("Footer credibility line", () => {
   }
 });
 
-test.describe("Login coming-soon", () => {
-  test("Login button reveals 'Coming soon' and never navigates", async ({ page }) => {
+test.describe("Footer version line + feedback", () => {
+  test("footer shows changelog link, version, and a feedback link on /", async ({ page }) => {
     await page.goto("/");
-    const login = page.getByRole("button", { name: /log in/i });
-    await expect(login).toBeVisible();
-    await login.click();
-    await expect(page.getByText(/coming soon/i)).toBeVisible();
-    await expect(page).toHaveURL(/\/$/); // it is a button, not a link — no navigation
+    const footer = page.locator("footer");
+    await expect(footer.getByRole("link", { name: /^changelog$/i })).toBeVisible();
+    await expect(footer.getByText(/^v\d+\.\d+\.\d+$/)).toBeVisible();
+    await expect(footer.getByRole("link", { name: /^Feedback$/i })).toBeVisible();
   });
 
-  test("Escape closes the 'Coming soon' hint", async ({ page }) => {
+  test("no login control remains in the header", async ({ page }) => {
     await page.goto("/");
-    const login = page.getByRole("button", { name: /log in/i });
-    await login.click();
-    await expect(page.getByText(/coming soon/i)).toBeVisible();
-    await login.press("Escape");
-    await expect(page.getByText(/coming soon/i)).toBeHidden();
+    await expect(page.getByRole("button", { name: /log in/i })).toHaveCount(0);
+  });
+});
+
+test.describe("/changelog", () => {
+  test("renders the changelog with the current version", async ({ page }) => {
+    const res = await page.goto("/changelog");
+    expect(res?.status()).toBe(200);
+    await expect(page.getByRole("heading", { level: 1, name: /Changelog/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: /v0\.1\.0/i })).toBeVisible();
+  });
+
+  test("footer changelog link navigates to /changelog", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("footer").getByRole("link", { name: /^changelog$/i }).click();
+    await expect(page).toHaveURL(/\/changelog$/);
   });
 });
