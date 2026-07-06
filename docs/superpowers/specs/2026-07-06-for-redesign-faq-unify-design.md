@@ -86,7 +86,10 @@ Rule: the persona pages carry no question that duplicates a `/faq` entry. "Accou
 - **New unit:** a guard test asserting **no duplicate question strings** across `FAQ_ITEMS` ∪ all persona `faqs` (locks the dedup invariant).
 - Pillar-hue single-source unit: persona pages and landing read the same hue config.
 
-## Out of scope (backlog / other lanes)
+## Out of scope
+
+_Backlog / other lanes._
+
 
 1. **Feedback backend** — the `/feedback` submission opening GitHub issues via the ITSM process is **backend (Bob)** and the ITSM process is still being designed. This plan ships only the **frontend** header link + the existing `/feedback` page. → dependency note for MASCHIN/Bob.
 2. **Bodo position + size on the landing page** — to be discussed separately (this plan only places Bodo in the header).
