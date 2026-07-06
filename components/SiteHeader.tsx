@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/config/product";
 import { NAV_ITEMS } from "@/config/nav";
-import { LoginButton } from "@/components/LoginButton";
 import { NavMenu } from "@/components/NavMenu";
 
 export function SiteHeader() {
@@ -18,7 +17,6 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-4">
           <NavMenu items={NAV_ITEMS} />
-          <LoginButton />
         </div>
       </div>
     </header>
