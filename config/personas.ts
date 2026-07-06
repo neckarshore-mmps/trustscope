@@ -15,12 +15,7 @@ export type PersonaPillar = { readonly q: string; readonly blurb: string };
 export type Persona = {
   readonly id: PersonaId;
   readonly tag: string;
-  readonly recognition: string;
-  readonly youIf: string;
-  readonly ctaLabel: string;
-  readonly ctaHref: string; // repo input lives on the landing page
   readonly spokeHref: string;
-  readonly accent: string; // tailwind border-top accent (PersonaCard)
   readonly spoke: {
     readonly title: string;
     // --- shared /for template (2026-07-06 redesign) ---
@@ -44,13 +39,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
   adopter: {
     id: "adopter",
     tag: "Adopter",
-    recognition: "You're about to build on someone else's code.",
-    youIf:
-      "You're evaluating a third-party library, framework or tool before taking on the dependency.",
-    ctaLabel: "Assess a repo you're evaluating",
-    ctaHref: "/",
     spokeHref: "/for/adopters",
-    accent: "border-t-sky-400/70",
     spoke: {
       title: "TrustScope for adopters",
       heroTitle: "Before you depend on a project, know how far to trust it.",
@@ -113,13 +102,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
   maintainer: {
     id: "maintainer",
     tag: "Maintainer",
-    recognition: "You want people to trust your code.",
-    youIf:
-      "You maintain your own project and want to see — and close — the trust gaps adopters look for.",
-    ctaLabel: "Check how your own project looks",
-    ctaHref: "/",
     spokeHref: "/for/maintainers",
-    accent: "border-t-violet-400/70",
     spoke: {
       title: "TrustScope for maintainers",
       heroTitle: "Before you publish, see your project the way evaluators will.",

@@ -50,10 +50,10 @@ test.describe("navigation", () => {
     await page.setViewportSize({ width: 1100, height: 800 });
     await page.goto("/");
     await page.getByRole("button", { name: /For whom/i }).click();
-    // the /for hub is reachable as the first menu item (trigger is button-only, spec §5)
-    await expect(page.getByRole("link", { name: /Overview/i })).toHaveAttribute("href", "/for");
+    // Overview hub removed (2026-07-06 redesign) — the two persona pages are the destinations.
     await expect(page.getByRole("link", { name: /Adopters/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Maintainers/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /^Overview/i })).toHaveCount(0);
   });
 
   test("desktop: Escape closes the 'For whom' dropdown", async ({ page }) => {
