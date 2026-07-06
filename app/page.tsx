@@ -150,7 +150,7 @@ export default function Home() {
       </section>
 
       {/* Four pillars */}
-      <section className="mx-auto max-w-5xl px-5 py-7 sm:py-14">
+      <section className="mx-auto max-w-5xl px-5 py-7">
         <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Four questions, four pillars — one synthesis
         </h2>
@@ -175,7 +175,7 @@ export default function Home() {
 
       {/* How it works */}
       <section className="border-t border-border/70 bg-surface/30">
-        <div className="mx-auto max-w-5xl px-5 py-7 sm:py-14">
+        <div className="mx-auto max-w-5xl px-5 py-7">
           <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
             How it works
           </h2>
@@ -196,7 +196,7 @@ export default function Home() {
       </section>
 
       {/* Why no single score */}
-      <section className="mx-auto max-w-3xl px-5 py-8 sm:py-16 text-center">
+      <section className="mx-auto max-w-3xl px-5 py-8 text-center">
         <h2 className="text-2xl font-semibold tracking-tight">Why no single score?</h2>
         <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-muted">
           Each pillar answers a different question. A brilliant, secure library maintained by one
