@@ -40,7 +40,9 @@ export function detectDueDiligence(
     });
   }
 
-  if (!github.hasSecurityPolicy) {
+  // §3 fail-open guard: only flag a MISSING policy when we definitively know it's absent. If the
+  // community fetch failed (unknown), stay silent — never accuse a repo of something we couldn't check.
+  if (github.communityProfileFetched && !github.hasSecurityPolicy) {
     signals.push({
       id: "no-security-contact",
       title: "No security policy",

@@ -155,18 +155,30 @@ function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar
     source: "github",
   };
 
-  const contactFinding: Finding = {
-    check: "Contact-Channel",
-    label: "Contact channel",
-    status: gh.hasSecurityPolicy ? "pass" : gh.hasIssuesEnabled ? "warn" : "fail",
-    score: null,
-    reason: gh.hasSecurityPolicy
-      ? "A security policy provides a disclosure/contact channel."
-      : gh.hasIssuesEnabled
-        ? "No security policy detected via the GitHub community profile; issues are enabled as a fallback channel. (Scorecard may still credit a Security-Policy found in an org .github repo — see the Security-Policy finding.)"
-        : "No security policy and issues are disabled — no clear channel to report problems.",
-    source: "github",
-  };
+  // §3 fail-open guard: when the community profile couldn't be read (403/5xx/timeout), the
+  // security-policy signal is UNKNOWN — surface it as inconclusive, never as a confident "no channel".
+  const contactFinding: Finding = gh.communityProfileFetched
+    ? {
+        check: "Contact-Channel",
+        label: "Contact channel",
+        status: gh.hasSecurityPolicy ? "pass" : gh.hasIssuesEnabled ? "warn" : "fail",
+        score: null,
+        reason: gh.hasSecurityPolicy
+          ? "A security policy provides a disclosure/contact channel."
+          : gh.hasIssuesEnabled
+            ? "No security policy detected via the GitHub community profile; issues are enabled as a fallback channel. (Scorecard may still credit a Security-Policy found in an org .github repo — see the Security-Policy finding.)"
+            : "No security policy and issues are disabled — no clear channel to report problems.",
+        source: "github",
+      }
+    : {
+        check: "Contact-Channel",
+        label: "Contact channel",
+        status: "inconclusive",
+        score: null,
+        reason:
+          "Couldn’t read the GitHub community profile (rate-limited or unavailable) — the security-policy signal is unknown, not absent.",
+        source: "github",
+      };
 
   const findings = [...scorecardFindings, ownerFinding, contactFinding].sort(byCheck);
   return {

@@ -75,6 +75,27 @@ describe("check -> pillar assignment is a partition (no check in two pillars)", 
   });
 });
 
+describe("§3: unknown community profile does not fail open into a confident 'no channel'", () => {
+  const scorecard = read("scorecard-ossf.json") as ScorecardResult;
+  const findContact = (github: GitHubData) =>
+    buildReport({ scorecard, github, generatedAt: "2026-07-01T00:00:00.000Z" })
+      .pillars.flatMap((p) => p.findings)
+      .find((f) => f.check === "Contact-Channel")!;
+
+  it("communityProfileFetched=false -> Contact-Channel is inconclusive, not a fail/warn", () => {
+    const github = normalizeGitHubData(read("github-repo-ossf.json"), {}, false);
+    const contact = findContact(github);
+    expect(contact.status).toBe("inconclusive");
+    expect(contact.reason).toMatch(/couldn.t (read|check)|unknown|unavailable|rate.?limit/i);
+  });
+
+  it("communityProfileFetched=true with no security file -> still a definite warn/fail (unchanged)", () => {
+    const github = normalizeGitHubData(read("github-repo-ossf.json"), {}, true);
+    const contact = findContact(github);
+    expect(["warn", "fail"]).toContain(contact.status);
+  });
+});
+
 describe("ossf/scorecard — a strong repo", () => {
   const r = reportFor("ossf");
 

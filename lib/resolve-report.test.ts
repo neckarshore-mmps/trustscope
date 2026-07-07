@@ -87,6 +87,39 @@ describe("resolveReport", () => {
     if (r.kind === "error") expect(r.title).toMatch(/Scorecard/i);
   });
 
+  it("§5: coalesces concurrent misses for the SAME repo into exactly one pipeline run", async () => {
+    let resolveGen!: (v: GeneratedReport) => void;
+    const pending = new Promise<GeneratedReport>((res) => (resolveGen = res));
+    const generateReport = vi.fn(async () => pending);
+    const store = fakeStore();
+    const inFlight = new Map<string, Promise<GeneratedReport>>();
+
+    // Fire N concurrent requests for the same repo while generation is still in flight.
+    const calls = Array.from({ length: 5 }, () =>
+      resolveReport(PARSED, { store, generateReport, now: () => NOW, inFlight }),
+    );
+    await Promise.resolve();
+
+    resolveGen({ report: REPORT, scorecardSource: "binary" });
+    const results = await Promise.all(calls);
+
+    // Exactly ONE pipeline run despite 5 concurrent misses; every caller got the same ok report.
+    expect(generateReport).toHaveBeenCalledOnce();
+    expect(results.every((r) => r.kind === "ok")).toBe(true);
+    // And it persisted once, not five times.
+    expect(store.put).toHaveBeenCalledOnce();
+  });
+
+  it("§5: does NOT coalesce distinct repos (independent generations)", async () => {
+    const generateReport = gen("binary");
+    const inFlight = new Map<string, Promise<GeneratedReport>>();
+    await Promise.all([
+      resolveReport({ owner: "o", repo: "a" }, { store: fakeStore(), generateReport, now: () => NOW, inFlight }),
+      resolveReport({ owner: "o", repo: "b" }, { store: fakeStore(), generateReport, now: () => NOW, inFlight }),
+    ]);
+    expect(generateReport).toHaveBeenCalledTimes(2);
+  });
+
   it("AtCapacityError -> a distinct 'at capacity' outcome, NOT a generic report failure", async () => {
     const generateReport = vi.fn(async () => {
       throw new AtCapacityError(2);
