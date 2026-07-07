@@ -44,23 +44,23 @@ function WrenchIcon() {
 const PILLARS = [
   {
     id: 1,
-    q: "Is it well-built?",
-    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
-  },
-  {
-    id: 2,
     q: "Is it built securely?",
     body: "The full OpenSSF Scorecard — token permissions, pinned dependencies, SAST, signed releases, and more.",
   },
   {
-    id: 3,
+    id: 2,
     q: "Can I trust the project behind it?",
     body: "License, security policy, who owns it, and whether there is a way to reach them when something breaks.",
   },
   {
-    id: 4,
+    id: 3,
     q: "Will it be here in a year?",
     body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
+  },
+  {
+    id: 4,
+    q: "Is it well-built?",
+    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
   },
 ];
 

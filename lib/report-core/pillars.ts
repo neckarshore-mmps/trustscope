@@ -11,25 +11,25 @@ export const PILLAR_META: Record<
   PillarKey,
   { id: 1 | 2 | 3 | 4; title: string; question: string }
 > = {
-  "functional-quality": {
-    id: 1,
-    title: "Functional Quality",
-    question: "Is it well-built?",
-  },
   "security-supply-chain": {
-    id: 2,
+    id: 1,
     title: "Security & Supply Chain",
     question: "Is it built and operated securely?",
   },
   "trust-governance": {
-    id: 3,
+    id: 2,
     title: "Trust & Governance",
     question: "Can I trust the project behind it?",
   },
   "community-sustainability": {
-    id: 4,
+    id: 3,
     title: "Community & Sustainability",
     question: "Will it still be here in twelve months?",
+  },
+  "functional-quality": {
+    id: 4,
+    title: "Functional Quality",
+    question: "Is it well-built?",
   },
 };
 

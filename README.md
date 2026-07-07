@@ -11,10 +11,10 @@ across security, governance, and community — and never hides the trade-offs be
 
 | Pillar | Question | Source |
 |--------|----------|--------|
-| 1 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
-| 2 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
-| 3 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
-| 4 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 1 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
+| 2 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
+| 3 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 4 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
 
 **No single aggregate score, by design** — each pillar answers a different question; collapsing them
 hides exactly the trade-off you are weighing.

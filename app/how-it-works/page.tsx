@@ -11,31 +11,31 @@ export const metadata: Metadata = {
 const PILLARS = [
   {
     id: 1,
-    title: "Functional Quality",
-    q: "Is it well-built?",
-    body: "Honestly left open. Whether software is genuinely well-made is a hands-on craft judgement — so TrustScope marks this pillar “not assessed” rather than faking it from automated signals.",
-    accent: "text-slate-400",
-  },
-  {
-    id: 2,
     title: "Security & Supply Chain",
     q: "Is it built securely?",
     body: "The full OpenSSF Scorecard: branch protection, pinned dependencies, token permissions, SAST, signed releases, dependency-update tooling, and more — the checks that decide how safe it is to pull into your build.",
     accent: "text-emerald-300",
   },
   {
-    id: 3,
+    id: 2,
     title: "Trust & Governance",
     q: "Can I trust the project behind it?",
     body: "License, security policy, and the responsible owner — is there a way to reach someone when something breaks, and are the rules of engagement clear? The project behind the code matters as much as the code.",
     accent: "text-sky-300",
   },
   {
-    id: 4,
+    id: 3,
     title: "Community & Sustainability",
     q: "Will it be here in a year?",
     body: "Maintenance cadence, contributors, and recent activity — read as a lifecycle stage, never as a grade. A one-maintainer library early in its life is not “failing”; it is simply young.",
     accent: "text-amber-300",
+  },
+  {
+    id: 4,
+    title: "Functional Quality",
+    q: "Is it well-built?",
+    body: "Honestly left open. Whether software is genuinely well-made is a hands-on craft judgement — so TrustScope marks this pillar “not assessed” rather than faking it from automated signals.",
+    accent: "text-slate-400",
   },
 ];
 
