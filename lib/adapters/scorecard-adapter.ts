@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { ConcurrencyGate } from "@/lib/concurrency-gate";
 import type { ScorecardResult } from "@/lib/report-core/types";
 
 /**
@@ -28,6 +29,24 @@ const DEFAULT_IMAGE = "gcr.io/openssf/scorecard:stable";
 const DEFAULT_BIN = "scorecard";
 const RUN_MAX_BUFFER = 32 * 1024 * 1024;
 
+/**
+ * §1 — /report DoS mitigation. The on-demand Scorecard run spawns a ~90s subprocess per cache-miss;
+ * unauthenticated + uncapped, a burst of distinct `repo=` values exhausts the host. This module-level
+ * gate bounds concurrent spawns PER INSTANCE and sheds excess (AtCapacityError) instead of spawning.
+ * Default 2; override with SCORECARD_MAX_CONCURRENCY. The fast-path GET is cheap and never gated.
+ */
+function readMaxConcurrency(): number {
+  const raw = process.env.SCORECARD_MAX_CONCURRENCY;
+  const n = raw ? Number.parseInt(raw, 10) : NaN;
+  return Number.isInteger(n) && n >= 1 ? n : 2;
+}
+
+let sharedGate: ConcurrencyGate | undefined;
+function getSpawnGate(): ConcurrencyGate {
+  if (!sharedGate) sharedGate = new ConcurrencyGate(readMaxConcurrency());
+  return sharedGate;
+}
+
 /** Fast-path returned 404 — the repo is not in the OpenSSF dataset; fall back to Docker. */
 export class ScorecardNotCoveredError extends Error {
   constructor(slug: string) {
@@ -52,6 +71,11 @@ export interface ScorecardRunOptions {
   /** Injectable for tests. */
   fetchFn?: typeof fetch;
   execFileFn?: typeof execFileAsync;
+  /**
+   * Concurrency gate bounding the on-demand spawn (§1 DoS). Defaults to the module-level shared gate
+   * sized by SCORECARD_MAX_CONCURRENCY. Injectable so tests can assert the shed-load behaviour.
+   */
+  gate?: ConcurrencyGate;
 }
 
 export async function fetchScorecardFastPath(
@@ -194,11 +218,16 @@ export async function getScorecard(
   const onDemand: OnDemandRunner =
     opts.onDemand ?? (process.env.SCORECARD_ONDEMAND as OnDemandRunner) ?? "docker";
 
+  // §1: every path that spawns a subprocess funnels through the gate; the fast-path GET never does.
+  const gate = opts.gate ?? getSpawnGate();
+  const gatedSpawn = (which: OnDemandRunner) =>
+    gate.run(() => runOnDemand(which, owner, repo, opts));
+
   if (runner === "docker") {
-    return { result: await runScorecardDocker(owner, repo, opts), source: "docker" };
+    return { result: await gatedSpawn("docker"), source: "docker" };
   }
   if (runner === "binary") {
-    return { result: await runScorecardBinary(owner, repo, opts), source: "binary" };
+    return { result: await gatedSpawn("binary"), source: "binary" };
   }
   if (runner === "fastpath") {
     return { result: await fetchScorecardFastPath(owner, repo, opts), source: "fastpath" };
@@ -208,7 +237,7 @@ export async function getScorecard(
     return { result: await fetchScorecardFastPath(owner, repo, opts), source: "fastpath" };
   } catch (err) {
     if (err instanceof ScorecardNotCoveredError) {
-      return { result: await runOnDemand(onDemand, owner, repo, opts), source: onDemand };
+      return { result: await gatedSpawn(onDemand), source: onDemand };
     }
     throw err;
   }

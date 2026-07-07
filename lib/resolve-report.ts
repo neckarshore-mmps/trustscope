@@ -5,6 +5,7 @@ import {
   type GeneratedReport,
   type ScorecardSource,
 } from "@/lib/adapters";
+import { AtCapacityError } from "@/lib/concurrency-gate";
 import type { ReportModel } from "@/lib/report-core/types";
 import { getReportStore } from "@/lib/store";
 import type { ReportStore } from "@/lib/store/types";
@@ -81,6 +82,15 @@ export async function resolveReport(
         kind: "error",
         title: "Couldn’t run the Scorecard on demand",
         message: `${parsed.owner}/${parsed.repo} isn’t in the OpenSSF dataset, and the on-demand runner isn’t available in this environment. A container host is required for arbitrary repos (see the README).`,
+      };
+    }
+    if (err instanceof AtCapacityError) {
+      // §1 DoS: the on-demand runner is saturated. Shed this request with a friendly retry hint
+      // rather than spawning — never leak the internal capacity/concurrency detail to the user.
+      return {
+        kind: "error",
+        title: "TrustScope is at capacity",
+        message: `We’re running several reports right now and couldn’t start a new one for ${parsed.owner}/${parsed.repo}. Please try again in a minute — reports we’ve already run stay instant.`,
       };
     }
     return {

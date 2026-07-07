@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { resolveReport, CACHE_TTL_MS } from "./resolve-report";
+import { AtCapacityError } from "./concurrency-gate";
 import { RepoNotFoundError } from "./adapters/github";
 import { ScorecardNotCoveredError } from "./adapters/scorecard-adapter";
 import type { ReportModel } from "./report-core/types";
@@ -84,6 +85,19 @@ describe("resolveReport", () => {
     const r = await resolveReport(PARSED, { store: fakeStore(), generateReport, now: () => NOW });
     expect(r.kind).toBe("error");
     if (r.kind === "error") expect(r.title).toMatch(/Scorecard/i);
+  });
+
+  it("AtCapacityError -> a distinct 'at capacity' outcome, NOT a generic report failure", async () => {
+    const generateReport = vi.fn(async () => {
+      throw new AtCapacityError(2);
+    });
+    const r = await resolveReport(PARSED, { store: fakeStore(), generateReport, now: () => NOW });
+    expect(r.kind).toBe("error");
+    if (r.kind === "error") {
+      expect(r.title).toMatch(/capacity/i);
+      // must not leak the internal "N concurrent operations" detail as the user message
+      expect(r.message).not.toMatch(/concurrent operations/i);
+    }
   });
 
   it("generic error -> 'Couldn't generate the report', surfacing the message", async () => {
