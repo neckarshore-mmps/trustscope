@@ -49,8 +49,10 @@ export async function resolveReport(
   const now = deps.now ?? Date.now;
   const inFlight = deps.inFlight ?? moduleInFlight;
 
+  // §6: the cache READ lives OUTSIDE the generation try/catch. A store.getLatest() failure is a
+  // cache miss, never a generation failure — otherwise a flaky store returns "couldn't generate the
+  // report" and never even attempts generation (a §3-class fail-open on the cache path).
   try {
-    // Cache-serve: a recent stored report skips the (possibly ~90s) on-demand run.
     const cached = await store.getLatest(parsed.owner, parsed.repo);
     if (cached && now() - Date.parse(cached.fetchedAt) < CACHE_TTL_MS) {
       return {
@@ -60,7 +62,11 @@ export async function resolveReport(
         cached: true,
       };
     }
+  } catch (cacheErr) {
+    console.error("ReportStore.getLatest failed (falling through to generation):", cacheErr);
+  }
 
+  try {
     // §5 single-flight: coalesce concurrent misses for the same repo onto one generation+persist,
     // so a cache-miss stampede runs the ~90s pipeline exactly once, not once per concurrent request.
     const key = `${parsed.owner}/${parsed.repo}`;

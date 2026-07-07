@@ -59,6 +59,19 @@ describe("resolveReport", () => {
     expect(store.put).toHaveBeenCalledOnce();
   });
 
+  it("§6: a store.getLatest() throw does NOT mask generation — it falls through and generates", async () => {
+    const generateReport = gen("binary");
+    const store = fakeStore({
+      getLatest: vi.fn(async () => {
+        throw new Error("store unavailable");
+      }),
+    });
+    const r = await resolveReport(PARSED, { store, generateReport, now: () => NOW });
+    // The cache read failed, but that must not become "Couldn't generate the report".
+    expect(r.kind).toBe("ok");
+    expect(generateReport).toHaveBeenCalledOnce();
+  });
+
   it("store.put failure still returns the ok report (the swallow invariant)", async () => {
     const generateReport = gen("binary");
     const store = fakeStore({

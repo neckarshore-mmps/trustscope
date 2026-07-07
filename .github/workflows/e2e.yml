@@ -1,0 +1,44 @@
+# E2E gate — runs the Playwright suite (e2e/) on every PR. Until now 15 specs existed but NO
+# workflow ran them, so the browser-level suite never gated (Lane-B Run-1 High #6). This closes that
+# third tooth of the test gap: legal pages, site chrome, report page, repo selection, FAQ, personas —
+# all now block merge if a rendered page or a footer link regresses.
+#
+# The suite is offline + token-free: global-setup seeds a deterministic fixture report into the
+# FileReportStore and the specs serve it from cache (no GITHUB token, no live scorecard run). The
+# webServer block starts `npm run dev` fresh in CI (reuseExistingServer is false under CI).
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default token — this workflow only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Playwright e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright e2e
+        run: npm run test:e2e
