@@ -2,6 +2,12 @@ import { PRODUCT_NAME } from "@/config/product";
 import { detectDueDiligence } from "./due-diligence";
 import { FIX_TEXT } from "./fix-text";
 import { PILLAR_META, pillarForCheck } from "./pillars";
+import {
+  ACTIVITY_WINDOW_DAYS,
+  daysBetween,
+  FAIL_THRESHOLD,
+  PASS_THRESHOLD,
+} from "./thresholds";
 import type {
   Finding,
   Fix,
@@ -18,10 +24,6 @@ import type {
  * (scorecard result + normalized GitHub data + a caller-supplied timestamp) -> ReportModel.
  * No I/O, no clock, no framework imports. Same input -> same output, always.
  */
-
-const PASS_THRESHOLD = 8; // score >= 8 -> pass
-const FAIL_THRESHOLD = 3; // score <= 3 -> fail; in-between -> warn
-const ACTIVITY_WINDOW_DAYS = 90;
 
 function checkStatus(score: number): Finding["status"] {
   if (score < 0) return "inconclusive";
@@ -80,13 +82,6 @@ function fixesFor(findings: Finding[]): Fix[] {
     }
   }
   return fixes;
-}
-
-function daysBetween(aIso: string, bIso: string): number | null {
-  const a = Date.parse(aIso);
-  const b = Date.parse(bIso);
-  if (Number.isNaN(a) || Number.isNaN(b)) return null;
-  return Math.abs(a - b) / 86_400_000;
 }
 
 function byCheck(a: Finding, b: Finding): number {
