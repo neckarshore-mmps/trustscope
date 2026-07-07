@@ -1,15 +1,16 @@
+import { FAIL_THRESHOLD, PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { Pillar, ReportModel } from "@/lib/report-core/types";
 
 /** Pure, deterministic report-orientation derivations (mirror lib/report-export.ts). No LLM, no clock. */
 
 type Band = "strong" | "moderate" | "concern" | "not-assessed";
 
-// Thresholds match build-report.ts (PASS_THRESHOLD = 8, FAIL_THRESHOLD = 3) so a pillar the core
-// would call "pass" is never labelled "moderate" here (V2 amendment §C).
+// Bands share the one source of truth (§4) so a pillar the core would call "pass" is never
+// labelled "moderate" here (V2 amendment §C).
 function band(p: Pillar): Band {
   if (p.status === "not-assessed" || p.score === null) return "not-assessed";
-  if (p.score >= 8) return "strong";
-  if (p.score <= 3) return "concern";
+  if (p.score >= PASS_THRESHOLD) return "strong";
+  if (p.score <= FAIL_THRESHOLD) return "concern";
   return "moderate";
 }
 

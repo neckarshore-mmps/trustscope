@@ -1,14 +1,6 @@
 import { PILLAR_META } from "./pillars";
+import { ACTIVITY_WINDOW_DAYS, daysBetween } from "./thresholds";
 import type { DueDiligenceSignal, GitHubData, ManifestData, PillarKey } from "./types";
-
-const ACTIVITY_WINDOW_DAYS = 90;
-
-function daysBetween(aIso: string, bIso: string): number | null {
-  const a = Date.parse(aIso);
-  const b = Date.parse(bIso);
-  if (Number.isNaN(a) || Number.isNaN(b)) return null;
-  return Math.abs(a - b) / 86_400_000;
-}
 
 /** Derive the numeric pillar id from its key (V2 amendment §D) so the panel can link to #pillar-{id}. */
 function pillarId(key: PillarKey): 1 | 2 | 3 | 4 {
