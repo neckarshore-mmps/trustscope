@@ -29,7 +29,16 @@ export interface ResolveReportDeps {
   generateReport?: (owner: string, repo: string) => Promise<GeneratedReport>;
   /** Injectable clock (ms since epoch) for deterministic TTL tests. Defaults to Date.now. */
   now?: () => number;
+  /**
+   * §5 single-flight registry: concurrent cache-misses for the SAME repo share ONE generation
+   * instead of each running the full ~90s pipeline (cache-stampede). Injectable for deterministic
+   * tests; defaults to a module-level map (per-instance coalescing on Vercel Fluid Compute).
+   */
+  inFlight?: Map<string, Promise<GeneratedReport>>;
 }
+
+/** Module-level single-flight registry — one in-flight generation per "owner/repo" per instance. */
+const moduleInFlight = new Map<string, Promise<GeneratedReport>>();
 
 export async function resolveReport(
   parsed: { owner: string; repo: string },
@@ -38,6 +47,7 @@ export async function resolveReport(
   const store = deps.store ?? getReportStore();
   const generate = deps.generateReport ?? defaultGenerateReport;
   const now = deps.now ?? Date.now;
+  const inFlight = deps.inFlight ?? moduleInFlight;
 
   try {
     // Cache-serve: a recent stored report skips the (possibly ~90s) on-demand run.
@@ -51,23 +61,41 @@ export async function resolveReport(
       };
     }
 
-    const { report, scorecardSource } = await generate(parsed.owner, parsed.repo);
-    // Persist as a best-effort cache — a write failure (e.g. a read-only serverless FS) must
-    // NEVER turn a successfully generated report into an error.
-    try {
-      await store.put({
-        key: {
-          owner: parsed.owner,
-          repo: parsed.repo,
-          commit: report.repo.commit ?? "unknown",
-        },
-        report,
-        scorecardSource,
-        fetchedAt: new Date(now()).toISOString(),
-      });
-    } catch (storeErr) {
-      console.error("ReportStore.put failed (serving report anyway):", storeErr);
+    // §5 single-flight: coalesce concurrent misses for the same repo onto one generation+persist,
+    // so a cache-miss stampede runs the ~90s pipeline exactly once, not once per concurrent request.
+    const key = `${parsed.owner}/${parsed.repo}`;
+    let flight = inFlight.get(key);
+    if (!flight) {
+      flight = (async () => {
+        const generated = await generate(parsed.owner, parsed.repo);
+        // Persist as a best-effort cache — a write failure (e.g. a read-only serverless FS) must
+        // NEVER turn a successfully generated report into an error.
+        try {
+          await store.put({
+            key: {
+              owner: parsed.owner,
+              repo: parsed.repo,
+              commit: generated.report.repo.commit ?? "unknown",
+            },
+            report: generated.report,
+            scorecardSource: generated.scorecardSource,
+            fetchedAt: new Date(now()).toISOString(),
+          });
+        } catch (storeErr) {
+          console.error("ReportStore.put failed (serving report anyway):", storeErr);
+        }
+        return generated;
+      })();
+      inFlight.set(key, flight);
+      // Free the slot once settled (success OR failure) so the next miss regenerates. The no-throw
+      // handlers keep this cleanup chain from surfacing as an unhandled rejection.
+      const clear = () => {
+        if (inFlight.get(key) === flight) inFlight.delete(key);
+      };
+      flight.then(clear, clear);
     }
+
+    const { report, scorecardSource } = await flight;
     return { kind: "ok", report, source: scorecardSource, cached: false };
   } catch (err) {
     if (err instanceof RepoNotFoundError) {

@@ -17,6 +17,7 @@ const base: GitHubData = {
   hasContributing: true,
   hasCodeOfConduct: true,
   healthPercentage: 90,
+  communityProfileFetched: true,
 };
 const assessedAt = "2026-07-01T00:00:00Z";
 
@@ -32,6 +33,15 @@ describe("detectDueDiligence", () => {
   it("flags a missing security policy", () => {
     const s = detectDueDiligence({ ...base, hasSecurityPolicy: false }, null, assessedAt);
     expect(s.map((x) => x.id)).toContain("no-security-contact");
+  });
+  it("§3: does NOT accuse of a missing security policy when the community profile was UNKNOWN", () => {
+    // hasSecurityPolicy is false only because the fetch failed (403/timeout) — not a definitive absence.
+    const s = detectDueDiligence(
+      { ...base, hasSecurityPolicy: false, communityProfileFetched: false },
+      null,
+      assessedAt,
+    );
+    expect(s.map((x) => x.id)).not.toContain("no-security-contact");
   });
   it("frames the missing security policy as repository-scoped, not absolute (§D)", () => {
     const s = detectDueDiligence({ ...base, hasSecurityPolicy: false }, null, assessedAt);

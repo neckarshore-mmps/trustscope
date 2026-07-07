@@ -57,6 +57,12 @@ export interface GitHubData {
   hasContributing: boolean;
   hasCodeOfConduct: boolean;
   healthPercentage: number | null;
+  /**
+   * §3 fail-open guard: true when the community profile was resolved definitively (200 with data,
+   * or a 404 = genuinely absent). false when the fetch FAILED (403 rate-limit, 5xx, timeout) — the
+   * community-derived signals above are then "unknown", not "absent", and must render as such.
+   */
+  communityProfileFetched: boolean;
 }
 
 // ---------------------------------------------------------------------------
