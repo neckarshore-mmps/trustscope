@@ -11,8 +11,8 @@ export type PillarMeta = {
  * Landing and persona pages BOTH read `hue` from here so pillar colors cannot drift.
  */
 export const PILLARS_META: readonly PillarMeta[] = [
-  { id: 1, key: "functional-quality", title: "Functional Quality", hue: "#94a3b8" },
-  { id: 2, key: "security-supply-chain", title: "Security & Supply Chain", hue: "#6ee7b7" },
-  { id: 3, key: "trust-governance", title: "Trust & Governance", hue: "#7dd3fc" },
-  { id: 4, key: "community-sustainability", title: "Community & Sustainability", hue: "#fcd34d" },
+  { id: 1, key: "security-supply-chain", title: "Security & Supply Chain", hue: "#6ee7b7" },
+  { id: 2, key: "trust-governance", title: "Trust & Governance", hue: "#7dd3fc" },
+  { id: 3, key: "community-sustainability", title: "Community & Sustainability", hue: "#fcd34d" },
+  { id: 4, key: "functional-quality", title: "Functional Quality", hue: "#94a3b8" },
 ];

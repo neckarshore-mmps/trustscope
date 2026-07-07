@@ -93,7 +93,7 @@ function byCheck(a: Finding, b: Finding): number {
   return a.check.localeCompare(b.check);
 }
 
-// --- Pillar 1: Functional Quality — always honestly not-assessed. --------------------
+// --- Pillar 4: Functional Quality — always honestly not-assessed. --------------------
 
 function functionalQualityPillar(): Pillar {
   const m = PILLAR_META["functional-quality"];
@@ -113,7 +113,7 @@ function functionalQualityPillar(): Pillar {
   };
 }
 
-// --- Pillar 2: Security & Supply Chain — the Scorecard security checks. ---------------
+// --- Pillar 1: Security & Supply Chain — the Scorecard security checks. ---------------
 
 function securityPillar(checks: ScorecardCheck[]): Pillar {
   const m = PILLAR_META["security-supply-chain"];
@@ -135,7 +135,7 @@ function securityPillar(checks: ScorecardCheck[]): Pillar {
   };
 }
 
-// --- Pillar 3: Trust & Governance — Scorecard License/Security-Policy + GitHub signals. --
+// --- Pillar 2: Trust & Governance — Scorecard License/Security-Policy + GitHub signals. --
 
 function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar {
   const m = PILLAR_META["trust-governance"];
@@ -185,7 +185,7 @@ function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar
   };
 }
 
-// --- Pillar 4: Community & Sustainability — lifecycle, not a grade. -------------------
+// --- Pillar 3: Community & Sustainability — lifecycle, not a grade. -------------------
 
 function communityPillar(
   checks: ScorecardCheck[],
@@ -264,10 +264,10 @@ export function buildReport(input: BuildReportInput): ReportModel {
   const { owner, name } = parseOwnerRepo(scorecard.repo?.name ?? "");
 
   const pillars: [Pillar, Pillar, Pillar, Pillar] = [
-    functionalQualityPillar(),
     securityPillar(scorecard.checks ?? []),
     trustGovernancePillar(scorecard.checks ?? [], github),
     communityPillar(scorecard.checks ?? [], github, scorecard.date),
+    functionalQualityPillar(),
   ];
 
   const dueDiligence = detectDueDiligence(github, manifest, scorecard.date);

@@ -62,9 +62,13 @@ export function reportSynthesis(report: ReportModel): string {
 /**
  * Presentational pillar order: scored pillars lead, not-assessed pillars trail (#314 — the N/A
  * functional-quality pillar must never OPEN the report; a field-tester read the N/A-opener twice as
- * "is this a bug?"). Stable — relative order within each group is preserved. Display-only: the core
- * `ReportModel.pillars` order and the deterministic export are untouched, so "same repo → same
- * report" (D9) still holds.
+ * "is this a bug?"). Stable — relative order within each group is preserved.
+ *
+ * Since the pillar renumber (Functional Quality → Pillar 4), the core `ReportModel.pillars` order
+ * already trails Functional Quality last, so this is a no-op for the common case. It remains as an
+ * edge-case safety net: any OTHER pillar that comes back not-assessed (e.g. Security with zero
+ * Scorecard checks) is still pushed behind the scored ones. Display-only — the deterministic export
+ * reads the core order, so "same repo → same report" (D9) still holds.
  */
 export function orderedPillars(pillars: Pillar[]): Pillar[] {
   const scored = pillars.filter((p) => p.status === "scored");

@@ -7,18 +7,18 @@ describe("PILLARS_META", () => {
   });
   it("carries the fixed landing hues", () => {
     expect(PILLARS_META.map((p) => p.hue)).toEqual([
-      "#94a3b8",
       "#6ee7b7",
       "#7dd3fc",
       "#fcd34d",
+      "#94a3b8",
     ]);
   });
   it("titles match the report-core pillar titles", () => {
     expect(PILLARS_META.map((p) => p.title)).toEqual([
-      "Functional Quality",
       "Security & Supply Chain",
       "Trust & Governance",
       "Community & Sustainability",
+      "Functional Quality",
     ]);
   });
 });

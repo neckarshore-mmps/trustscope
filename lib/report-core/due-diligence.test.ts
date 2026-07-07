@@ -58,9 +58,9 @@ describe("detectDueDiligence", () => {
       null,
       assessedAt,
     );
-    expect(s.find((x) => x.id === "no-license")?.pillarId).toBe(3); // trust-governance
-    expect(s.find((x) => x.id === "no-security-contact")?.pillarId).toBe(3);
-    expect(s.find((x) => x.id === "archived")?.pillarId).toBe(4); // community-sustainability
+    expect(s.find((x) => x.id === "no-license")?.pillarId).toBe(2); // trust-governance
+    expect(s.find((x) => x.id === "no-security-contact")?.pillarId).toBe(2);
+    expect(s.find((x) => x.id === "archived")?.pillarId).toBe(3); // community-sustainability
   });
   it("is deterministic", () => {
     const g = { ...base, licenseSpdxId: null };
@@ -71,7 +71,7 @@ describe("detectDueDiligence", () => {
     const sig = s.find((x) => x.id === "install-scripts");
     expect(sig).toBeTruthy();
     expect(sig?.detail).toContain("postinstall");
-    expect(sig?.pillarId).toBe(2); // security-supply-chain
+    expect(sig?.pillarId).toBe(1); // security-supply-chain
     expect(sig?.mitigation).toContain("--ignore-scripts");
   });
   it("does not flag install scripts when the manifest has no hooks or is null", () => {

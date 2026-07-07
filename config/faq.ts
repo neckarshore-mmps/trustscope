@@ -8,7 +8,7 @@ export type FaqItem = { readonly q: string; readonly a: string };
 export const FAQ_ITEMS: readonly FaqItem[] = [
   {
     q: "What is TrustScope?",
-    a: "TrustScope reads a public GitHub repository across four pillars — Functional Quality, Security & Supply Chain, Trust & Governance, and Community & Sustainability — and gives a verdict per pillar, with no misleading single score.",
+    a: "TrustScope reads a public GitHub repository across four pillars — Security & Supply Chain, Trust & Governance, Community & Sustainability, and Functional Quality — and gives a verdict per pillar, with no misleading single score.",
   },
   {
     q: "What is an adopter, and what is a maintainer?",

@@ -71,7 +71,6 @@ export const PERSONAS: Record<PersonaId, Persona> = {
       nsaHeading: "No single aggregate score. A verdict per pillar — the decision stays yours.",
       verdictCaption: null,
       pillars: [
-        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
         {
           q: "Is it built securely?",
           blurb: "The full OpenSSF Scorecard — where the xz pattern hides.",
@@ -81,11 +80,12 @@ export const PERSONAS: Record<PersonaId, Persona> = {
           blurb: "Ownership, licensing & security policy.",
         },
         { q: "Will it be here in a year?", blurb: "Activity & contributor lifecycle." },
+        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
       ],
       faqs: [
         {
           q: "What does TrustScope do for adopters?",
-          a: "It assesses a third-party open-source project before you depend on it, reading four pillars separately — Functional Quality, Security & Supply Chain, Trust & Governance, and Community & Sustainability — so you can decide adopt, proceed, or avoid.",
+          a: "It assesses a third-party open-source project before you depend on it, reading four pillars separately — Security & Supply Chain, Trust & Governance, Community & Sustainability, and Functional Quality — so you can decide adopt, proceed, or avoid.",
         },
         {
           q: "How is this different from a star count or a green badge?",
@@ -135,7 +135,6 @@ export const PERSONAS: Record<PersonaId, Persona> = {
       verdictCaption:
         "The verdict an adopter reaches on your repo — close the gaps before they do.",
       pillars: [
-        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
         {
           q: "Is it built securely?",
           blurb: "The full OpenSSF Scorecard — the surface adopters scrutinise most.",
@@ -145,11 +144,12 @@ export const PERSONAS: Record<PersonaId, Persona> = {
           blurb: "Ownership, licensing & security policy.",
         },
         { q: "Will it be here in a year?", blurb: "Activity & contributor lifecycle." },
+        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
       ],
       faqs: [
         {
           q: "What does TrustScope do for maintainers?",
-          a: "It shows the same four-pillar report an adopter sees on your repo — Functional Quality, Security & Supply Chain, Trust & Governance, Community & Sustainability — plus a constructive fix-list you can file as issues.",
+          a: "It shows the same four-pillar report an adopter sees on your repo — Security & Supply Chain, Trust & Governance, Community & Sustainability, Functional Quality — plus a constructive fix-list you can file as issues.",
         },
         {
           q: "Will TrustScope give my project a badge or score?",
