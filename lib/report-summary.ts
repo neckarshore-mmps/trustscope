@@ -1,15 +1,16 @@
+import { FAIL_THRESHOLD, PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { Pillar, ReportModel } from "@/lib/report-core/types";
 
 /** Pure, deterministic report-orientation derivations (mirror lib/report-export.ts). No LLM, no clock. */
 
 type Band = "strong" | "moderate" | "concern" | "not-assessed";
 
-// Thresholds match build-report.ts (PASS_THRESHOLD = 8, FAIL_THRESHOLD = 3) so a pillar the core
-// would call "pass" is never labelled "moderate" here (V2 amendment §C).
+// Bands share the one source of truth (§4) so a pillar the core would call "pass" is never
+// labelled "moderate" here (V2 amendment §C).
 function band(p: Pillar): Band {
   if (p.status === "not-assessed" || p.score === null) return "not-assessed";
-  if (p.score >= 8) return "strong";
-  if (p.score <= 3) return "concern";
+  if (p.score >= PASS_THRESHOLD) return "strong";
+  if (p.score <= FAIL_THRESHOLD) return "concern";
   return "moderate";
 }
 
@@ -57,6 +58,23 @@ export function reportSynthesis(report: ReportModel): string {
     s += " Functional quality isn't assessed — it's a hands-on judgement, never faked.";
   }
   return s;
+}
+
+/**
+ * Presentational pillar order: scored pillars lead, not-assessed pillars trail (#314 — the N/A
+ * functional-quality pillar must never OPEN the report; a field-tester read the N/A-opener twice as
+ * "is this a bug?"). Stable — relative order within each group is preserved.
+ *
+ * Since the pillar renumber (Functional Quality → Pillar 4), the core `ReportModel.pillars` order
+ * already trails Functional Quality last, so this is a no-op for the common case. It remains as an
+ * edge-case safety net: any OTHER pillar that comes back not-assessed (e.g. Security with zero
+ * Scorecard checks) is still pushed behind the scored ones. Display-only — the deterministic export
+ * reads the core order, so "same repo → same report" (D9) still holds.
+ */
+export function orderedPillars(pillars: Pillar[]): Pillar[] {
+  const scored = pillars.filter((p) => p.status === "scored");
+  const trailed = pillars.filter((p) => p.status !== "scored");
+  return [...scored, ...trailed];
 }
 
 export interface CoverageSummary {

@@ -1,3 +1,4 @@
+import { PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { FindingStatus } from "@/lib/report-core/types";
 
 /** Visual metadata per finding status. */
@@ -37,18 +38,22 @@ export const STATUS_META: Record<
   },
 };
 
+// The "strong" colour floor shares PASS_THRESHOLD (§4); the amber/rose split is a display-only
+// midpoint (>= 4), deliberately NOT the fail threshold, so fractional means in (3,4] stay amber.
+const AMBER_FLOOR = 4;
+
 /** Text colour for a 0–10 pillar score (or null = not-assessed). */
 export function scoreColor(score: number | null): string {
   if (score === null) return "text-slate-400";
-  if (score >= 8) return "text-emerald-300";
-  if (score >= 4) return "text-amber-300";
+  if (score >= PASS_THRESHOLD) return "text-emerald-300";
+  if (score >= AMBER_FLOOR) return "text-amber-300";
   return "text-rose-300";
 }
 
 /** Ring colour for the score ring. */
 export function scoreRing(score: number | null): string {
   if (score === null) return "text-slate-600";
-  if (score >= 8) return "text-emerald-400";
-  if (score >= 4) return "text-amber-400";
+  if (score >= PASS_THRESHOLD) return "text-emerald-400";
+  if (score >= AMBER_FLOOR) return "text-amber-400";
   return "text-rose-400";
 }

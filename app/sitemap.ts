@@ -4,7 +4,6 @@ import { PRODUCT_SUBDOMAIN } from "@/config/product";
 const BASE = `https://${PRODUCT_SUBDOMAIN}`;
 const ROUTES = [
   "",
-  "/for",
   "/for/adopters",
   "/for/maintainers",
   "/how-it-works",

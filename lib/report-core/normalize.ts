@@ -30,6 +30,8 @@ export interface RawGitHubCommunity {
 export function normalizeGitHubData(
   repo: RawGitHubRepo,
   community: RawGitHubCommunity,
+  /** §3: false when the community fetch failed (403/5xx/timeout) — signals are "unknown", not "absent". */
+  communityProfileFetched = true,
 ): GitHubData {
   return {
     ownerLogin: repo.owner?.login ?? "unknown",
@@ -49,5 +51,6 @@ export function normalizeGitHubData(
       typeof community.health_percentage === "number"
         ? community.health_percentage
         : null,
+    communityProfileFetched,
   };
 }

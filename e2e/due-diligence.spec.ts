@@ -12,7 +12,7 @@ test("renders the due-diligence panel with real signals", async ({ page }) => {
   await expect(panel).toContainText("No security policy");
   await expect(panel.getByRole("link", { name: "No license" })).toHaveAttribute(
     "href",
-    "#pillar-3",
+    "#pillar-2",
   );
 });
 
@@ -22,6 +22,6 @@ test("shows the install-scripts signal linked to the security pillar", async ({ 
   await expect(panel).toContainText("Runs scripts on install");
   await expect(panel.getByRole("link", { name: "Runs scripts on install" })).toHaveAttribute(
     "href",
-    "#pillar-2",
+    "#pillar-1",
   );
 });

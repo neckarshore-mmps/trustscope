@@ -25,6 +25,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // Persist the GitHub access token so the file-issue route can act AS the user.
     async jwt({ token, account }) {
       if (account?.access_token) token.accessToken = account.access_token;
+      // Data minimization (Art. 5(1)(c) DSGVO): the ONLY thing TrustScope needs is the
+      // access token (to open an issue as the user) plus the opaque subject id NextAuth
+      // uses to key the session. No component consumes the GitHub profile, so we do NOT
+      // persist name / email / avatar in the session JWT. Keep this stripping in lockstep
+      // with the § 5 data-category text in app/datenschutz.
+      delete token.name;
+      delete token.email;
+      delete token.picture;
       return token;
     },
     async session({ session, token }) {

@@ -1,13 +1,22 @@
 export type FaqItem = { readonly q: string; readonly a: string };
 
+/**
+ * General, product-wide FAQ. Persona-specific questions live on the /for pages
+ * (config/personas.ts → spoke.faqs). The faq-dedup test guards that no question
+ * string appears in more than one set.
+ */
 export const FAQ_ITEMS: readonly FaqItem[] = [
   {
-    q: "Do I need an account to read a report?",
-    a: "No. Reading any report is anonymous and needs no sign-in. Accounts (to save history and email reports) are coming soon.",
+    q: "What is TrustScope?",
+    a: "TrustScope reads a public GitHub repository across four pillars — Security & Supply Chain, Trust & Governance, Community & Sustainability, and Functional Quality — and gives a verdict per pillar, with no misleading single score.",
   },
   {
-    q: "Is TrustScope for open-source maintainers?",
-    a: "Yes. Maintainers and adopters are equal audiences — a maintainer runs their own repo to see the trust gaps adopters look for, and gets constructive fixes to close them.",
+    q: "What is an adopter, and what is a maintainer?",
+    a: "An adopter is evaluating someone else's project before depending on it; a maintainer runs their own project to see and close the trust gaps adopters look for. Both read the same four-pillar report from opposite directions.",
+  },
+  {
+    q: "Do I need an account to read a report?",
+    a: "No. Reading any report is anonymous and needs no sign-in. Accounts (to save history and email reports) are coming later.",
   },
   {
     q: "Why is there no single score?",

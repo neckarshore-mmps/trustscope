@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildReport } from "./report-core/build-report";
 import { normalizeGitHubData } from "./report-core/normalize";
-import { isCleanReport, reportCoverage, reportSynthesis } from "./report-summary";
+import { isCleanReport, orderedPillars, reportCoverage, reportSynthesis } from "./report-summary";
 
 const FIXTURES = join(process.cwd(), "fixtures");
 const read = (f: string) => JSON.parse(readFileSync(join(FIXTURES, f), "utf8"));
@@ -41,6 +41,31 @@ describe("reportCoverage", () => {
   });
   it("lists inconclusive findings by label", () => {
     expect(Array.isArray(cov.inconclusive)).toBe(true);
+  });
+});
+
+describe("orderedPillars", () => {
+  it("never opens with the not-assessed functional-quality pillar (#314)", () => {
+    const ordered = orderedPillars(report.pillars);
+    expect(ordered[0].key).not.toBe("functional-quality");
+    expect(ordered[0].status).toBe("scored");
+  });
+  it("places every scored pillar before any not-assessed pillar", () => {
+    const ordered = orderedPillars(report.pillars);
+    const lastScored = ordered.reduce((acc, p, i) => (p.status === "scored" ? i : acc), -1);
+    const firstTrailed = ordered.findIndex((p) => p.status !== "scored");
+    if (firstTrailed !== -1) expect(lastScored).toBeLessThan(firstTrailed);
+  });
+  it("preserves every pillar — no drop, no duplicate", () => {
+    const ordered = orderedPillars(report.pillars);
+    expect(ordered.length).toBe(report.pillars.length);
+    expect(new Set(ordered.map((p) => p.key)).size).toBe(report.pillars.length);
+  });
+  it("is stable within each group", () => {
+    const ordered = orderedPillars(report.pillars);
+    const orderedScored = ordered.filter((p) => p.status === "scored").map((p) => p.key);
+    const origScored = report.pillars.filter((p) => p.status === "scored").map((p) => p.key);
+    expect(orderedScored).toEqual(origScored);
   });
 });
 

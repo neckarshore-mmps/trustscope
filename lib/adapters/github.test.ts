@@ -54,13 +54,46 @@ describe("fetchGitHubData", () => {
     ).rejects.toBeInstanceOf(RepoNotFoundError);
   });
 
-  it("tolerates a missing community profile (404) as 'no signals'", async () => {
+  it("tolerates a missing community profile (404) as a DEFINITIVE 'no signals'", async () => {
     const data = await fetchGitHubData("ossf", "scorecard", {
       fetchFn: routedFetch({ status: 200, body: REPO_JSON }, { status: 404 }),
     });
     expect(data.hasSecurityPolicy).toBe(false);
     expect(data.hasContributing).toBe(false);
     expect(data.ownerType).toBe("Organization"); // repo data still present
+    // A 404 is a definitive answer: the profile is genuinely absent, not "we couldn't check".
+    expect(data.communityProfileFetched).toBe(true);
+  });
+
+  it("§3: a non-404 community failure (403 rate-limit) is UNKNOWN, not a clean 'empty' profile", async () => {
+    const data = await fetchGitHubData("ossf", "scorecard", {
+      fetchFn: routedFetch({ status: 200, body: REPO_JSON }, { status: 403 }),
+    });
+    // The repo data survives, but the community signal must NOT masquerade as "definitively absent".
+    expect(data.ownerType).toBe("Organization");
+    expect(data.communityProfileFetched).toBe(false);
+  });
+
+  it("§3: a community fetch that throws (network/timeout) degrades to UNKNOWN, report survives", async () => {
+    const fetchFn = vi.fn(async (url: string) => {
+      if (String(url).endsWith("/community/profile")) {
+        throw Object.assign(new Error("aborted"), { name: "AbortError" });
+      }
+      return { status: 200, ok: true, json: async () => REPO_JSON };
+    }) as unknown as typeof fetch;
+    const data = await fetchGitHubData("ossf", "scorecard", { fetchFn });
+    expect(data.ownerType).toBe("Organization");
+    expect(data.communityProfileFetched).toBe(false);
+  });
+
+  it("§3: passes an AbortSignal to every outbound fetch (timeout guard)", async () => {
+    const spy = routedFetch({ status: 200, body: REPO_JSON }, { status: 200, body: COMMUNITY_JSON });
+    await fetchGitHubData("ossf", "scorecard", { fetchFn: spy });
+    const calls = (spy as unknown as { mock: { calls: [string, { signal?: AbortSignal }][] } }).mock.calls;
+    expect(calls.length).toBe(2);
+    for (const [, init] of calls) {
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+    }
   });
 
   it("sends an auth header when a token is supplied", async () => {

@@ -1,24 +1,31 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/config/product";
 import { NAV_ITEMS } from "@/config/nav";
-import { LoginButton } from "@/components/LoginButton";
 import { NavMenu } from "@/components/NavMenu";
 
 export function SiteHeader() {
   return (
     <header className="border-b border-border/70 bg-surface/40 backdrop-blur">
       <div className="relative mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-        <Link href="/" className="group flex items-center gap-2.5">
+        <Link href="/" className="group flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand/15 text-brand ring-1 ring-brand/30">
             <ShieldIcon />
           </span>
+          <Image
+            src="/bodo.svg"
+            alt="Bodo, the TrustScope mascot"
+            width={28}
+            height={28}
+            priority
+            className="h-7 w-7"
+          />
           <span className="text-[15px] font-semibold tracking-tight">
             {PRODUCT_NAME}
           </span>
         </Link>
         <div className="flex items-center gap-4">
           <NavMenu items={NAV_ITEMS} />
-          <LoginButton />
         </div>
       </div>
     </header>

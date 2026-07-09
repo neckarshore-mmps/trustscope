@@ -17,6 +17,7 @@ const base: GitHubData = {
   hasContributing: true,
   hasCodeOfConduct: true,
   healthPercentage: 90,
+  communityProfileFetched: true,
 };
 const assessedAt = "2026-07-01T00:00:00Z";
 
@@ -32,6 +33,15 @@ describe("detectDueDiligence", () => {
   it("flags a missing security policy", () => {
     const s = detectDueDiligence({ ...base, hasSecurityPolicy: false }, null, assessedAt);
     expect(s.map((x) => x.id)).toContain("no-security-contact");
+  });
+  it("§3: does NOT accuse of a missing security policy when the community profile was UNKNOWN", () => {
+    // hasSecurityPolicy is false only because the fetch failed (403/timeout) — not a definitive absence.
+    const s = detectDueDiligence(
+      { ...base, hasSecurityPolicy: false, communityProfileFetched: false },
+      null,
+      assessedAt,
+    );
+    expect(s.map((x) => x.id)).not.toContain("no-security-contact");
   });
   it("frames the missing security policy as repository-scoped, not absolute (§D)", () => {
     const s = detectDueDiligence({ ...base, hasSecurityPolicy: false }, null, assessedAt);
@@ -58,9 +68,9 @@ describe("detectDueDiligence", () => {
       null,
       assessedAt,
     );
-    expect(s.find((x) => x.id === "no-license")?.pillarId).toBe(3); // trust-governance
-    expect(s.find((x) => x.id === "no-security-contact")?.pillarId).toBe(3);
-    expect(s.find((x) => x.id === "archived")?.pillarId).toBe(4); // community-sustainability
+    expect(s.find((x) => x.id === "no-license")?.pillarId).toBe(2); // trust-governance
+    expect(s.find((x) => x.id === "no-security-contact")?.pillarId).toBe(2);
+    expect(s.find((x) => x.id === "archived")?.pillarId).toBe(3); // community-sustainability
   });
   it("is deterministic", () => {
     const g = { ...base, licenseSpdxId: null };
@@ -71,7 +81,7 @@ describe("detectDueDiligence", () => {
     const sig = s.find((x) => x.id === "install-scripts");
     expect(sig).toBeTruthy();
     expect(sig?.detail).toContain("postinstall");
-    expect(sig?.pillarId).toBe(2); // security-supply-chain
+    expect(sig?.pillarId).toBe(1); // security-supply-chain
     expect(sig?.mitigation).toContain("--ignore-scripts");
   });
   it("does not flag install scripts when the manifest has no hooks or is null", () => {

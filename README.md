@@ -11,10 +11,10 @@ across security, governance, and community — and never hides the trade-offs be
 
 | Pillar | Question | Source |
 |--------|----------|--------|
-| 1 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
-| 2 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
-| 3 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
-| 4 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 1 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
+| 2 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
+| 3 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 4 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
 
 **No single aggregate score, by design** — each pillar answers a different question; collapsing them
 hides exactly the trade-off you are weighing.
@@ -99,3 +99,7 @@ See [`.env.example`](.env.example). Nothing is required to read reports for Open
   - `sitemap.ts`, `opengraph-image` / `twitter-image` — SEO + social surfaces.
 
 See [DECISIONS.md](DECISIONS.md) for the locked product decisions and the AP-1 seam rationale.
+
+## Estate test-scope stats
+
+This repo is a **producer** for the neckarshore.ai estate test-count. On every `push:main`, CI counts the two gated suites (vitest unit + Playwright e2e) and publishes a contract-valid `stats.json` to the dedicated **[`stats-data`](../../tree/stats-data/stats.json)** branch — a single-file data branch, **not** `main`. `main` is a protected branch (a bot cannot push to it without weakening its protection), so the machine artifact lives on its own unprotected branch instead. The neckarshore.ai aggregator fetches it via `contents/stats.json?ref=stats-data`. Contract: [`stats-json-contract.md`](https://github.com/neckarshore-ai/neckarshore-planning/blob/main/docs/reference/stats-json-contract.md).

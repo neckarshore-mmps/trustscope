@@ -43,3 +43,30 @@ body {
 ::selection {
   background: rgba(45, 212, 191, 0.25);
 }
+
+/*
+ * Dual-role CTA: the fill drifts brand (teal) <-> amber, implying one tool serves both the
+ * adopter (evaluate) and the maintainer (improve) path. Honors reduced-motion with a static blend.
+ */
+.cta-fade {
+  background: linear-gradient(90deg, var(--brand), #fbbf24, var(--brand));
+  background-size: 220% 100%;
+  animation: cta-drift 4.5s ease-in-out infinite;
+}
+@keyframes cta-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-fade {
+    animation: none;
+    background: linear-gradient(90deg, var(--brand), #fbbf24);
+  }
+}
