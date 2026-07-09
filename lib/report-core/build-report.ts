@@ -1,10 +1,18 @@
 import { PRODUCT_NAME } from "@/config/product";
+import { detectDueDiligence } from "./due-diligence";
 import { FIX_TEXT } from "./fix-text";
 import { PILLAR_META, pillarForCheck } from "./pillars";
+import {
+  ACTIVITY_WINDOW_DAYS,
+  daysBetween,
+  FAIL_THRESHOLD,
+  PASS_THRESHOLD,
+} from "./thresholds";
 import type {
   Finding,
   Fix,
   GitHubData,
+  ManifestData,
   Pillar,
   ReportModel,
   ScorecardCheck,
@@ -16,10 +24,6 @@ import type {
  * (scorecard result + normalized GitHub data + a caller-supplied timestamp) -> ReportModel.
  * No I/O, no clock, no framework imports. Same input -> same output, always.
  */
-
-const PASS_THRESHOLD = 8; // score >= 8 -> pass
-const FAIL_THRESHOLD = 3; // score <= 3 -> fail; in-between -> warn
-const ACTIVITY_WINDOW_DAYS = 90;
 
 function checkStatus(score: number): Finding["status"] {
   if (score < 0) return "inconclusive";
@@ -80,18 +84,11 @@ function fixesFor(findings: Finding[]): Fix[] {
   return fixes;
 }
 
-function daysBetween(aIso: string, bIso: string): number | null {
-  const a = Date.parse(aIso);
-  const b = Date.parse(bIso);
-  if (Number.isNaN(a) || Number.isNaN(b)) return null;
-  return Math.abs(a - b) / 86_400_000;
-}
-
 function byCheck(a: Finding, b: Finding): number {
   return a.check.localeCompare(b.check);
 }
 
-// --- Pillar 1: Functional Quality — always honestly not-assessed. --------------------
+// --- Pillar 4: Functional Quality — always honestly not-assessed. --------------------
 
 function functionalQualityPillar(): Pillar {
   const m = PILLAR_META["functional-quality"];
@@ -111,7 +108,7 @@ function functionalQualityPillar(): Pillar {
   };
 }
 
-// --- Pillar 2: Security & Supply Chain — the Scorecard security checks. ---------------
+// --- Pillar 1: Security & Supply Chain — the Scorecard security checks. ---------------
 
 function securityPillar(checks: ScorecardCheck[]): Pillar {
   const m = PILLAR_META["security-supply-chain"];
@@ -133,7 +130,7 @@ function securityPillar(checks: ScorecardCheck[]): Pillar {
   };
 }
 
-// --- Pillar 3: Trust & Governance — Scorecard License/Security-Policy + GitHub signals. --
+// --- Pillar 2: Trust & Governance — Scorecard License/Security-Policy + GitHub signals. --
 
 function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar {
   const m = PILLAR_META["trust-governance"];
@@ -153,18 +150,30 @@ function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar
     source: "github",
   };
 
-  const contactFinding: Finding = {
-    check: "Contact-Channel",
-    label: "Contact channel",
-    status: gh.hasSecurityPolicy ? "pass" : gh.hasIssuesEnabled ? "warn" : "fail",
-    score: null,
-    reason: gh.hasSecurityPolicy
-      ? "A security policy provides a disclosure/contact channel."
-      : gh.hasIssuesEnabled
-        ? "No security policy detected via the GitHub community profile; issues are enabled as a fallback channel. (Scorecard may still credit a Security-Policy found in an org .github repo — see the Security-Policy finding.)"
-        : "No security policy and issues are disabled — no clear channel to report problems.",
-    source: "github",
-  };
+  // §3 fail-open guard: when the community profile couldn't be read (403/5xx/timeout), the
+  // security-policy signal is UNKNOWN — surface it as inconclusive, never as a confident "no channel".
+  const contactFinding: Finding = gh.communityProfileFetched
+    ? {
+        check: "Contact-Channel",
+        label: "Contact channel",
+        status: gh.hasSecurityPolicy ? "pass" : gh.hasIssuesEnabled ? "warn" : "fail",
+        score: null,
+        reason: gh.hasSecurityPolicy
+          ? "A security policy provides a disclosure/contact channel."
+          : gh.hasIssuesEnabled
+            ? "No security policy detected via the GitHub community profile; issues are enabled as a fallback channel. (Scorecard may still credit a Security-Policy found in an org .github repo — see the Security-Policy finding.)"
+            : "No security policy and issues are disabled — no clear channel to report problems.",
+        source: "github",
+      }
+    : {
+        check: "Contact-Channel",
+        label: "Contact channel",
+        status: "inconclusive",
+        score: null,
+        reason:
+          "Couldn’t read the GitHub community profile (rate-limited or unavailable) — the security-policy signal is unknown, not absent.",
+        source: "github",
+      };
 
   const findings = [...scorecardFindings, ownerFinding, contactFinding].sort(byCheck);
   return {
@@ -183,7 +192,7 @@ function trustGovernancePillar(checks: ScorecardCheck[], gh: GitHubData): Pillar
   };
 }
 
-// --- Pillar 4: Community & Sustainability — lifecycle, not a grade. -------------------
+// --- Pillar 3: Community & Sustainability — lifecycle, not a grade. -------------------
 
 function communityPillar(
   checks: ScorecardCheck[],
@@ -253,18 +262,22 @@ export interface BuildReportInput {
   github: GitHubData;
   /** ISO timestamp; caller supplies it so the core stays deterministic/pure. */
   generatedAt: string;
+  /** Root package.json facts (batch-2 seam); null when unread. */
+  manifest?: ManifestData | null;
 }
 
 export function buildReport(input: BuildReportInput): ReportModel {
-  const { scorecard, github, generatedAt } = input;
+  const { scorecard, github, generatedAt, manifest = null } = input;
   const { owner, name } = parseOwnerRepo(scorecard.repo?.name ?? "");
 
   const pillars: [Pillar, Pillar, Pillar, Pillar] = [
-    functionalQualityPillar(),
     securityPillar(scorecard.checks ?? []),
     trustGovernancePillar(scorecard.checks ?? [], github),
     communityPillar(scorecard.checks ?? [], github, scorecard.date),
+    functionalQualityPillar(),
   ];
+
+  const dueDiligence = detectDueDiligence(github, manifest, scorecard.date);
 
   return {
     product: PRODUCT_NAME,
@@ -283,5 +296,6 @@ export function buildReport(input: BuildReportInput): ReportModel {
     aggregateNote:
       "By design, TrustScope shows no single aggregate score. Each pillar answers a different question; collapsing them into one number hides the trade-offs that matter for an adoption decision.",
     pillars,
+    dueDiligence,
   };
 }

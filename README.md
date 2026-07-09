@@ -1,8 +1,8 @@
 # TrustScope
 
 Paste a public GitHub repo → get a deterministic **four-pillar trust report** with constructive,
-upstream-friendly fixes. Built on the [OpenSSF Scorecard](https://securityscorecards.dev). A
-reputation surface by Neckarshore AI.
+upstream-friendly fixes. Built on the [OpenSSF Scorecard](https://securityscorecards.dev). By
+Neckarshore AI.
 
 TrustScope helps someone **evaluating a third-party open-source tool** decide how much to trust it —
 across security, governance, and community — and never hides the trade-offs behind a single score.
@@ -11,13 +11,22 @@ across security, governance, and community — and never hides the trade-offs be
 
 | Pillar | Question | Source |
 |--------|----------|--------|
-| 1 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
-| 2 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
-| 3 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
-| 4 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 1 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
+| 2 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
+| 3 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
+| 4 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
 
 **No single aggregate score, by design** — each pillar answers a different question; collapsing them
 hides exactly the trade-off you are weighing.
+
+### Due-diligence signals
+
+Alongside the pillars, the report surfaces a few quiet **due-diligence notes** — calm nudges
+derived from existing data, never a score. One example: **install scripts.** Some npm packages
+run their own steps automatically the moment they are installed (`preinstall` / `install` /
+`postinstall`) — arbitrary code runs during `npm install`. Often legitimate (native builds), but
+worth a look before adopting. The note points to a constructive next step
+(`npm install --ignore-scripts` to inspect first) and never accuses.
 
 ## How it works
 
@@ -36,10 +45,17 @@ npm run dev          # http://localhost:3000
 ```
 
 ```bash
-npm test             # Vitest unit tests (report-core, adapters, store, issue-markdown)
+npm test             # Vitest unit tests (see below)
+npm run lint         # ESLint (strict — fails on any warning)
 npm run typecheck    # tsc --noEmit
 npm run build        # production build
+npm run test:e2e     # Playwright e2e (legal + report pages; boots its own dev server)
 ```
+
+The Vitest suite covers the pure **report-core** (build-report, normalize, pillars,
+due-diligence), the swappable **adapters** (Scorecard fast-path/Docker/binary, GitHub API),
+the **store** contract, **issue-markdown** + **report-export/-summary** serializers, and a
+**fixture-sanitization guard** (no secrets / private-repo identity in `fixtures/`).
 
 To score repos that aren't in the OpenSSF dataset (e.g. our own), the on-demand runner needs a
 GitHub token and Docker locally:
@@ -48,7 +64,10 @@ GitHub token and Docker locally:
 GITHUB_AUTH_TOKEN=$(gh auth token) npm run start
 ```
 
-The first report for a repo is generated + stored; re-runs within 24h are served from the store.
+The first report for a repo is generated + stored; re-runs are served from the store for a short
+window (target 24h). **Note:** on serverless (Vercel) the file store lives on an ephemeral
+filesystem, so the cache is best-effort per instance — a report may be regenerated after a cold
+start or on another instance. A durable store is planned (see Architecture).
 
 ## Configuration
 
@@ -60,25 +79,27 @@ See [`.env.example`](.env.example). Nothing is required to read reports for Open
 | `SCORECARD_RUNNER` | `auto` (default) · `fastpath` · `docker` · `binary`. |
 | `SCORECARD_ONDEMAND` | Which runner `auto` uses on a fast-path miss: `docker` (default) · `binary`. |
 | `SCORECARD_BIN` / `SCORECARD_IMAGE` | Path to the `scorecard` binary / the Docker image. |
-| `REPORT_STORE` | `file` (default, persistent) · `memory`. |
+| `REPORT_STORE` | `file` (default, persistent locally) · `memory`. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` / `AUTH_SECRET` | GitHub OAuth App (one-click issue filing). Optional — the fallbacks work without it. |
 
 ## Architecture
 
 - `lib/report-core/` — the **pure, framework-free** report builder (the AP-1 anchor). No I/O, no clock.
 - `lib/adapters/` — the swappable Scorecard source (fast-path → Docker/binary) + GitHub-API adapter.
-- `lib/store/` — the persistent `ReportStore` (memory + file locally; Postgres in prod).
+- `lib/store/` — the `ReportStore`. `memory` + `file` today (the file store is ephemeral on
+  serverless); a durable store (e.g. Postgres) is planned for production persistence.
 - `auth.ts` + `app/api/` — env-gated GitHub OAuth issue filing (Auth.js), with credential-free fallbacks.
-- `app/` — the home + `/report` surface.
+- `config/` — central product identity + config (`config/product.ts`).
+- `components/` — `SiteHeader` / `SiteFooter` / `NavMenu`, the repo `RepoForm` + `RecentRepos`, and the report UI.
+- `app/` — the marketing + product surface:
+  - `/` home + `/report` — paste a repo, read the report.
+  - `/how-it-works`, `/about`, `/faq`, `/feedback` — supporting pages.
+  - `/for` + `/for/adopters` + `/for/maintainers` — the audience hub + spokes.
+  - `/impressum`, `/datenschutz` — the German legal pages (DE Pflichtseiten).
+  - `sitemap.ts`, `opengraph-image` / `twitter-image` — SEO + social surfaces.
 
 See [DECISIONS.md](DECISIONS.md) for the locked product decisions and the AP-1 seam rationale.
 
-## Open User-Actions (gate the LIVE launch — not the local build)
+## Estate test-scope stats
 
-| # | Action | Status |
-|---|--------|--------|
-| 1 | Lock the name "TrustScope" | ✅ locked (the subdomain slug). |
-| 2 | Subdomain `trustscope.neckarshore.ai` | ✅ **DONE** — domain live on Vercel, TLS issued (verified `HTTP/2 200` on the apex report URL, 2026-07-02). |
-| 3 | GitHub OAuth App creds (`GITHUB_CLIENT_ID/SECRET` + `AUTH_SECRET`) | ✅ set in Vercel **Production** — one-click "file as yourself" is live. Not in Preview/Dev (those fall back to Copy-Markdown / pre-filled issue). Callback URL must track the final production domain (see #2). |
-| 4 | **Scorecard-run host** (the on-demand job is not pure-serverless) | ✅ **DONE** — Vercel-native `scorecard` **binary** on a Fluid-Compute function (`maxDuration=300`). Measured on-demand: 4–19 s « 300 s ceiling — no external host needed. See [`docs/scorecard-host-measurement.md`](docs/scorecard-host-measurement.md). |
-| 5 | Hosting (Vercel project) | ✅ confirmed. |
+This repo is a **producer** for the neckarshore.ai estate test-count. On every `push:main`, CI counts the two gated suites (vitest unit + Playwright e2e) and publishes a contract-valid `stats.json` to the dedicated **[`stats-data`](../../tree/stats-data/stats.json)** branch — a single-file data branch, **not** `main`. `main` is a protected branch (a bot cannot push to it without weakening its protection), so the machine artifact lives on its own unprotected branch instead. The neckarshore.ai aggregator fetches it via `contents/stats.json?ref=stats-data`. Contract: [`stats-json-contract.md`](https://github.com/neckarshore-ai/neckarshore-planning/blob/main/docs/reference/stats-json-contract.md).

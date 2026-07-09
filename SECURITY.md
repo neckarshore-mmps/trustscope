@@ -1,6 +1,6 @@
 # Security Policy
 
-TrustScope is a reputation surface by Neckarshore AI — paste a public GitHub
+TrustScope is an open-source trust report by Neckarshore AI — paste a public GitHub
 repository and get a deterministic four-pillar trust report, built on the
 [OpenSSF Scorecard](https://securityscorecards.dev). A tool whose whole job is
 assessing the security posture of *other* projects has to hold itself to the

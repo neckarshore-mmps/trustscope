@@ -1,8 +1,7 @@
 # TrustScope — Decisions
 
 Why TrustScope is built the way it is. Format: **Decision → Rationale → Affects**. Grounds on the
-[v1 Build Work-Order](https://github.com/neckarshore-ai/neckarshore-planning/blob/main/docs/plans/2026-07-01-trustscope-v1-linus-build-workorder.md)
-(#274, Founder-decided).
+internal, Founder-decided v1 build work-order (#274).
 
 ## 1. The six locked product decisions
 
@@ -11,7 +10,7 @@ Why TrustScope is built the way it is. Format: **Decision → Rationale → Affe
 | 1 | Audience | **Adopter/Evaluator** — someone vetting a *third-party* tool before adopting it. Not the maintainer/badge path (that competes with OpenSSF's own badge). |
 | 2 | Format | **Web report-generator** — repo URL in → report out. |
 | 3 | Depth | **Deterministic-pure — no LLM, no API key.** Rule-based fix text from the Hardening Standard §3. |
-| 4 | Pillars | **All four shown.** P2 full Scorecard · P3 Trust/Governance · P4 lifecycle. **P1 = "not assessed" — never faked.** **No single aggregate score.** |
+| 4 | Pillars | **All four shown.** P1 full Scorecard · P2 Trust/Governance · P3 lifecycle. **P4 = "not assessed" — never faked** (trails by number so N/A never leads). **No single aggregate score.** |
 | 5 | Third-party posture | **Constructive + consent.** Offer to file a constructive fix-issue upstream. |
 | 6 | Fix-issue mechanism | **File via GitHub OAuth AS THE USER** (the issue is the user's own action) with a "via TrustScope" footer. **Bot-identity forbidden** — unsolicited bot-issues break consent. |
 

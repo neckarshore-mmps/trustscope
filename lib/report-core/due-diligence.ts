@@ -1,0 +1,85 @@
+import { PILLAR_META } from "./pillars";
+import { ACTIVITY_WINDOW_DAYS, daysBetween } from "./thresholds";
+import type { DueDiligenceSignal, GitHubData, ManifestData, PillarKey } from "./types";
+
+/** Derive the numeric pillar id from its key (V2 amendment §D) so the panel can link to #pillar-{id}. */
+function pillarId(key: PillarKey): 1 | 2 | 3 | 4 {
+  return PILLAR_META[key].id;
+}
+
+/**
+ * Batch 1 quiet signals from existing normalized GitHub data (TS16).
+ * Calm + constructive (D1/D2): each is a reflective nudge with a mitigation, never a score,
+ * never an accusation. Batch 2 (install-scripts, star-anomaly) slots in here unchanged.
+ */
+export function detectDueDiligence(
+  github: GitHubData,
+  manifest: ManifestData | null,
+  assessedAt: string,
+): DueDiligenceSignal[] {
+  const signals: DueDiligenceSignal[] = [];
+
+  if (github.licenseSpdxId === null) {
+    signals.push({
+      id: "no-license",
+      title: "No license",
+      detail:
+        "Without a license the code is “all rights reserved” by default — legally you can’t use it in your build.",
+      mitigation:
+        "Ask the maintainer to add a LICENSE file (TrustScope can file a friendly issue).",
+      pillarKey: "trust-governance",
+      pillarId: pillarId("trust-governance"),
+    });
+  }
+
+  // §3 fail-open guard: only flag a MISSING policy when we definitively know it's absent. If the
+  // community fetch failed (unknown), stay silent — never accuse a repo of something we couldn't check.
+  if (github.communityProfileFetched && !github.hasSecurityPolicy) {
+    signals.push({
+      id: "no-security-contact",
+      title: "No security policy",
+      // §D: repository-scoped, not an absolute claim — a SECURITY.md may live in an org .github repo.
+      detail:
+        "No security policy detected on this repository — no documented way to report a vulnerability responsibly (no SECURITY.md or contact channel here).",
+      mitigation: "Suggest adding a SECURITY.md with a disclosure contact.",
+      pillarKey: "trust-governance",
+      pillarId: pillarId("trust-governance"),
+    });
+  }
+
+  const days = github.pushedAt ? daysBetween(assessedAt, github.pushedAt) : null;
+  if (github.archived) {
+    signals.push({
+      id: "archived",
+      title: "Archived repository",
+      detail: "The repository is archived — no further development is expected.",
+      mitigation: null,
+      pillarKey: "community-sustainability",
+      pillarId: pillarId("community-sustainability"),
+    });
+  } else if (days !== null && days > ACTIVITY_WINDOW_DAYS) {
+    signals.push({
+      id: "low-activity",
+      title: "Low recent activity",
+      detail: `Last pushed about ${Math.round(days)} days before assessment — outside the ${ACTIVITY_WINDOW_DAYS}-day activity window. Not necessarily abandoned, but worth a second look.`,
+      mitigation: null,
+      pillarKey: "community-sustainability",
+      pillarId: pillarId("community-sustainability"),
+    });
+  }
+
+  if (manifest && manifest.installHooks.length > 0) {
+    const hooks = manifest.installHooks.join(", ");
+    signals.push({
+      id: "install-scripts",
+      title: "Runs scripts on install",
+      detail: `This package runs its own steps automatically when it is installed (${hooks}) — arbitrary code runs during npm install. Often legitimate (native builds, setup), but worth a look before you adopt it.`,
+      mitigation:
+        "Review what the install steps do — installing with the --ignore-scripts flag lets you hold them back and inspect first.",
+      pillarKey: "security-supply-chain",
+      pillarId: pillarId("security-supply-chain"),
+    });
+  }
+
+  return signals;
+}

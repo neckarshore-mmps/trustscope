@@ -1,0 +1,1 @@
+TrustScope — Four pillars of trust, no single fake score. Paste a public GitHub repo for a deterministic four-pillar trust report. Built on the OpenSSF Scorecard, by Neckarshore AI.

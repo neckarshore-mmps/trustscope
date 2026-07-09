@@ -57,6 +57,12 @@ export interface GitHubData {
   hasContributing: boolean;
   hasCodeOfConduct: boolean;
   healthPercentage: number | null;
+  /**
+   * §3 fail-open guard: true when the community profile was resolved definitively (200 with data,
+   * or a 404 = genuinely absent). false when the fetch FAILED (403 rate-limit, 5xx, timeout) — the
+   * community-derived signals above are then "unknown", not "absent", and must render as such.
+   */
+  communityProfileFetched: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -81,6 +87,20 @@ export interface Finding {
 export interface Fix {
   check: string;
   text: string;
+}
+
+export interface DueDiligenceSignal {
+  /** Stable key, e.g. "no-license". */
+  id: string;
+  title: string;
+  /** Why it matters, from the adopter's side — calm, never accusatory. */
+  detail: string;
+  /** A constructive next step, or null when there is nothing to do. */
+  mitigation: string | null;
+  /** The pillar this signal relates to. */
+  pillarKey: PillarKey;
+  /** The pillar's numeric id — links the signal to its `#pillar-{id}` section (V2 amendment §D). */
+  pillarId: 1 | 2 | 3 | 4;
 }
 
 export type PillarKey =
@@ -124,4 +144,15 @@ export interface ReportModel {
   aggregateScore: null;
   aggregateNote: string;
   pillars: [Pillar, Pillar, Pillar, Pillar];
+  /** Quiet "due diligence" signals — qualitative, never a score (TS16). */
+  dueDiligence: DueDiligenceSignal[];
+}
+
+/** npm lifecycle hooks that run automatically on `npm install`. */
+export type InstallHook = "preinstall" | "install" | "postinstall";
+
+/** Minimal facts read from a package's root package.json (batch-2 manifest seam). */
+export interface ManifestData {
+  /** Which auto-run install hooks are present, in canonical order. */
+  installHooks: InstallHook[];
 }
