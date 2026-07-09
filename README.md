@@ -99,3 +99,7 @@ See [`.env.example`](.env.example). Nothing is required to read reports for Open
   - `sitemap.ts`, `opengraph-image` / `twitter-image` — SEO + social surfaces.
 
 See [DECISIONS.md](DECISIONS.md) for the locked product decisions and the AP-1 seam rationale.
+
+## Estate test-scope stats
+
+This repo is a **producer** for the neckarshore.ai estate test-count. On every `push:main`, CI counts the two gated suites (vitest unit + Playwright e2e) and publishes a contract-valid `stats.json` to the dedicated **[`stats-data`](../../tree/stats-data/stats.json)** branch — a single-file data branch, **not** `main`. `main` is a protected branch (a bot cannot push to it without weakening its protection), so the machine artifact lives on its own unprotected branch instead. The neckarshore.ai aggregator fetches it via `contents/stats.json?ref=stats-data`. Contract: [`stats-json-contract.md`](https://github.com/neckarshore-ai/neckarshore-planning/blob/main/docs/reference/stats-json-contract.md).
