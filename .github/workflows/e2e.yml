@@ -187,6 +187,7 @@ jobs:
           GIT_COMMITTER_NAME: "github-actions[bot]"
           GIT_COMMITTER_EMAIL: "github-actions[bot]@users.noreply.github.com"
         run: |
+          set -euo pipefail
           norm() { jq -S 'del(.updatedAt)' "$1" 2>/dev/null; }
           # Reliably materialize refs/remotes/origin/stats-data (a bare `fetch <branch>` only sets
           # FETCH_HEAD). Fails harmlessly on the first run (the branch does not exist yet).
@@ -204,4 +205,9 @@ jobs:
           else
             COMMIT=$(git commit-tree "$TREE" -m "$MSG")
           fi
+          # Belt: a git push with an EMPTY source refspec (":refs/heads/stats-data") is a DELETE
+          # command — an empty $COMMIT would delete stats-data instead of updating it. `set -e`
+          # already aborts on a failed commit-tree substitution; this is the explicit guard so a
+          # branch deletion can never depend on implicit -e (data-integrity belt on the trust product).
+          [ -n "$COMMIT" ] || { echo "::error::commit-tree produced no commit — refusing to push (would delete stats-data)"; exit 1; }
           git push origin "${COMMIT}:refs/heads/stats-data"
