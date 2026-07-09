@@ -1,6 +1,7 @@
 import { buildReport } from "@/lib/report-core";
 import type { ReportModel } from "@/lib/report-core/types";
 import { fetchGitHubData, type GitHubFetchOptions } from "./github";
+import { fetchPackageManifest } from "./manifest";
 import {
   getScorecard,
   type ScorecardRunOptions,
@@ -30,14 +31,16 @@ export async function generateReport(
   repo: string,
   opts: GenerateReportOptions = {},
 ): Promise<GeneratedReport> {
-  const [{ result: scorecard, source }, github] = await Promise.all([
+  const [{ result: scorecard, source }, github, manifest] = await Promise.all([
     getScorecard(owner, repo, opts),
     fetchGitHubData(owner, repo, opts),
+    fetchPackageManifest(owner, repo, opts),
   ]);
 
   const report = buildReport({
     scorecard,
     github,
+    manifest,
     generatedAt: opts.generatedAt ?? new Date().toISOString(),
   });
 

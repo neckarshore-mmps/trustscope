@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
@@ -23,7 +23,7 @@ const report = buildReport({
 
 function stored(commit: string, fetchedAt: string): StoredReport {
   return {
-    key: { owner: "neckarshore-mmps", repo: "snakeoil-check", commit },
+    key: { owner: "fixture-org", repo: "fixture-repo", commit },
     report,
     scorecardSource: "docker",
     fetchedAt,
@@ -58,7 +58,7 @@ describe.each(impls)("%s — ReportStore contract", (_name, make) => {
     const s = stored("aaa111", "2026-07-01T10:00:00.000Z");
     await store.put(s);
     const got = await store.get(s.key);
-    expect(got?.report.repo.name).toBe("snakeoil-check");
+    expect(got?.report.repo.name).toBe("fixture-repo");
     expect(got?.fetchedAt).toBe("2026-07-01T10:00:00.000Z");
   });
 
@@ -67,7 +67,7 @@ describe.each(impls)("%s — ReportStore contract", (_name, make) => {
     await store.put(stored("old", "2026-07-01T08:00:00.000Z"));
     await store.put(stored("new", "2026-07-01T12:00:00.000Z"));
     await store.put(stored("mid", "2026-07-01T10:00:00.000Z"));
-    const latest = await store.getLatest("neckarshore-mmps", "snakeoil-check");
+    const latest = await store.getLatest("fixture-org", "fixture-repo");
     expect(latest?.key.commit).toBe("new");
   });
 
@@ -75,5 +75,40 @@ describe.each(impls)("%s — ReportStore contract", (_name, make) => {
     const store = await make();
     await store.put(stored("x", "2026-07-01T09:00:00.000Z"));
     expect(await store.getLatest("someone", "else")).toBeNull();
+  });
+});
+
+describe("FileReportStore — §5 atomic write + bounded growth", () => {
+  async function makeDir(): Promise<string> {
+    const dir = await mkdtemp(join(tmpdir(), "trustscope-store-"));
+    tempDirs.push(dir);
+    return dir;
+  }
+
+  it("leaves no partial/temp files behind — the write is atomic (rename)", async () => {
+    const dir = await makeDir();
+    const store = new FileReportStore(dir);
+    await store.put(stored("aaa111", "2026-07-01T10:00:00.000Z"));
+    const files = await readdir(dir);
+    // exactly the final .json, no .tmp residue from a temp-write-then-rename
+    expect(files.every((f) => f.endsWith(".json"))).toBe(true);
+    expect(files.some((f) => f.includes(".tmp"))).toBe(false);
+    // and the file is complete, valid JSON
+    const got = await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "aaa111" });
+    expect(got?.report.repo.name).toBe("fixture-repo");
+  });
+
+  it("bounds growth — evicts the oldest entries beyond maxEntries", async () => {
+    const dir = await makeDir();
+    const store = new FileReportStore(dir, 3);
+    // Put 5 distinct-commit reports, oldest first.
+    for (let i = 0; i < 5; i++) {
+      await store.put(stored(`c${i}`, `2026-07-01T0${i}:00:00.000Z`));
+    }
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    expect(files.length).toBe(3);
+    // the two oldest (c0, c1) were evicted; the three newest remain
+    expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c0" })).toBeNull();
+    expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c4" })).not.toBeNull();
   });
 });

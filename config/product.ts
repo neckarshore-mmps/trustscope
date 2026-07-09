@@ -4,6 +4,6 @@
  */
 export const PRODUCT_NAME = "TrustScope";
 export const PRODUCT_TAGLINE =
-  "See how much you can trust an open-source project — before you adopt it.";
+  "Know how much you can trust an open-source project — before you adopt it.";
 export const PRODUCT_SUBDOMAIN = "trustscope.neckarshore.ai";
 export const PRODUCT_ORG = "Neckarshore AI";

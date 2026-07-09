@@ -36,8 +36,9 @@ describe("buildReport — structure (both fixtures)", () => {
       expect(r.aggregateNote).toMatch(/no single aggregate/i);
     });
 
-    it(`${slug}: Pillar 1 is always honestly not-assessed`, () => {
-      const p = pillar(reportFor(slug), 1);
+    it(`${slug}: Pillar 4 (Functional Quality) is always honestly not-assessed`, () => {
+      const p = pillar(reportFor(slug), 4);
+      expect(p.key).toBe("functional-quality");
       expect(p.status).toBe("not-assessed");
       expect(p.score).toBeNull();
       expect(p.findings).toHaveLength(0);
@@ -74,6 +75,27 @@ describe("check -> pillar assignment is a partition (no check in two pillars)", 
   });
 });
 
+describe("§3: unknown community profile does not fail open into a confident 'no channel'", () => {
+  const scorecard = read("scorecard-ossf.json") as ScorecardResult;
+  const findContact = (github: GitHubData) =>
+    buildReport({ scorecard, github, generatedAt: "2026-07-01T00:00:00.000Z" })
+      .pillars.flatMap((p) => p.findings)
+      .find((f) => f.check === "Contact-Channel")!;
+
+  it("communityProfileFetched=false -> Contact-Channel is inconclusive, not a fail/warn", () => {
+    const github = normalizeGitHubData(read("github-repo-ossf.json"), {}, false);
+    const contact = findContact(github);
+    expect(contact.status).toBe("inconclusive");
+    expect(contact.reason).toMatch(/couldn.t (read|check)|unknown|unavailable|rate.?limit/i);
+  });
+
+  it("communityProfileFetched=true with no security file -> still a definite warn/fail (unchanged)", () => {
+    const github = normalizeGitHubData(read("github-repo-ossf.json"), {}, true);
+    const contact = findContact(github);
+    expect(["warn", "fail"]).toContain(contact.status);
+  });
+});
+
 describe("ossf/scorecard — a strong repo", () => {
   const r = reportFor("ossf");
 
@@ -85,14 +107,14 @@ describe("ossf/scorecard — a strong repo", () => {
   });
 
   it("security pillar scores high", () => {
-    const p = pillar(r, 2);
+    const p = pillar(r, 1);
     expect(p.status).toBe("scored");
     expect(p.score).not.toBeNull();
     expect(p.score!).toBeGreaterThan(7);
   });
 
   it("owner-type finding recognises an organization", () => {
-    const owner = pillar(r, 3).findings.find((f) => f.check === "Owner-Type")!;
+    const owner = pillar(r, 2).findings.find((f) => f.check === "Owner-Type")!;
     expect(owner.status).toBe("pass");
     expect(owner.reason).toMatch(/organization/i);
   });
@@ -102,29 +124,29 @@ describe("snakeoil-check — a sparse repo (the dogfood, Docker path)", () => {
   const r = reportFor("snakeoil");
 
   it("security pillar scores low and yields constructive fixes", () => {
-    const p = pillar(r, 2);
+    const p = pillar(r, 1);
     expect(p.score!).toBeLessThan(5);
     const fixChecks = p.fixes.map((f) => f.check);
     expect(fixChecks).toContain("Token-Permissions");
     expect(fixChecks).toContain("Pinned-Dependencies");
   });
 
-  it("missing License surfaces in P3 with the §3 fix text", () => {
-    const p = pillar(r, 3);
+  it("missing License surfaces in P2 with the §3 fix text", () => {
+    const p = pillar(r, 2);
     const license = p.findings.find((f) => f.check === "License")!;
     expect(license.status).toBe("fail");
     const licenseFix = p.fixes.find((f) => f.check === "License")!;
     expect(licenseFix.text).toMatch(/LICENSE.*SPDX/i);
   });
 
-  it("P4 frames low community as a lifecycle stage, not a weakness", () => {
-    const p = pillar(r, 4);
+  it("P3 frames low community as a lifecycle stage, not a weakness", () => {
+    const p = pillar(r, 3);
     expect(p.framingNote).toMatch(/lifecycle/i);
     expect(p.framingNote).toMatch(/not a (weakness|grade)/i);
   });
 
   it("recent activity is detected (snakeoil was pushed within 90 days of assessment)", () => {
-    const activity = pillar(r, 4).findings.find((f) => f.check === "Recent-Activity")!;
+    const activity = pillar(r, 3).findings.find((f) => f.check === "Recent-Activity")!;
     expect(activity.status).toBe("pass");
   });
 });
@@ -133,7 +155,7 @@ describe("scoring rules", () => {
   it("inconclusive (-1) checks are excluded from the pillar mean", () => {
     // snakeoil has Packaging=-1 and Signed-Releases=-1 in P2 — must not drag the mean to a
     // negative or count them as zeros.
-    const p = pillar(reportFor("snakeoil"), 2);
+    const p = pillar(reportFor("snakeoil"), 1);
     const inconclusive = p.findings.filter((f) => f.status === "inconclusive");
     expect(inconclusive.length).toBeGreaterThan(0);
     expect(p.score!).toBeGreaterThanOrEqual(0);
@@ -141,7 +163,7 @@ describe("scoring rules", () => {
   });
 
   it("fixes are only emitted for low (warn/fail) findings, de-duplicated", () => {
-    const p = pillar(reportFor("snakeoil"), 2);
+    const p = pillar(reportFor("snakeoil"), 1);
     const passFindings = p.findings.filter((f) => f.status === "pass").map((f) => f.check);
     p.fixes.forEach((fix) => expect(passFindings).not.toContain(fix.check));
     expect(new Set(p.fixes.map((f) => f.check)).size).toBe(p.fixes.length);

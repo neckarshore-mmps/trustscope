@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { AtCapacityError, ConcurrencyGate } from "@/lib/concurrency-gate";
 import {
   getScorecard,
   ScorecardNotCoveredError,
@@ -216,5 +217,86 @@ describe("getScorecard runner selection", () => {
     });
     expect(r.source).toBe("docker");
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * §1 — /report DoS: the on-demand spawn (docker/binary) is bounded by a concurrency gate. A burst of
+ * distinct repos beyond the cap sheds load (AtCapacityError) instead of spawning an unbounded number
+ * of ~90s subprocesses. Cheap cached/fast-path reads never reach the gate.
+ */
+describe("getScorecard on-demand concurrency gate (§1 DoS)", () => {
+  function deferred<T = void>() {
+    let resolve!: (v: T) => void;
+    const promise = new Promise<T>((res) => (resolve = res));
+    return { promise, resolve };
+  }
+
+  it("caps concurrent on-demand spawns and sheds excess with AtCapacityError", async () => {
+    const gate = new ConcurrencyGate(1);
+    const held = deferred<{ stdout: string; stderr: string }>();
+    let spawns = 0;
+    const execFileFn = vi.fn(async () => {
+      spawns++;
+      return held.promise; // first call parks in the critical section
+    });
+
+    // First on-demand run takes the only slot and parks.
+    const first = getScorecard("distinct", "repo-a", {
+      runner: "binary",
+      githubToken: "t",
+      execFileFn: execFileFn as never,
+      gate,
+    });
+    // Let the first call enter the gate before the burst.
+    await Promise.resolve();
+
+    // A burst of distinct repos while the slot is held → all shed, none spawned.
+    const burst = await Promise.allSettled(
+      Array.from({ length: 5 }, (_, i) =>
+        getScorecard("distinct", `repo-${i}`, {
+          runner: "binary",
+          githubToken: "t",
+          execFileFn: execFileFn as never,
+          gate,
+        }),
+      ),
+    );
+
+    expect(burst.every((r) => r.status === "rejected")).toBe(true);
+    expect(
+      burst.every(
+        (r) => (r as PromiseRejectedResult).reason instanceof AtCapacityError,
+      ),
+    ).toBe(true);
+    // Only the FIRST call ever spawned a subprocess; the 5-way burst spawned nothing.
+    expect(spawns).toBe(1);
+
+    held.resolve({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" });
+    await first;
+  });
+
+  it("does NOT gate the fast-path (cheap cached reads stay open)", async () => {
+    const gate = new ConcurrencyGate(0 + 1);
+    // Occupy the single slot with a parked on-demand run…
+    const held = deferred<{ stdout: string; stderr: string }>();
+    const parked = getScorecard("x", "y", {
+      runner: "binary",
+      githubToken: "t",
+      execFileFn: (async () => held.promise) as never,
+      gate,
+    });
+    await Promise.resolve();
+
+    // …a fast-path (covered) read must still succeed even though the gate is full.
+    const r = await getScorecard("ossf", "scorecard", {
+      runner: "fastpath",
+      fetchFn: fakeFetch(200),
+      gate,
+    });
+    expect(r.source).toBe("fastpath");
+
+    held.resolve({ stdout: JSON.stringify(FAKE_RESULT), stderr: "" });
+    await parked;
   });
 });

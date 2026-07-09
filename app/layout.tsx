@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import {
   PRODUCT_NAME,
-  PRODUCT_ORG,
   PRODUCT_SUBDOMAIN,
   PRODUCT_TAGLINE,
 } from "@/config/product";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,96 +32,18 @@ export const metadata: Metadata = {
     description: PRODUCT_TAGLINE,
     siteName: PRODUCT_NAME,
     type: "website",
+    // og:image tags are emitted automatically from app/opengraph-image.png
+    // (Next file-based metadata convention).
+  },
+  twitter: {
+    // twitter:image tags are emitted automatically from app/twitter-image.png;
+    // this block only sets the card type + text so the unfurl renders large.
+    card: "summary_large_image",
+    title: `${PRODUCT_NAME} — open-source trust reports`,
+    description: PRODUCT_TAGLINE,
   },
   robots: { index: true, follow: true },
 };
-
-function Header() {
-  return (
-    <header className="border-b border-border/70 bg-surface/40 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand/15 text-brand ring-1 ring-brand/30">
-            <ShieldIcon />
-          </span>
-          <span className="text-[15px] font-semibold tracking-tight">
-            {PRODUCT_NAME}
-          </span>
-        </Link>
-        <nav className="flex items-center gap-5">
-          <Link
-            href="/about"
-            className="text-sm text-muted transition-colors hover:text-foreground"
-          >
-            How it works
-          </Link>
-          <a
-            href="https://github.com/neckarshore-mmps/trustscope"
-            className="text-sm text-muted transition-colors hover:text-foreground"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub ↗
-          </a>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="mt-auto border-t border-border/70">
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 px-5 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-2xl">
-          {PRODUCT_NAME} builds on the{" "}
-          <a
-            className="text-foreground/80 underline decoration-border underline-offset-4 hover:text-brand"
-            href="https://securityscorecards.dev"
-            target="_blank"
-            rel="noreferrer"
-          >
-            OpenSSF Scorecard
-          </a>
-          . A reputation surface by {PRODUCT_ORG}. No single aggregate score — by design.
-        </p>
-        <nav
-          aria-label="Legal"
-          className="flex shrink-0 items-center gap-4"
-        >
-          <Link href="/impressum" className="transition-colors hover:text-foreground">
-            Impressum
-          </Link>
-          <Link
-            href="/datenschutz"
-            className="transition-colors hover:text-foreground"
-          >
-            Datenschutz
-          </Link>
-        </nav>
-      </div>
-    </footer>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
 
 export default function RootLayout({
   children,
@@ -132,9 +54,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
-        <Header />
+        <SiteHeader />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <SiteFooter />
       </body>
     </html>
   );

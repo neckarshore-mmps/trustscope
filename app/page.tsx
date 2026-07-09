@@ -1,113 +1,195 @@
+import Image from "next/image";
+import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
-import { PRODUCT_NAME } from "@/config/product";
+import { PILLARS_META } from "@/config/pillars";
 
+/** Adopter path — evaluating someone else's code. */
+function SearchIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <line x1="16.5" y1="16.5" x2="21" y2="21" />
+    </svg>
+  );
+}
+
+/** Maintainer path — improving your own code. */
+function WrenchIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path d="M15 6.5a3.6 3.6 0 0 0-4.8 4.8L4 17.5V20h2.5l6.2-6.2A3.6 3.6 0 0 0 17.5 9l-2.2 2.2-2.3-.6-.6-2.3L15 6.5z" />
+    </svg>
+  );
+}
+
+// Landing pillar copy (question + body). Title + hue come from PILLARS_META
+// (config/pillars.ts) so the landing and the persona pages cannot drift.
 const PILLARS = [
   {
     id: 1,
-    title: "Functional Quality",
-    q: "Is it well-built?",
-    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
-    accent: "text-slate-400",
+    q: "Is it built securely?",
+    body: "The full OpenSSF Scorecard — token permissions, pinned dependencies, SAST, signed releases, and more.",
   },
   {
     id: 2,
-    title: "Security & Supply Chain",
-    q: "Is it built securely?",
-    body: "The full OpenSSF Scorecard — token permissions, pinned dependencies, SAST, signed releases, and more.",
-    accent: "text-emerald-300",
+    q: "Can I trust the project behind it?",
+    body: "License, security policy, who owns it, and whether there is a way to reach them when something breaks.",
   },
   {
     id: 3,
-    title: "Trust & Governance",
-    q: "Can I trust the project behind it?",
-    body: "License, security policy, who owns it, and whether there is a way to reach them when something breaks.",
-    accent: "text-sky-300",
+    q: "Will it be here in a year?",
+    body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
   },
   {
     id: 4,
-    title: "Community & Sustainability",
-    q: "Will it be here in a year?",
-    body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
-    accent: "text-amber-300",
+    q: "Is it well-built?",
+    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
   },
 ];
 
 const STEPS = [
   { n: "1", t: "Paste a repo", d: "Any public GitHub repository — URL or owner/repo." },
-  { n: "2", t: "We assess it", d: "OpenSSF Scorecard plus GitHub governance and lifecycle signals." },
-  { n: "3", t: "Read four pillars", d: "Per-pillar findings and constructive fixes — no single grade." },
+  { n: "2", t: "Assess it with OpenSSF", d: "The full OpenSSF Scorecard, plus GitHub governance and lifecycle signals." },
+  {
+    n: "3",
+    t: "Read your report by pillar",
+    d: "Each pillar answers a different question, with its own findings and constructive fixes. No single grade papers over the trade-offs — you see where the project is strong and where it isn't.",
+  },
   { n: "4", t: "Send fixes upstream", d: "File a friendly, attributed issue as yourself." },
 ];
 
 export default function Home() {
   return (
     <div>
-      {/* Hero */}
+      {/* Hero — one picker, both roles; the try-box sits high, the hook right on top of it */}
       <section className="hero-glow">
-        <div className="mx-auto max-w-3xl px-5 pb-8 pt-20 text-center sm:pt-28">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-            Built on the OpenSSF Scorecard
-          </span>
-          <h1 className="mx-auto mt-6 max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            Know how much you can trust an{" "}
-            <span className="text-brand">open-source project</span> — before you adopt it.
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Paste a public GitHub repo. {PRODUCT_NAME} returns a four-pillar trust report with
-            constructive, upstream-friendly fixes — and no misleading single score.
-          </p>
+        <div className="mx-auto max-w-2xl px-5 pb-10 pt-10 text-center sm:pt-14">
+          <div className="mb-5 flex items-center justify-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#eef4fa] ring-1 ring-black/5">
+              <Image
+                src="/bodo.svg"
+                alt="Bodo, the TrustScope mascot"
+                width={40}
+                height={40}
+                priority
+              />
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+              Built on the OpenSSF Scorecard
+            </span>
+          </div>
 
-          <div className="mx-auto mt-8 max-w-xl">
-            <RepoForm autoFocus />
-            <p className="mt-3 text-xs text-muted/70">
-              Try{" "}
-              <span className="font-mono text-muted">ossf/scorecard</span> or{" "}
-              <span className="font-mono text-muted">sindresorhus/got</span>. No sign-in needed to
-              read a report.
-            </p>
+          <h1 className="mx-auto max-w-[18ch] text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">
+            Don&apos;t build on code you haven&apos;t <span className="text-brand">vetted</span>.
+          </h1>
+
+          <div className="mx-auto mt-7 max-w-xl rounded-2xl border border-border bg-surface p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] sm:p-5">
+            <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-sm font-semibold">
+              <span className="inline-flex items-center gap-1.5 text-brand">
+                <SearchIcon /> Evaluating a tool
+              </span>
+              <span className="font-normal text-muted/50">/</span>
+              <span className="inline-flex items-center gap-1.5 text-amber-400">
+                Maintaining one <WrenchIcon />
+              </span>
+            </div>
+
+            <div className="mt-3.5">
+              <RepoForm
+                autoFocus
+                submitClassName="cta-fade text-background transition-[filter] hover:brightness-105"
+                submitLabel="Assess →"
+                placeholder="owner/repo  ·  or your/repo"
+              />
+            </div>
+
+            <div className="mt-3.5 flex flex-col gap-1.5 text-left text-[13.5px]">
+              <span className="inline-flex items-center gap-2 text-brand">
+                <SearchIcon />
+                <span className="text-foreground">See its trust report before you commit.</span>
+              </span>
+              <span className="inline-flex items-center gap-2 text-amber-400">
+                <WrenchIcon />
+                <span className="text-foreground">Find the gaps in your code — and fix them.</span>
+              </span>
+            </div>
+          </div>
+
+          <p className="mt-4 text-xs text-muted/70">
+            Try <span className="font-mono text-muted">ossf/scorecard</span> or{" "}
+            <span className="font-mono text-muted">sindresorhus/got</span>. No sign-in needed to
+            read a report.
+          </p>
+          <div className="mx-auto mt-2 max-w-xl">
+            <RecentRepos />
           </div>
         </div>
       </section>
 
       {/* Four pillars */}
-      <section className="mx-auto max-w-5xl px-5 py-14">
+      <section className="mx-auto max-w-5xl px-5 py-7">
         <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Four questions, four pillars — one synthesis
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {PILLARS.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-xl border border-border bg-surface/60 p-5 transition-colors hover:border-brand/30"
-            >
-              <div className="flex items-baseline gap-2">
-                <span className={`text-xs font-semibold uppercase tracking-wider ${p.accent}`}>
-                  Pillar {p.id}
-                </span>
-                <span className="text-xs text-muted">· {p.q}</span>
+          {PILLARS.map((p) => {
+            const meta = PILLARS_META[p.id - 1];
+            return (
+              <div
+                key={p.id}
+                className="rounded-xl border border-border bg-surface/60 p-5 transition-colors hover:border-brand/30"
+              >
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className="text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: meta.hue }}
+                  >
+                    Pillar {p.id}
+                  </span>
+                  <span className="text-xs text-muted">· {p.q}</span>
+                </div>
+                <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{meta.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
               </div>
-              <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{p.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* How it works */}
       <section className="border-t border-border/70 bg-surface/30">
-        <div className="mx-auto max-w-5xl px-5 py-14">
+        <div className="mx-auto max-w-5xl px-5 py-7">
           <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
             How it works
           </h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {STEPS.map((s) => (
-              <div key={s.n}>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/25">
+              <div key={s.n} className="flex gap-3.5">
+                <div className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-brand/15 text-sm font-semibold text-brand ring-1 ring-brand/25">
                   {s.n}
                 </div>
-                <h3 className="mt-3 font-semibold tracking-tight">{s.t}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted">{s.d}</p>
+                <div>
+                  <h3 className="font-semibold tracking-tight">{s.t}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{s.d}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -115,7 +197,7 @@ export default function Home() {
       </section>
 
       {/* Why no single score */}
-      <section className="mx-auto max-w-3xl px-5 py-16 text-center">
+      <section className="mx-auto max-w-3xl px-5 py-8 text-center">
         <h2 className="text-2xl font-semibold tracking-tight">Why no single score?</h2>
         <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-muted">
           Each pillar answers a different question. A brilliant, secure library maintained by one
