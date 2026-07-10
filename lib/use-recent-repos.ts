@@ -6,6 +6,7 @@ import {
   browserRecentStore,
   clearRecentRepos,
   getRecentRepos,
+  removeRecentRepo,
   type RecentRepo,
 } from "./recent-repos";
 
@@ -64,6 +65,12 @@ export function useRecentRepos(): RecentRepo[] {
 /** Record a viewed repo (canonical owner/repo) and notify subscribers. */
 export function recordRecentRepo(owner: string, repo: string, now: string): void {
   addRecentRepo(browserRecentStore(), { owner, repo }, now);
+  notify();
+}
+
+/** Remove a single repo from the recent list and notify subscribers. */
+export function removeRecentRepoAndNotify(owner: string, repo: string): void {
+  removeRecentRepo(browserRecentStore(), { owner, repo });
   notify();
 }
 

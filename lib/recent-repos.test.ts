@@ -4,6 +4,7 @@ import {
   clearRecentRepos,
   getRecentRepos,
   MAX_RECENT,
+  removeRecentRepo,
   type RecentStore,
 } from "./recent-repos";
 
@@ -43,6 +44,20 @@ describe("recent-repos", () => {
     addRecentRepo(s, { owner: "a", repo: "x" }, "2026-07-01T00:00:00Z");
     clearRecentRepos(s);
     expect(getRecentRepos(s)).toEqual([]);
+  });
+  it("removes a single entry, leaving the rest newest-first", () => {
+    const s = fakeStore();
+    addRecentRepo(s, { owner: "a", repo: "x" }, "2026-07-01T00:00:00Z");
+    addRecentRepo(s, { owner: "b", repo: "y" }, "2026-07-02T00:00:00Z");
+    addRecentRepo(s, { owner: "c", repo: "z" }, "2026-07-03T00:00:00Z");
+    removeRecentRepo(s, { owner: "b", repo: "y" });
+    expect(getRecentRepos(s).map((r) => `${r.owner}/${r.repo}`)).toEqual(["c/z", "a/x"]);
+  });
+  it("remove of an absent entry is a no-op", () => {
+    const s = fakeStore();
+    addRecentRepo(s, { owner: "a", repo: "x" }, "2026-07-01T00:00:00Z");
+    removeRecentRepo(s, { owner: "nope", repo: "nope" });
+    expect(getRecentRepos(s).map((r) => `${r.owner}/${r.repo}`)).toEqual(["a/x"]);
   });
   it("orders ties on equal viewedAt deterministically by slug (total order)", () => {
     // Equal viewedAt must not depend on input array order — the comparator has a
