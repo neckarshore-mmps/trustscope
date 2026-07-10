@@ -21,11 +21,21 @@ updates:
     commit-message:
       prefix: chore(deps)
     groups:
-      # One PR for the low-risk minor/patch churn; majors stay separate so a
-      # breaking bump (e.g. next) gets its own reviewable PR.
-      npm-minor-patch:
+      # Grouping is aligned with the auto-merge safe class (dependabot-auto-merge.yml)
+      # so the boring class self-clears atomically and only the review-worthy bumps
+      # surface individually:
+      #   - npm-development: dev deps, minor+patch  -> auto (minor&&dev, or patch)
+      #   - npm-production:  prod deps, patch only   -> auto (patch)
+      #   - runtime minor (prod, minor): ungrouped -> individual PR -> MANUAL
+      #   - any major:                   ungrouped -> individual PR -> MANUAL
+      npm-development:
+        dependency-type: development
         update-types:
           - minor
+          - patch
+      npm-production:
+        dependency-type: production
+        update-types:
           - patch
 
   - package-ecosystem: github-actions
@@ -41,6 +51,11 @@ updates:
     commit-message:
       prefix: chore(ci)
     groups:
-      github-actions:
+      # Non-major actions bumps batch into one auto-mergeable PR; an actions MAJOR
+      # stays ungrouped so it surfaces individually for review.
+      github-actions-minor-patch:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
