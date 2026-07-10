@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to **TrustScope**. Format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
+[Semantic Versioning](https://semver.org/). Pre-1.0 (`0.x`) means the shape
+can still move. Entries land under **[Unreleased]** per user-facing change;
+each release links the pull requests it contains.
+
+## [Unreleased]
+
+## [baseline] — 2026-07-10
+
+Notable changes to date — TrustScope's public **v0.1.0** surface, condensed to
+the milestones a new user would notice. Prior history in git.
+
+- **A four-pillar trust report, not a single misleading score.** Every report is
+  deterministic, built on the OpenSSF Scorecard, and split into four pillars so
+  you can see *where* a project is strong or weak — never one aggregate number
+  that hides the trade-offs. ([#57](https://github.com/neckarshore-mmps/trustscope/pull/57), [#69](https://github.com/neckarshore-mmps/trustscope/pull/69))
+- **See the reasoning, not just a verdict.** An orientation layer summarises the
+  report up front, every finding can disclose its own evidence ("show your
+  work"), and a Due-Diligence panel surfaces quiet signals like install-script
+  detection. ([#33](https://github.com/neckarshore-mmps/trustscope/pull/33), [#34](https://github.com/neckarshore-mmps/trustscope/pull/34), [#35](https://github.com/neckarshore-mmps/trustscope/pull/35), [#43](https://github.com/neckarshore-mmps/trustscope/pull/43))
+- **Find any repository fast.** A searchable repo picker with a Recently-Viewed
+  strip gets you from landing to report in a couple of keystrokes. ([#42](https://github.com/neckarshore-mmps/trustscope/pull/42))
+- **Act on findings, constructively.** File a finding upstream as *yourself* —
+  each issue carries a transparent "via TrustScope" attribution — now available
+  per pillar rather than as a single bulk action. ([#53](https://github.com/neckarshore-mmps/trustscope/pull/53), [#70](https://github.com/neckarshore-mmps/trustscope/pull/70))
+- **Take the report with you.** Export the full report as Markdown or HTML. ([#36](https://github.com/neckarshore-mmps/trustscope/pull/36))
+- **A path for each side of the table.** Dedicated adopter and maintainer
+  journeys, a `/for` persona hub, and a dual-role landing hero. ([#44](https://github.com/neckarshore-mmps/trustscope/pull/44), [#45](https://github.com/neckarshore-mmps/trustscope/pull/45), [#56](https://github.com/neckarshore-mmps/trustscope/pull/56))
+- **A trust surface you can check.** Impressum, Datenschutz, an Open-Graph
+  preview card, and Made-in-Germany credibility throughout. ([#31](https://github.com/neckarshore-mmps/trustscope/pull/31), [#46](https://github.com/neckarshore-mmps/trustscope/pull/46), [#52](https://github.com/neckarshore-mmps/trustscope/pull/52))
+- **We run TrustScope on TrustScope.** A security-hardening pass across six areas
+  (§1–§6) worked through the findings our own report surfaced on this
+  repository. ([#58](https://github.com/neckarshore-mmps/trustscope/pull/58), [#59](https://github.com/neckarshore-mmps/trustscope/pull/59), [#60](https://github.com/neckarshore-mmps/trustscope/pull/60), [#61](https://github.com/neckarshore-mmps/trustscope/pull/61))

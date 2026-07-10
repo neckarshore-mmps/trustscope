@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
-import { APP_VERSION, GIT_SHA } from "@/config/version";
+import { APP_VERSION, GIT_SHA, COMMIT_URL } from "@/config/version";
 
 export function SiteFooter() {
   return (
@@ -50,24 +50,38 @@ export function SiteFooter() {
           </Link>
         </nav>
 
-        {/* Version status line — changelog · version · deploy SHA (MDViewer pattern) */}
-        <div className="flex items-center justify-center gap-2 text-xs text-muted/70">
+        {/* Version status line — uniform AD-42 variant A: product · version · commit-linked SHA · Changelog.
+            Content is uniform across the estate; TrustScope's position/styling stays its own. */}
+        <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/70">
+          <span className="font-mono">
+            {PRODUCT_NAME} v{APP_VERSION}
+          </span>
+          {GIT_SHA && (
+            <>
+              <span aria-hidden="true">·</span>
+              {COMMIT_URL ? (
+                <a
+                  href={COMMIT_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80 transition-colors hover:text-foreground"
+                >
+                  {GIT_SHA}
+                </a>
+              ) : (
+                <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80">
+                  {GIT_SHA}
+                </code>
+              )}
+            </>
+          )}
+          <span aria-hidden="true">·</span>
           <Link
             href="/changelog"
             className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
           >
-            changelog
+            Changelog
           </Link>
-          <span aria-hidden="true">·</span>
-          <span className="font-mono">v{APP_VERSION}</span>
-          {GIT_SHA && (
-            <>
-              <span aria-hidden="true">·</span>
-              <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80">
-                {GIT_SHA}
-              </code>
-            </>
-          )}
         </div>
       </div>
     </footer>
