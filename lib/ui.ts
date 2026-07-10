@@ -57,3 +57,11 @@ export function scoreRing(score: number | null): string {
   if (score >= AMBER_FLOOR) return "text-amber-400";
   return "text-rose-400";
 }
+
+/** Background fill class for a score meter bar (mirrors scoreRing's bands). */
+export function scoreBar(score: number | null): string {
+  if (score === null) return "bg-slate-600";
+  if (score >= PASS_THRESHOLD) return "bg-emerald-400";
+  if (score >= AMBER_FLOOR) return "bg-amber-400";
+  return "bg-rose-400";
+}

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import type { ReportModel } from "@/lib/report-core/types";
 import type { ScorecardSource } from "@/lib/adapters";
+import { displayPillars } from "@/lib/report-display";
 import { PillarCard } from "./PillarCard";
 import { IssueActions } from "./IssueActions";
-import { ReportSummary } from "./ReportSummary";
-import { orderedPillars } from "@/lib/report-summary";
-import { DueDiligencePanel } from "./DueDiligencePanel";
 import { ExportActions } from "./ExportActions";
+import { InfoIcon } from "./InfoIcon";
+import { Scoreboard } from "./Scoreboard";
+import { Tldr } from "./Tldr";
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -30,65 +31,59 @@ export function ReportView({
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-10">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm text-muted">Trust report for</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-            <a
-              href={report.repo.url}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-brand"
-            >
-              {report.repo.owner}/{report.repo.name}
-            </a>
-          </h1>
-          <p className="mt-2 text-sm text-muted">
-            Assessed {fmtDate(report.assessedAt)}
-            {report.scorecard && (
-              <> · Scorecard {report.scorecard.version}</>
-            )}{" "}
-            · via {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
-            {cached && " · cached"}
-          </p>
+      {/* Masthead — the repo identity as hero (mono repo-path), the no-grade doctrine foregrounded */}
+      <header>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+              Trust report
+            </p>
+            <h1 className="mt-1.5 break-words font-mono text-2xl font-semibold tracking-tight sm:text-[2rem]">
+              <a
+                href={report.repo.url}
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-brand"
+              >
+                <span className="text-muted">{report.repo.owner}/</span>
+                {report.repo.name}
+              </a>
+            </h1>
+            <p className="mt-2 text-sm text-muted">
+              Assessed {fmtDate(report.assessedAt)}
+              {report.scorecard && <> · Scorecard {report.scorecard.version}</>} · via{" "}
+              {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
+              {cached && " · cached"}
+              <InfoIcon label="how this was assessed" />
+            </p>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex w-fit shrink-0 items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-brand/40"
+          >
+            ← Assess another repo
+          </Link>
         </div>
-        <Link
-          href="/"
-          className="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-brand/40"
-        >
-          ← Assess another repo
-        </Link>
-      </div>
-
-      {/* Orientation layer — the 2-second read: synthesis + coverage + good-case (§A slot 2) */}
-      <ReportSummary report={report} />
-
-      {/* Due-diligence panel — quiet signals worth a second look (§A slot 3) */}
-      <DueDiligencePanel report={report} />
-
-      {/* No-aggregate rationale — the reputation differentiator, foregrounded */}
-      <div className="mt-6 rounded-xl border border-brand/20 bg-brand/[0.04] p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-brand/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-brand">
-            Four pillars, no single grade
-          </span>
-        </div>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
-          {report.aggregateNote} That four-pillar synthesis — security, governance,
-          community, and an honest “not assessed” for functional quality — is what {report.product}{" "}
-          adds on top of the raw Scorecard.
+        <p className="mt-4 max-w-2xl border-l-2 border-brand/40 pl-3 text-sm leading-relaxed text-muted">
+          {report.aggregateNote}
+          <InfoIcon label="why there is no single score" />
         </p>
-      </div>
+      </header>
 
-      {/* Pillars — scored pillars lead, the not-assessed pillar trails (#314: N/A must not open) */}
+      {/* Scoreboard — the per-pillar scores surfaced at the very top (#403 a) */}
+      <Scoreboard report={report} />
+
+      {/* TL;DR — the two-second read, due diligence folded in, ground colour = worst pillar */}
+      <Tldr report={report} />
+
+      {/* Pillars — worst-first (concern → moderate → strong); Functional Quality is Pro-only */}
       <div className="mt-6 grid gap-4">
-        {orderedPillars(report.pillars).map((p) => (
+        {displayPillars(report.pillars).map((p) => (
           <PillarCard key={p.id} pillar={p} />
         ))}
       </div>
 
-      {/* Constructive upstream action — the reputation mechanism */}
+      {/* Constructive upstream action — the reputation mechanism (per-pillar Convert-to-issue wires here later) */}
       {totalFixes > 0 && (
         <IssueActions
           report={report}

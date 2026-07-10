@@ -25,8 +25,8 @@ describe("reportSynthesis", () => {
     expect(s.trim().endsWith(".")).toBe(true);
     expect(s).not.toMatch(/\d/);
   });
-  it("names the not-assessed functional-quality pillar honestly", () => {
-    expect(reportSynthesis(report).toLowerCase()).toContain("functional quality isn't assessed");
+  it("never mentions functional quality — it is Pro-only, dropped from the non-Pro synthesis", () => {
+    expect(reportSynthesis(report).toLowerCase()).not.toContain("functional quality");
   });
   it("is deterministic", () => {
     expect(reportSynthesis(report)).toBe(reportSynthesis(report));

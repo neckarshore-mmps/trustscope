@@ -1,18 +1,7 @@
-import { FAIL_THRESHOLD, PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { Pillar, ReportModel } from "@/lib/report-core/types";
+import { displayPillars, pillarBand } from "@/lib/report-display";
 
 /** Pure, deterministic report-orientation derivations (mirror lib/report-export.ts). No LLM, no clock. */
-
-type Band = "strong" | "moderate" | "concern" | "not-assessed";
-
-// Bands share the one source of truth (§4) so a pillar the core would call "pass" is never
-// labelled "moderate" here (V2 amendment §C).
-function band(p: Pillar): Band {
-  if (p.status === "not-assessed" || p.score === null) return "not-assessed";
-  if (p.score >= PASS_THRESHOLD) return "strong";
-  if (p.score <= FAIL_THRESHOLD) return "concern";
-  return "moderate";
-}
 
 const SHORT: Record<string, string> = {
   "functional-quality": "functional quality",
@@ -27,14 +16,18 @@ function list(items: string[]): string {
   return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
 
+/**
+ * One-line orientation over the SHOWN pillars (Functional Quality is out of the non-Pro product, so
+ * it never appears here). Bands match the visible tile colours via pillarBand.
+ */
 export function reportSynthesis(report: ReportModel): string {
   const strong: string[] = [];
   const moderate: string[] = [];
   const concern: string[] = [];
-  let notAssessed = false;
-  for (const p of report.pillars) {
+  const notScored: string[] = [];
+  for (const p of displayPillars(report.pillars)) {
     const name = SHORT[p.key] ?? p.title.toLowerCase();
-    switch (band(p)) {
+    switch (pillarBand(p.score)) {
       case "strong":
         strong.push(name);
         break;
@@ -45,7 +38,7 @@ export function reportSynthesis(report: ReportModel): string {
         concern.push(name);
         break;
       default:
-        notAssessed = true;
+        notScored.push(name);
     }
   }
   const clauses: string[] = [];
@@ -54,8 +47,9 @@ export function reportSynthesis(report: ReportModel): string {
   if (concern.length) clauses.push(`worth checking on ${list(concern)}`);
   let s = clauses.length ? clauses.join("; ") : "no pillar could be scored";
   s = s.charAt(0).toUpperCase() + s.slice(1) + ".";
-  if (notAssessed) {
-    s += " Functional quality isn't assessed — it's a hands-on judgement, never faked.";
+  if (notScored.length) {
+    const names = list(notScored);
+    s += ` ${names.charAt(0).toUpperCase() + names.slice(1)} couldn't be scored.`;
   }
   return s;
 }
