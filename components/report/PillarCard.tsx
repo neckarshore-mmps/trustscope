@@ -1,8 +1,14 @@
-import type { Finding, Pillar } from "@/lib/report-core/types";
+import type { Finding, Pillar, ReportModel } from "@/lib/report-core/types";
 import { findingHasEvidence } from "@/lib/finding-evidence";
+import {
+  buildPillarIssueMarkdown,
+  buildPillarIssueTitle,
+  prefilledPillarIssueUrl,
+} from "@/lib/issue-markdown";
 import { partitionFindings } from "@/lib/report-display";
 import { STATUS_META } from "@/lib/ui";
 import { InfoIcon } from "./InfoIcon";
+import { PillarIssueButton } from "./PillarIssueButton";
 import { ScoreBadge } from "./ScoreBadge";
 import { StatusPill } from "./StatusPill";
 
@@ -60,7 +66,15 @@ function FindingRow({ finding }: { finding: Finding }) {
   );
 }
 
-export function PillarCard({ pillar }: { pillar: Pillar }) {
+export function PillarCard({
+  pillar,
+  report,
+  oauthConfigured,
+}: {
+  pillar: Pillar;
+  report: ReportModel;
+  oauthConfigured: boolean;
+}) {
   const notAssessed = pillar.status === "not-assessed";
   const { shown, collapsed, capped } = partitionFindings(pillar.findings);
   const shownConcerns = shown.filter(isConcern).length;
@@ -123,14 +137,14 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
                   </li>
                 ))}
               </ul>
-              {/* Placeholder: filing lives in "Send the suggestions upstream" below (behaviour wired later). */}
-              <button
-                type="button"
-                title="Convert to issue — coming soon"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/[0.16]"
-              >
-                <span aria-hidden>＋</span> Convert to issue
-              </button>
+              <PillarIssueButton
+                owner={report.repo.owner}
+                repo={report.repo.name}
+                title={buildPillarIssueTitle(report, pillar)}
+                body={buildPillarIssueMarkdown(report, pillar)}
+                prefilledUrl={prefilledPillarIssueUrl(report, pillar)}
+                oauthConfigured={oauthConfigured}
+              />
             </div>
           )}
 

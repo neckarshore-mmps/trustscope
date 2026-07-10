@@ -3,7 +3,6 @@ import type { ReportModel } from "@/lib/report-core/types";
 import type { ScorecardSource } from "@/lib/adapters";
 import { displayPillars } from "@/lib/report-display";
 import { PillarCard } from "./PillarCard";
-import { IssueActions } from "./IssueActions";
 import { ExportActions } from "./ExportActions";
 import { InfoIcon } from "./InfoIcon";
 import { Scoreboard } from "./Scoreboard";
@@ -24,7 +23,6 @@ export function ReportView({
   source: ScorecardSource;
   cached?: boolean;
 }) {
-  const totalFixes = report.pillars.reduce((n, p) => n + p.fixes.length, 0);
   const oauthConfigured = Boolean(
     process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET,
   );
@@ -76,23 +74,16 @@ export function ReportView({
       {/* TL;DR — the two-second read, due diligence folded in, ground colour = worst pillar */}
       <Tldr report={report} />
 
-      {/* Pillars — worst-first (concern → moderate → strong); Functional Quality is Pro-only */}
+      {/* Pillars — worst-first (concern → moderate → strong); Functional Quality is Pro-only.
+          Each pillar with fixes carries its own Convert-to-issue control (the reputation mechanism);
+          the former bulk "Send the suggestions upstream" section is retired. */}
       <div className="mt-6 grid gap-4">
         {displayPillars(report.pillars).map((p) => (
-          <PillarCard key={p.id} pillar={p} />
+          <PillarCard key={p.id} pillar={p} report={report} oauthConfigured={oauthConfigured} />
         ))}
       </div>
 
-      {/* Constructive upstream action — the reputation mechanism (per-pillar Convert-to-issue wires here later) */}
-      {totalFixes > 0 && (
-        <IssueActions
-          report={report}
-          totalFixes={totalFixes}
-          oauthConfigured={oauthConfigured}
-        />
-      )}
-
-      {/* Export — always shown, independent of totalFixes (§A slot 7) */}
+      {/* Export — always shown, independent of fixes (§A slot 7) */}
       <ExportActions report={report} />
 
       <p className="mt-8 text-center text-xs text-muted/70">
