@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { Finding, Pillar } from "./report-core/types";
+import type { DueDiligenceSignal, Finding, Pillar, ReportModel } from "./report-core/types";
 import {
+  displayDueDiligence,
   displayPillars,
   partitionFindings,
   pillarBand,
@@ -114,6 +115,36 @@ describe("tldrBand", () => {
   it("ignores not-assessed pillars when picking the worst", () => {
     const dead = pillar({ key: "security-supply-chain", score: null });
     expect(tldrBand([dead, strong])).toBe("strong");
+  });
+  it("returns 'na' when nothing could be scored — never green for an unassessed report", () => {
+    const dead1 = pillar({ key: "security-supply-chain", score: null });
+    const dead2 = pillar({ key: "trust-governance", score: null });
+    expect(tldrBand([dead1, dead2])).toBe("na");
+  });
+});
+
+// ---- displayDueDiligence --------------------------------------------------
+
+describe("displayDueDiligence", () => {
+  const signal = (id: string, pillarKey: DueDiligenceSignal["pillarKey"]): DueDiligenceSignal => ({
+    id,
+    title: id,
+    detail: "",
+    mitigation: null,
+    pillarKey,
+    pillarId: 1,
+  });
+  const reportWith = (dd: DueDiligenceSignal[]) => ({ dueDiligence: dd }) as ReportModel;
+
+  it("drops Pro-only (functional-quality) signals so they never leak into a non-Pro surface", () => {
+    const out = displayDueDiligence(
+      reportWith([
+        signal("no-license", "trust-governance"),
+        signal("fq-thing", "functional-quality"),
+        signal("archived", "community-sustainability"),
+      ]),
+    );
+    expect(out.map((d) => d.id)).toEqual(["no-license", "archived"]);
   });
 });
 

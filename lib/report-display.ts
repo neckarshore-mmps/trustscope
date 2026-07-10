@@ -1,5 +1,5 @@
 import { PASS_THRESHOLD } from "@/lib/report-core/thresholds";
-import type { Finding, Pillar } from "@/lib/report-core/types";
+import type { DueDiligenceSignal, Finding, Pillar, ReportModel } from "@/lib/report-core/types";
 
 /**
  * Display-only derivations for the report UI + export (Founder redesign 2026-07-10). PURE and
@@ -55,16 +55,26 @@ export function displayPillars(pillars: readonly Pillar[]): Pillar[] {
 
 /**
  * The TL;DR ground colour follows the WORST shown pillar (not-assessed pillars ignored). A colour,
- * never a number — so the "no single aggregate score" doctrine holds. Falls back to "strong" when
- * nothing could be scored.
+ * never a number — so the "no single aggregate score" doctrine holds. Returns "na" when nothing
+ * could be scored, so an unassessed report never renders green ("Looks solid").
  */
 export function tldrBand(pillars: readonly Pillar[]): Band {
-  let worst: Band = "strong";
+  let worst: Band | null = null;
   for (const p of displayPillars(pillars)) {
     const b = pillarBand(p.score);
-    if (b !== "na" && BAND_RANK[b] < BAND_RANK[worst]) worst = b;
+    if (b === "na") continue;
+    if (worst === null || BAND_RANK[b] < BAND_RANK[worst]) worst = b;
   }
-  return worst;
+  return worst ?? "na";
+}
+
+/**
+ * Due-diligence signals for the SHOWN pillars only: Pro-only (functional-quality) signals are
+ * dropped so they never leak into a non-Pro surface — the same visibility rule displayPillars
+ * applies to the pillars themselves.
+ */
+export function displayDueDiligence(report: ReportModel): DueDiligenceSignal[] {
+  return report.dueDiligence.filter((d) => d.pillarKey !== PRO_ONLY_PILLAR);
 }
 
 function isConcern(f: Finding): boolean {

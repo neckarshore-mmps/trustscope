@@ -1,5 +1,11 @@
 import type { Band } from "@/lib/report-display";
-import { displayPillars, pillarBand, scoreboardFill, tldrBand } from "@/lib/report-display";
+import {
+  displayDueDiligence,
+  displayPillars,
+  pillarBand,
+  scoreboardFill,
+  tldrBand,
+} from "@/lib/report-display";
 import type { Finding, ReportModel } from "@/lib/report-core/types";
 import { reportSynthesis } from "@/lib/report-summary";
 
@@ -50,10 +56,11 @@ export function reportToMarkdown(report: ReportModel): string {
   lines.push("");
   lines.push(reportSynthesis(report));
   lines.push("");
-  if (report.dueDiligence.length > 0) {
+  const dd = displayDueDiligence(report);
+  if (dd.length > 0) {
     lines.push("### Due diligence — worth a second look");
     lines.push("");
-    for (const s of report.dueDiligence) {
+    for (const s of dd) {
       const mitigation = s.mitigation ? ` _${s.mitigation}_` : "";
       lines.push(`- **${s.title}** — ${s.detail}${mitigation}`);
     }
@@ -122,8 +129,9 @@ export function reportToHtml(report: ReportModel): string {
     : "";
 
   const tldr = HTML_BAND[tldrBand(report.pillars)];
-  const dueDiligence = report.dueDiligence.length
-    ? `<h3>Due diligence — worth a second look</h3><ul>${report.dueDiligence
+  const dd = displayDueDiligence(report);
+  const dueDiligence = dd.length
+    ? `<h3>Due diligence — worth a second look</h3><ul>${dd
         .map(
           (s) =>
             `<li><strong>${e(s.title)}</strong> — ${e(s.detail)}${s.mitigation ? ` <em>${e(s.mitigation)}</em>` : ""}</li>`,

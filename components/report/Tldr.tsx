@@ -1,5 +1,5 @@
 import type { ReportModel } from "@/lib/report-core/types";
-import { type Band, tldrBand } from "@/lib/report-display";
+import { type Band, displayDueDiligence, tldrBand } from "@/lib/report-display";
 import { reportSynthesis } from "@/lib/report-summary";
 
 /**
@@ -44,6 +44,7 @@ const PILLAR_LABEL: Record<string, string> = {
 
 export function Tldr({ report }: { report: ReportModel }) {
   const s = BAND_STYLE[tldrBand(report.pillars)];
+  const dueDiligence = displayDueDiligence(report);
   return (
     <section
       data-testid="report-tldr"
@@ -62,13 +63,13 @@ export function Tldr({ report }: { report: ReportModel }) {
         {reportSynthesis(report)}
       </p>
 
-      {report.dueDiligence.length > 0 && (
+      {dueDiligence.length > 0 && (
         <div data-testid="due-diligence" className={`mt-4 border-t pt-4 ${s.divider}`}>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted">
             Due Diligence — worth a second look
           </h3>
           <ul className="mt-3 space-y-3">
-            {report.dueDiligence.map((d) => (
+            {dueDiligence.map((d) => (
               <li key={d.id}>
                 <div className="flex flex-wrap items-baseline gap-2">
                   <a
