@@ -1,9 +1,14 @@
 import type { Finding, Pillar } from "@/lib/report-core/types";
 import { findingHasEvidence } from "@/lib/finding-evidence";
+import { partitionFindings } from "@/lib/report-display";
 import { STATUS_META } from "@/lib/ui";
+import { InfoIcon } from "./InfoIcon";
 import { ScoreBadge } from "./ScoreBadge";
 import { StatusPill } from "./StatusPill";
 
+const isConcern = (f: Finding) => f.status === "fail" || f.status === "warn";
+
+/** One check: score leads the line, then label + source + info affordance; reason and evidence below. */
 function FindingRow({ finding }: { finding: Finding }) {
   const m = STATUS_META[finding.status];
   return (
@@ -11,13 +16,12 @@ function FindingRow({ finding }: { finding: Finding }) {
       <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${m.dot}`} aria-hidden />
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="text-sm font-medium text-foreground">{finding.label}</span>
           {finding.score !== null && (
-            <span className={`text-xs tabular-nums ${m.text}`}>{finding.score}/10</span>
+            <span className={`text-xs font-semibold tabular-nums ${m.text}`}>{finding.score}/10</span>
           )}
-          <span className="text-[11px] uppercase tracking-wide text-muted/70">
-            {finding.source}
-          </span>
+          <span className="text-sm font-medium text-foreground">{finding.label}</span>
+          <span className="text-[11px] uppercase tracking-wide text-muted/70">{finding.source}</span>
+          <InfoIcon label={finding.label} />
         </div>
         <p className="mt-0.5 text-sm leading-relaxed text-muted">{finding.reason}</p>
         {findingHasEvidence(finding) && (
@@ -58,6 +62,13 @@ function FindingRow({ finding }: { finding: Finding }) {
 
 export function PillarCard({ pillar }: { pillar: Pillar }) {
   const notAssessed = pillar.status === "not-assessed";
+  const { shown, collapsed, capped } = partitionFindings(pillar.findings);
+  const shownConcerns = shown.filter(isConcern).length;
+  const moreLabel =
+    capped > 0
+      ? `Show ${collapsed.length} more — ${capped} still need${capped === 1 ? "s" : ""} attention`
+      : `Show ${collapsed.length} more check${collapsed.length === 1 ? "" : "s"}`;
+
   return (
     <section
       className="rounded-xl border border-border bg-surface/60 p-5 sm:p-6"
@@ -67,7 +78,7 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
         <ScoreBadge score={pillar.score} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-brand">
-            Pillar {pillar.id}
+            Pillar
           </div>
           <h2
             id={`pillar-${pillar.id}`}
@@ -75,7 +86,10 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
           >
             {pillar.title}
           </h2>
-          <p className="text-sm text-muted">{pillar.question}</p>
+          <p className="text-sm text-muted">
+            {pillar.question}
+            <InfoIcon label={pillar.title} />
+          </p>
         </div>
       </div>
 
@@ -85,66 +99,71 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
         </p>
       )}
 
-      {!notAssessed && (
-        <>
-          <p className="mt-4 text-xs leading-relaxed text-muted/80">{pillar.scoreBasis}</p>
-
-          <ul className="mt-2 divide-y divide-border/60">
-            {pillar.findings.map((f) => (
-              <FindingRow key={f.check} finding={f} />
-            ))}
-          </ul>
-
-          {pillar.fixes.length > 0 && (
-            <div className="mt-4 rounded-lg border border-brand/20 bg-brand/[0.04] p-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <WrenchIcon />
-                Constructive suggestions
-                <span className="rounded-full bg-brand/15 px-2 py-0.5 text-xs font-normal text-brand">
-                  {pillar.fixes.length}
-                </span>
-              </h3>
-              <p className="mt-1 text-xs text-muted">
-                Share these upstream — they are phrased as improvements the maintainer can make.
-              </p>
-              <ul className="mt-3 space-y-2.5">
-                {pillar.fixes.map((fix) => (
-                  <li key={fix.check} className="flex gap-2.5 text-sm leading-relaxed">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
-                    <span className="text-foreground/90">{fix.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      )}
-
-      {notAssessed && (
+      {notAssessed ? (
         <div className="mt-4 flex items-center gap-2">
           <StatusPill status="inconclusive" />
           <span className="text-sm text-muted">Not assessed — never faked.</span>
         </div>
+      ) : (
+        <>
+          {/* Constructive suggestion — up top, straight under the score, with a convert-to-issue action */}
+          {pillar.fixes.length > 0 && (
+            <div className="mt-4 rounded-lg border border-brand/20 bg-brand/[0.04] p-4">
+              <h3 className="text-sm font-semibold text-foreground">
+                Constructive suggestion{pillar.fixes.length > 1 ? "s" : ""}
+              </h3>
+              <ul className="mt-2 space-y-2">
+                {pillar.fixes.map((fix) => (
+                  <li key={fix.check} className="flex gap-2.5 text-sm leading-relaxed">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                    <span className="text-foreground/90">
+                      {fix.text}
+                      <InfoIcon label={fix.check} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {/* Placeholder: filing lives in "Send the suggestions upstream" below (behaviour wired later). */}
+              <button
+                type="button"
+                title="Convert to issue — coming soon"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/[0.16]"
+              >
+                <span aria-hidden>＋</span> Convert to issue
+              </button>
+            </div>
+          )}
+
+          {shown.length > 0 && (
+            <>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+                {shownConcerns > 0 ? `Worth addressing · ${shownConcerns}` : "Checks"}
+              </p>
+              <ul className="mt-1 divide-y divide-border/60">
+                {shown.map((f) => (
+                  <FindingRow key={f.check} finding={f} />
+                ))}
+              </ul>
+            </>
+          )}
+
+          {collapsed.length > 0 && (
+            <details className="group mt-3">
+              <summary className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-brand">
+                <span className="transition-transform group-open:rotate-90" aria-hidden>
+                  ▸
+                </span>
+                {moreLabel}
+              </summary>
+              <ul className="mt-1 divide-y divide-border/60">
+                {collapsed.map((f) => (
+                  <FindingRow key={f.check} finding={f} />
+                ))}
+              </ul>
+            </details>
+          )}
+        </>
       )}
     </section>
-  );
-}
-
-function WrenchIcon() {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="text-brand"
-      aria-hidden="true"
-    >
-      <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-2.4Z" />
-    </svg>
   );
 }

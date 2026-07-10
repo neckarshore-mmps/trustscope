@@ -73,7 +73,7 @@ describe("threshold SSOT (§4)", () => {
     for (const f of [
       "lib/report-core/build-report.ts",
       "lib/report-core/due-diligence.ts",
-      "lib/report-summary.ts",
+      "lib/report-display.ts",
     ]) {
       const src = readSrc(f);
       expect(src).not.toMatch(/const\s+PASS_THRESHOLD\s*=/);

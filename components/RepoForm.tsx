@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { SEED_REPOS } from "@/config/seed-repos";
 import { parseRepoInput } from "@/lib/parse-repo-input";
 import { buildSuggestions, filterSuggestions } from "@/lib/repo-suggestions";
@@ -22,6 +22,7 @@ export function RepoForm({
 }) {
   const router = useRouter();
   const listboxId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -66,6 +67,15 @@ export function RepoForm({
       setActive(-1);
     }
   }
+  function clearInput() {
+    setValue("");
+    setOpen(false);
+    setActive(-1);
+    setError(null);
+    // The clear button preventDefaults mousedown, so focus never left the input — this is a
+    // belt-and-suspenders refocus. Because focus stays put, no onFocus fires to reopen the list.
+    inputRef.current?.focus();
+  }
 
   return (
     <form onSubmit={onSubmit} className="w-full">
@@ -74,34 +84,52 @@ export function RepoForm({
           <label htmlFor="repo" className="sr-only">
             Public GitHub repository
           </label>
-          <input
-            id="repo"
-            name="repo"
-            type="text"
-            role="combobox"
-            aria-expanded={open && suggestions.length > 0}
-            aria-controls={listboxId}
-            aria-autocomplete="list"
-            aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
-            inputMode="url"
-            autoFocus={autoFocus}
-            autoComplete="off"
-            spellCheck={false}
-            value={value}
-            onChange={(e) => {
-              setValue(e.target.value);
-              setOpen(true);
-              setActive(-1);
-              setError(null);
-            }}
-            onFocus={() => setOpen(true)}
-            onBlur={() => setTimeout(() => setOpen(false), 120)}
-            onKeyDown={onKeyDown}
-            placeholder={placeholder}
-            className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-[15px] text-foreground placeholder:text-muted/60 outline-none transition-colors focus:border-brand/60 focus:ring-2 focus:ring-brand/20"
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? "repo-error" : undefined}
-          />
+          <div className="relative">
+            <input
+              id="repo"
+              name="repo"
+              type="text"
+              role="combobox"
+              ref={inputRef}
+              aria-expanded={open && suggestions.length > 0}
+              aria-controls={listboxId}
+              aria-autocomplete="list"
+              aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
+              inputMode="url"
+              autoFocus={autoFocus}
+              autoComplete="off"
+              spellCheck={false}
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setOpen(true);
+                setActive(-1);
+                setError(null);
+              }}
+              onFocus={() => setOpen(true)}
+              onBlur={() => setTimeout(() => setOpen(false), 120)}
+              onKeyDown={onKeyDown}
+              placeholder={placeholder}
+              className={`w-full rounded-lg border border-border bg-surface py-3 pl-4 text-[15px] text-foreground placeholder:text-muted/60 outline-none transition-colors focus:border-brand/60 focus:ring-2 focus:ring-brand/20 ${value ? "pr-11" : "pr-4"}`}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? "repo-error" : undefined}
+            />
+            {value && (
+              <button
+                type="button"
+                aria-label="Clear input"
+                title="Clear"
+                // Keep focus on the input so onFocus never fires to reopen the closed list.
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={clearInput}
+                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+              >
+                <span aria-hidden className="text-lg leading-none">
+                  ×
+                </span>
+              </button>
+            )}
+          </div>
           {open && suggestions.length > 0 && (
             <ul
               id={listboxId}

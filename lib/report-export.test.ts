@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { buildReport } from "./report-core/build-report";
 import { normalizeGitHubData } from "./report-core/normalize";
 import { reportSynthesis } from "./report-summary";
+import { displayPillars } from "./report-display";
 import { reportToMarkdown, reportToHtml, exportFilename } from "./report-export";
 
 const FIXTURES = join(process.cwd(), "fixtures");
@@ -28,8 +29,10 @@ describe("reportToMarkdown", () => {
     expect(md).toContain(report.aggregateNote);
     expect(md).not.toMatch(/aggregate score:\s*\d/i);
   });
-  it("renders all four pillars by title", () => {
-    for (const p of report.pillars) expect(md).toContain(`## Pillar ${p.id} — ${p.title}`);
+  it("renders the shown pillars by title and drops Functional Quality (Pro-only)", () => {
+    for (const p of displayPillars(report.pillars))
+      expect(md).toContain(`## Pillar ${p.id} — ${p.title}`);
+    expect(md).not.toContain("Functional Quality");
   });
   it("includes the synthesis sentence (§B)", () => {
     expect(md).toContain(reportSynthesis(report));
@@ -57,7 +60,7 @@ describe("reportToHtml", () => {
   it("escapes HTML-significant characters in content", () => {
     expect(reportToHtml({ ...report, product: "A<b>&c" })).toContain("A&lt;b&gt;&amp;c");
   });
-  it("renders all four pillars (titles HTML-escaped) and never links an external asset", () => {
+  it("renders the shown pillars (titles HTML-escaped), drops FQ, never links an external asset", () => {
     // Pillar titles contain "&" (e.g. "Security & Supply Chain") — the serializer escapes all
     // content, so the rendered heading carries the escaped form.
     const esc = (s: string) =>
@@ -65,11 +68,13 @@ describe("reportToHtml", () => {
         /[&<>"]/g,
         (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[m] as string,
       );
-    for (const p of report.pillars) expect(html).toContain(`Pillar ${p.id} — ${esc(p.title)}`);
+    for (const p of displayPillars(report.pillars))
+      expect(html).toContain(`Pillar ${p.id} — ${esc(p.title)}`);
+    expect(html).not.toContain("Functional Quality");
     expect(html).not.toMatch(/<(script|link)\b[^>]*\bsrc=|<link\b[^>]*\bhref=/i);
   });
-  it("includes the synthesis + due-diligence sections (§B)", () => {
-    expect(html).toContain("In short");
+  it("includes the TL;DR synthesis + due-diligence sections (§B)", () => {
+    expect(html).toContain("TL;DR");
     expect(html).toContain(reportSynthesis(report));
     expect(html).toContain("Due diligence");
   });

@@ -65,6 +65,17 @@ export function addRecentRepo(
   store.write(JSON.stringify(next));
 }
 
+/** Remove a single repo from the recent list (leaves the rest, newest-first, intact). */
+export function removeRecentRepo(
+  store: RecentStore,
+  ref: { owner: string; repo: string },
+): void {
+  const rest = getRecentRepos(store).filter(
+    (e) => !(e.owner === ref.owner && e.repo === ref.repo),
+  );
+  store.write(JSON.stringify(rest));
+}
+
 export function clearRecentRepos(store: RecentStore): void {
   store.write("[]");
 }
