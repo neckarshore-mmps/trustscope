@@ -9,6 +9,7 @@ import {
 } from "@/lib/report-display";
 import type { Finding, ReportModel } from "@/lib/report-core/types";
 import { reportSynthesis } from "@/lib/report-summary";
+import { BODO_ASCII } from "@/config/bodo-ascii";
 import { BODO_BACKDROPS } from "@/config/bodo";
 import { BODO_INLINE_SVG } from "@/config/bodo-svg";
 
@@ -30,6 +31,13 @@ export function reportToMarkdown(report: ReportModel): string {
   const r = report.repo;
   const pillars = displayPillars(report.pillars);
   const lines: string[] = [];
+  // Bodo greets the reader — a fenced ASCII banner so Markdown keeps the monospace alignment.
+  // The Markdown export can't carry an SVG or a coloured disc, so the beaver is monochrome here;
+  // the band signal still travels in the Pillar-scores table + the TL;DR section below.
+  lines.push("```");
+  lines.push(BODO_ASCII);
+  lines.push("```");
+  lines.push("");
   lines.push(`# Trust report — ${r.owner}/${r.name}`);
   lines.push("");
   lines.push(`> ${report.aggregateNote}`);

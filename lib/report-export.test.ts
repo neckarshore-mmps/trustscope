@@ -6,6 +6,7 @@ import { normalizeGitHubData } from "./report-core/normalize";
 import { reportSynthesis } from "./report-summary";
 import { displayPillars } from "./report-display";
 import { reportToMarkdown, reportToHtml, exportFilename } from "./report-export";
+import { BODO_ASCII } from "@/config/bodo-ascii";
 
 const FIXTURES = join(process.cwd(), "fixtures");
 const read = (f: string) => JSON.parse(readFileSync(join(FIXTURES, f), "utf8"));
@@ -24,6 +25,15 @@ describe("reportToMarkdown", () => {
 
   it("has an H1 with owner/name", () => {
     expect(md).toContain(`# Trust report — ${report.repo.owner}/${report.repo.name}`);
+  });
+  it("opens with Bodo as a fenced ASCII banner (monospace-safe)", () => {
+    // startsWith (not toContain) enforces the contract: the banner LEADS the document — no preamble
+    // may precede it — and the fence keeps the monospace alignment.
+    expect(md.startsWith("```\n" + BODO_ASCII + "\n```\n")).toBe(true);
+    // Redundant with startsWith, kept as an explicit "banner is above the title" statement.
+    expect(md.indexOf(BODO_ASCII)).toBeLessThan(
+      md.indexOf(`# Trust report — ${report.repo.owner}/${report.repo.name}`),
+    );
   });
   it("surfaces the aggregate note but never an aggregate score", () => {
     expect(md).toContain(report.aggregateNote);
