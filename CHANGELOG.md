@@ -8,12 +8,28 @@ each release links the pull requests it contains.
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-07-11
+
+### Added
+
+- **Bodo, the beaver mascot**, across the landing hero, the report masthead, and
+  both exports (HTML inline SVG + Markdown ASCII banner) — single-sourced from one
+  `public/bodo.svg` so every surface stays in sync. ([#75](https://github.com/neckarshore-mmps/trustscope/pull/75), [#76](https://github.com/neckarshore-mmps/trustscope/pull/76), [#77](https://github.com/neckarshore-mmps/trustscope/pull/77), [#78](https://github.com/neckarshore-mmps/trustscope/pull/78), [#79](https://github.com/neckarshore-mmps/trustscope/pull/79))
+- **Functional Quality is a Pro-only fourth pillar.** The free report now
+  explicitly assesses **three** pillars; the fourth is never a faked score. ([#80](https://github.com/neckarshore-mmps/trustscope/pull/80))
+
 ### Changed
 
+- **Report redesign** — a fixed Pillar 1 → 2 → 3 order with a per-pillar identity
+  colour, plus an input reset on a fresh run. ([#69](https://github.com/neckarshore-mmps/trustscope/pull/69), [#74](https://github.com/neckarshore-mmps/trustscope/pull/74))
+- The landing leads with a single-line hook and a "Run the report" CTA at pillar
+  width. ([#81](https://github.com/neckarshore-mmps/trustscope/pull/81))
+- **Repository picker** — a server-rendered default list; selecting a repo fills
+  the field instead of auto-assessing. ([#73](https://github.com/neckarshore-mmps/trustscope/pull/73))
 - The in-app `/changelog` page now renders **curated end-user highlights** sourced
   from this file's `## [public]` section (parsed at build time) — a single source of
   truth that replaces the separate typed `config/changelog.ts` and ends the
-  CHANGELOG.md ↔ in-app drift.
+  CHANGELOG.md ↔ in-app drift. ([#71](https://github.com/neckarshore-mmps/trustscope/pull/71), [#72](https://github.com/neckarshore-mmps/trustscope/pull/72))
 
 ## [baseline] — 2026-07-10
 
@@ -53,6 +69,13 @@ the milestones a new user would notice. Prior history in git.
   Format the parser expects, per release: "### v<x.y.z> — <YYYY-MM-DD>" followed by
   "- " bullets in plain prose (no PR links, no markdown emphasis — rendered as text).
 -->
+
+### v0.2.0 — 2026-07-11
+
+- Meet Bodo — TrustScope’s beaver mascot now guides you from the landing page through the report and into every export.
+- A cleaner report — a fixed pillar order (Security → Trust → Community), each with its own colour, so the shape of a project reads at a glance.
+- Three pillars, clearly named — the free report assesses three pillars; Functional Quality is a Pro-only pillar, never a faked score.
+- A smoother start — a faster repository picker that fills your choice instead of jumping ahead.
 
 ### v0.1.0 — 2026-07-06
 
