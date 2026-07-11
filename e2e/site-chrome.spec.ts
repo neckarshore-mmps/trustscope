@@ -50,6 +50,9 @@ test.describe("/changelog", () => {
     expect(res?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1, name: /Changelog/i })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /v0\.1\.0/i })).toBeVisible();
+    // Curated highlights are sourced from CHANGELOG.md's [public] section at build time.
+    await expect(page.getByText(/four-pillar trust reports/i)).toBeVisible();
+    await expect(page.getByText(/via TrustScope/i)).toBeVisible();
   });
 
   test("footer Changelog link navigates to /changelog", async ({ page }) => {
