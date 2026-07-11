@@ -80,3 +80,23 @@ infrastructure seams are scalable from the start; v2 is pure ADD.
   `save-exact`). Vitest for the pure cores. Rationale: the work-order stack call; exact pins per the
   global no-`^`/`~` rule. Affects: reproducible builds; the report-core has zero framework imports so
   it is trivially unit-tested.
+
+## 8. In-app changelog: one source (CHANGELOG.md), a curated public view
+
+- **Decision:** the website `/changelog` is a **curated end-user highlights** view, **single-sourced
+  from a `## [public]` section inside `CHANGELOG.md`**, parsed at build time (`lib/changelog.ts`) into
+  typed data and rendered as plain text on the force-static route. The separate typed
+  `config/changelog.ts` (which had drifted) is deleted. The `[public]` section is a *curated* list —
+  it leads with new features, bundles small stuff (bugfixes/deps/chores) under one line, and may omit a
+  release entirely if nothing user-facing shipped — **not** a mechanical subset of the dev `[baseline]`.
+- **Rationale:** the drift that prompted this (AD-42 CHANGELOG.md adoption filled the dev changelog but
+  the in-app view kept showing the pre-adoption bullets) came from **two separate files**. Co-locating
+  both the dev detail (`[Unreleased]`/`[baseline]`) and the curated public view (`[public]`) in one file
+  means a release edits them together — the drift is structurally hard to reintroduce (AP-1 / R3: one
+  source of truth). Build-time parse keeps the old typed-config guarantees (deterministic, no runtime
+  markdown renderer) while removing the duplicate. A public "What's New" is genuinely editorial (an
+  end-user audience, not the dev audience), so it is curated, not derived.
+- **Affects:** this is the **Next.js reference implementation** for the open ~20% of AD-42 — the estate
+  standard's uniform *in-app-changelog sourcing* rule (md-viewer uses a build-time base64 embed; this is
+  the Server-Component-parse variant for framework apps). The estate-wide decision remains **MASCHIN +
+  Founder** to ratify; TrustScope proves one pattern. Founder-approved 2026-07-11 (this session).

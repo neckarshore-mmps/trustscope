@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { CHANGELOG } from "@/config/changelog";
+import { CHANGELOG } from "@/lib/changelog";
 import { APP_VERSION } from "@/config/version";
+
+// Curated highlights are parsed from CHANGELOG.md at build time; keep this route
+// static so the filesystem read happens during `next build`, never at runtime.
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Changelog",

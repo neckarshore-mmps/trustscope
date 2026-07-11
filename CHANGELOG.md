@@ -8,6 +8,13 @@ each release links the pull requests it contains.
 
 ## [Unreleased]
 
+### Changed
+
+- The in-app `/changelog` page now renders **curated end-user highlights** sourced
+  from this file's `## [public]` section (parsed at build time) — a single source of
+  truth that replaces the separate typed `config/changelog.ts` and ends the
+  CHANGELOG.md ↔ in-app drift.
+
 ## [baseline] — 2026-07-10
 
 Notable changes to date — TrustScope's public **v0.1.0** surface, condensed to
@@ -34,3 +41,24 @@ the milestones a new user would notice. Prior history in git.
 - **We run TrustScope on TrustScope.** A security-hardening pass across six areas
   (§1–§6) worked through the findings our own report surfaced on this
   repository. ([#58](https://github.com/neckarshore-mmps/trustscope/pull/58), [#59](https://github.com/neckarshore-mmps/trustscope/pull/59), [#60](https://github.com/neckarshore-mmps/trustscope/pull/60), [#61](https://github.com/neckarshore-mmps/trustscope/pull/61))
+
+## [public]
+
+<!--
+  CURATED END-USER HIGHLIGHTS — the single source for the website /changelog page
+  (parsed at build time by lib/changelog.ts). Not a mechanical subset of the dev
+  changelog above: curate it. Lead with new features an end-user notices; bundle
+  small stuff (bugfixes, dependency bumps, chores) under one collective line, or
+  omit a release here entirely if nothing user-facing shipped. Newest version first.
+  Format the parser expects, per release: "### v<x.y.z> — <YYYY-MM-DD>" followed by
+  "- " bullets in plain prose (no PR links, no markdown emphasis — rendered as text).
+-->
+
+### v0.1.0 — 2026-07-06
+
+- Deterministic four-pillar trust reports built on the OpenSSF Scorecard — see where a project is strong or weak, never one misleading single score.
+- “Show your work” — an orientation summary up front, expandable per-finding evidence, and a Due-Diligence panel that surfaces quiet signals like install-script detection.
+- A searchable repository picker with a Recently-Viewed strip — from landing to report in a couple of keystrokes.
+- File findings upstream as yourself, per pillar, each carrying a transparent “via TrustScope” attribution.
+- Take any report with you — Markdown or HTML export — plus dedicated adopter and maintainer paths.
+- A trust surface you can check — Impressum, Datenschutz, an Open-Graph preview card, and a dogfooded security-hardening pass.
