@@ -29,11 +29,12 @@ test.describe("Footer credibility line", () => {
 });
 
 test.describe("Footer version line + feedback", () => {
-  test("footer shows changelog link, version, and a feedback link on /", async ({ page }) => {
+  test("footer shows product+version, Changelog link, and a feedback link on /", async ({ page }) => {
     await page.goto("/");
     const footer = page.locator("footer");
-    await expect(footer.getByRole("link", { name: /^changelog$/i })).toBeVisible();
-    await expect(footer.getByText(/^v\d+\.\d+\.\d+$/)).toBeVisible();
+    // AD-42 variant A: "<product> <version> · <sha> · Changelog" (SHA is deploy-only, absent locally).
+    await expect(footer.getByText(/TrustScope v\d+\.\d+\.\d+/)).toBeVisible();
+    await expect(footer.getByRole("link", { name: /^Changelog$/ })).toBeVisible();
     await expect(footer.getByRole("link", { name: /^Feedback$/i })).toBeVisible();
   });
 
@@ -51,9 +52,9 @@ test.describe("/changelog", () => {
     await expect(page.getByRole("heading", { level: 2, name: /v0\.1\.0/i })).toBeVisible();
   });
 
-  test("footer changelog link navigates to /changelog", async ({ page }) => {
+  test("footer Changelog link navigates to /changelog", async ({ page }) => {
     await page.goto("/");
-    await page.locator("footer").getByRole("link", { name: /^changelog$/i }).click();
+    await page.locator("footer").getByRole("link", { name: /^Changelog$/ }).click();
     await expect(page).toHaveURL(/\/changelog$/);
   });
 });
