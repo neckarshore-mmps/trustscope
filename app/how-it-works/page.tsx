@@ -5,7 +5,7 @@ import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
 export const metadata: Metadata = {
   title: "How it works",
   description:
-    "TrustScope turns a public GitHub repo into a deterministic four-pillar trust report — security & supply chain, governance, and community — with constructive, upstream-friendly fixes and no misleading single score.",
+    "TrustScope turns a public GitHub repo into a deterministic three-pillar trust report — security & supply chain, governance, and community — with constructive, upstream-friendly fixes and no misleading single score.",
 };
 
 const PILLARS = [
@@ -30,13 +30,8 @@ const PILLARS = [
     body: "Maintenance cadence, contributors, and recent activity — read as a lifecycle stage, never as a grade. A one-maintainer library early in its life is not “failing”; it is simply young.",
     accent: "text-amber-300",
   },
-  {
-    id: 4,
-    title: "Functional Quality",
-    q: "Is it well-built?",
-    body: "Honestly left open. Whether software is genuinely well-made is a hands-on craft judgement — so TrustScope marks this pillar “not assessed” rather than faking it from automated signals.",
-    accent: "text-slate-400",
-  },
+  // Pillar 4 (Functional Quality) is Pro-only — the free version assesses three pillars, so it is
+  // not listed here. It returns as its own pillar when the Pro tier ships.
 ];
 
 const STEPS = [
@@ -52,7 +47,7 @@ const STEPS = [
   },
   {
     n: "3",
-    t: "Read the four pillars",
+    t: "Read the three pillars",
     d: "Per-pillar findings, each answering its own question — with the trade-offs kept visible instead of averaged away.",
   },
   {
@@ -77,7 +72,7 @@ export default function AboutPage() {
             <span className="text-brand">open-source projects</span>.
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            {PRODUCT_NAME}{" "}checks a public GitHub repository and reflects it back across four
+            {PRODUCT_NAME}{" "}checks a public GitHub repository and reflects it back across three
             pillars — security &amp; supply chain, governance, and community — without hiding the
             trade-offs behind a single score.
           </p>
@@ -98,16 +93,16 @@ export default function AboutPage() {
         </p>
       </section>
 
-      {/* The four pillars */}
+      {/* The three pillars */}
       <section className="border-t border-border/70 bg-surface/30">
         <div className="mx-auto max-w-5xl px-5 py-14">
           <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
-            The four pillars
+            The three pillars
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-center text-[15px] leading-relaxed text-muted">
             {PRODUCT_NAME}{" "}answers each question separately, because each one is different.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {PILLARS.map((p) => (
               <div
                 key={p.id}

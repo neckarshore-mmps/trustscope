@@ -12,7 +12,8 @@ describe("persona config", () => {
       expect(p.spoke.heroTitle.length).toBeGreaterThan(0);
       expect(p.spoke.accentHex).toMatch(/^#[0-9a-f]{6}$/i);
       expect(p.spoke.whoWhatWhy).toHaveLength(3);
-      expect(p.spoke.pillars).toHaveLength(4);
+      // Free product = three pillars; Functional Quality (Pillar 4) is Pro-only, not shown here.
+      expect(p.spoke.pillars).toHaveLength(3);
       expect(p.spoke.faqs.length).toBeGreaterThan(0);
     }
   });
