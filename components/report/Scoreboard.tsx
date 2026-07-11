@@ -29,7 +29,7 @@ function Tile({ pillar }: { pillar: Pillar }) {
         {pillar.title}
       </span>
       {score === null ? (
-        <span className="mt-3 text-sm font-semibold text-slate-400">Not assessed</span>
+        <span className="mt-3 text-sm font-semibold text-muted">Not assessed</span>
       ) : (
         <span className="mt-3 flex items-baseline gap-1">
           <span

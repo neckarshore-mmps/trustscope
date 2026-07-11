@@ -97,7 +97,7 @@ export default function Home() {
                 <SearchIcon /> Evaluating a tool
               </span>
               <span className="font-normal text-muted/50">/</span>
-              <span className="inline-flex items-center gap-1.5 text-amber-400">
+              <span className="inline-flex items-center gap-1.5 text-amber-400 light:text-amber-700">
                 Maintaining one <WrenchIcon />
               </span>
             </div>
@@ -116,7 +116,7 @@ export default function Home() {
                 <SearchIcon />
                 <span className="text-foreground">See its trust report before you commit.</span>
               </span>
-              <span className="inline-flex items-center gap-2 text-amber-400">
+              <span className="inline-flex items-center gap-2 text-amber-400 light:text-amber-700">
                 <WrenchIcon />
                 <span className="text-foreground">Find the gaps in your code — and fix them.</span>
               </span>

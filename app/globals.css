@@ -1,6 +1,30 @@
 @import "tailwindcss";
 
+/*
+ * `light:` variant — active only when the toggle/no-FOUC script has set
+ * data-mode="light". Dark is the base (unprefixed) style and stays byte-for-byte
+ * unchanged; light-mode contrast fixes are additive `light:` overrides. Used for
+ * the vivid Tailwind-palette accent texts (emerald/sky/amber/rose -300/-400)
+ * that pop on the dark ground but fail WCAG contrast on a light one — each gets
+ * a `light:text-*-700` override at its call site.
+ *
+ * NOTE: the selector is `[data-mode="light"]`, NOT `:root[data-mode="light"]`.
+ * Turbopack's dev CSS pipeline mis-handles the plain `:root[data-mode="light"]`
+ * token block below when a custom variant uses the identical `:root[...]`
+ * selector (the light tokens silently stop applying in `next dev`; prod is
+ * fine). Dropping `:root` from the VARIANT avoids the collision — verified in
+ * both dev and prod. Do not add `:root` back here.
+ */
+@custom-variant light (&:where([data-mode="light"], [data-mode="light"] *));
+
+/*
+ * Dark is the default. If no data-mode is set (JS disabled, or the no-FOUC head
+ * script never runs) the site stays the current dark look — no regression.
+ * The no-FOUC script in app/layout.tsx sets data-mode before first paint from
+ * localStorage, else the visitor's system preference.
+ */
 :root {
+  color-scheme: dark;
   --background: #090d13;
   --surface: #0f1620;
   --surface-2: #16202c;
@@ -9,6 +33,26 @@
   --muted: #90a1b6;
   --brand: #2dd4bf;
   --brand-strong: #14b8a6;
+}
+
+/*
+ * Light mode — palette C (neutral gray-white). Brand teal is deepened to
+ * teal-700 (#0f766e) here: the vivid #2dd4bf fails WCAG contrast as text on a
+ * light ground, whereas #0f766e passes AA (~4.9:1) as text AND still reads as a
+ * clear brand accent when used as a fill/tint. One token, every `text-brand` /
+ * `bg-brand` surface adapts automatically. color-scheme flips native controls
+ * (scrollbars, form widgets) to light too.
+ */
+:root[data-mode="light"] {
+  color-scheme: light;
+  --background: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eceef1;
+  --border: #dde1e6;
+  --foreground: #14181d;
+  --muted: #5f6975;
+  --brand: #0f766e;
+  --brand-strong: #0d9488;
 }
 
 @theme inline {

@@ -53,7 +53,7 @@ export function RecentRepos() {
               aria-label={`Remove ${r.owner}/${r.repo}`}
               title="Remove"
               onClick={() => removeRecentRepoAndNotify(r.owner, r.repo)}
-              className="flex w-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-rose-400/40 hover:text-rose-300"
+              className="flex w-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-rose-400/40 hover:text-rose-300 light:text-rose-700"
             >
               <span aria-hidden className="text-base leading-none">
                 ×

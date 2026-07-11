@@ -189,7 +189,7 @@ export function RepoForm({
         </button>
       </div>
       {error && (
-        <p id="repo-error" className="mt-2 text-sm text-rose-300">
+        <p id="repo-error" className="mt-2 text-sm text-rose-300 light:text-rose-700">
           {error}
         </p>
       )}

@@ -35,7 +35,7 @@ export function ScoreBadge({ score }: { score: number | null }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {score === null ? (
-          <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+          <span className="text-[10px] font-medium uppercase tracking-wide text-muted">
             n/a
           </span>
         ) : (

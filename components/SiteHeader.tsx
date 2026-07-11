@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PRODUCT_NAME } from "@/config/product";
 import { NAV_ITEMS } from "@/config/nav";
 import { NavMenu } from "@/components/NavMenu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteHeader() {
   return (
@@ -24,8 +25,9 @@ export function SiteHeader() {
             {PRODUCT_NAME}
           </span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <NavMenu items={NAV_ITEMS} />
+          <ThemeToggle />
         </div>
       </div>
     </header>

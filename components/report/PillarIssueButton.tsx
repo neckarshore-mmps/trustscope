@@ -130,14 +130,14 @@ export function PillarIssueButton({
       </div>
 
       {filedUrl && (
-        <p className="mt-2 text-xs text-emerald-300">
+        <p className="mt-2 text-xs text-emerald-300 light:text-emerald-700">
           Issue filed —{" "}
           <a href={filedUrl} target="_blank" rel="noreferrer" className="underline">
             view it on GitHub ↗
           </a>
         </p>
       )}
-      {error && <p className="mt-2 text-xs text-rose-300">{error}</p>}
+      {error && <p className="mt-2 text-xs text-rose-300 light:text-rose-700">{error}</p>}
 
       <details className="mt-2.5" data-testid="pillar-filing-hint">
         <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted/85 marker:hidden [&::-webkit-details-marker]:hidden">

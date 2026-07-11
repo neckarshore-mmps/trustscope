@@ -52,8 +52,20 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/*
+         * No-FOUC theme init — runs synchronously before first paint, so the
+         * resolved mode (stored choice, else system preference) is applied on
+         * the initial render and the page never flashes the wrong theme.
+         * Mirrors the md-viewer pattern. Dark stays the default if this fails.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var m=localStorage.getItem("ts-mode");if(m!=="light"&&m!=="dark"){m=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-mode",m);}catch(e){}})();`,
+          }}
+        />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
