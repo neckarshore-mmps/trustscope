@@ -1,3 +1,4 @@
+import type { BodoBackdrop } from "@/config/bodo";
 import { PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { DueDiligenceSignal, Finding, Pillar, ReportModel } from "@/lib/report-core/types";
 
@@ -65,6 +66,22 @@ export function tldrBand(pillars: readonly Pillar[]): Band {
     if (worst === null || BAND_RANK[b] < BAND_RANK[worst]) worst = b;
   }
   return worst ?? "na";
+}
+
+/**
+ * Bodo's disc backdrop echoes the TL;DR ground band (Founder 2026-07-11): the mascot picks up the
+ * SAME colour the TL;DR box already shows, so the two can never drift. It reads as no NEW signal —
+ * the colour is already on the page. `na` (nothing assessed) falls back to the neutral gray disc.
+ */
+const BAND_TO_BODO: Record<Band, BodoBackdrop> = {
+  concern: "red",
+  moderate: "orange",
+  strong: "teal",
+  na: "gray",
+};
+
+export function reportBodoBackdrop(pillars: readonly Pillar[]): BodoBackdrop {
+  return BAND_TO_BODO[tldrBand(pillars)];
 }
 
 /**
