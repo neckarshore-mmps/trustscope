@@ -78,7 +78,7 @@ export default function Home() {
     <div>
       {/* Hero — one picker, both roles; the try-box sits high, the hook right on top of it */}
       <section className="hero-glow">
-        <div className="mx-auto max-w-2xl px-5 pb-10 pt-10 text-center sm:pt-14">
+        <div className="mx-auto max-w-5xl px-5 pb-10 pt-10 text-center sm:pt-14">
           <div className="mb-6 flex flex-col items-center gap-4">
             <BodoBadge backdrop={LANDING_BODO_BACKDROP} sizeClass="h-44 w-44" priority />
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
@@ -87,11 +87,11 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="mx-auto max-w-[18ch] text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">
+          <h1 className="mx-auto max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">
             Don&apos;t build on code you haven&apos;t <span className="text-brand">vetted</span>.
           </h1>
 
-          <div className="mx-auto mt-7 max-w-xl rounded-2xl border border-border bg-surface p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] sm:p-5">
+          <div className="mx-auto mt-7 max-w-5xl rounded-2xl border border-border bg-surface p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] sm:p-5">
             <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-sm font-semibold">
               <span className="inline-flex items-center gap-1.5 text-brand">
                 <SearchIcon /> Evaluating a tool
@@ -105,13 +105,13 @@ export default function Home() {
             <div className="mt-3.5">
               <RepoForm
                 autoFocus
-                submitClassName="cta-fade text-background transition-[filter] hover:brightness-105"
-                submitLabel="Assess →"
+                submitClassName="cta-fade text-background transition-[filter] hover:brightness-105 sm:min-w-[11rem]"
+                submitLabel="Run the report →"
                 placeholder="owner/repo  ·  or your/repo"
               />
             </div>
 
-            <div className="mt-3.5 flex flex-col gap-1.5 text-left text-[13.5px]">
+            <div className="mt-3.5 flex flex-col items-center gap-1.5 text-center text-[13.5px] sm:flex-row sm:justify-center sm:gap-x-8">
               <span className="inline-flex items-center gap-2 text-brand">
                 <SearchIcon />
                 <span className="text-foreground">See its trust report before you commit.</span>
@@ -128,7 +128,7 @@ export default function Home() {
             <span className="font-mono text-muted">sindresorhus/got</span>. No sign-in needed to
             read a report.
           </p>
-          <div className="mx-auto mt-2 max-w-xl">
+          <div className="mx-auto mt-2 max-w-5xl">
             <RecentRepos />
           </div>
         </div>
