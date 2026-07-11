@@ -44,10 +44,10 @@ test("combobox shows pinned trustscope and filters incrementally", async ({ page
 test("free entry of a non-listed repo still navigates", async ({ page }) => {
   await page.goto("/");
   // Open first to guarantee the client component is hydrated — otherwise the
-  // Assess click can trigger a native form submit instead of router.push.
+  // the report-button click can trigger a native form submit instead of router.push.
   const combobox = await openCombobox(page);
   await combobox.fill("fixture-org/fixture-repo");
-  await page.getByRole("button", { name: "Assess" }).click();
+  await page.getByRole("button", { name: "Run the report" }).click();
   await expect(page).toHaveURL(/repo=fixture-org%2Ffixture-repo/);
   await expect(
     page.getByRole("heading", { level: 1, name: /fixture-org\/fixture-repo/ }),
@@ -62,6 +62,10 @@ test("viewing a report adds it to the Recently-Viewed strip; Clear empties it", 
   // RecordView writes in a mount effect — wait for the store before navigating away (flake guard).
   await page.waitForFunction((k) => window.localStorage.getItem(k) !== null, RECENT_KEY);
   await page.goto("/");
+  // The input autofocuses and opens the suggestion dropdown, which floats over the
+  // Recently-viewed strip below. Dismiss it (as a user would) so its options don't
+  // intercept the click on the strip's Clear button.
+  await page.keyboard.press("Escape");
   const strip = page.getByText("Recently viewed");
   await expect(strip).toBeVisible();
   await expect(page.getByRole("link", { name: /fixture-org\/fixture-repo/ })).toBeVisible();
@@ -86,16 +90,16 @@ test("selecting a suggestion fills the input; it does NOT start the report", asy
   await expect(page).not.toHaveURL(/\/report/);
   await expect(page.getByRole("listbox")).toHaveCount(0);
 
-  // Only the explicit Assess click starts the report.
-  await page.getByRole("button", { name: "Assess" }).click();
+  // Only the explicit Run-the-report click starts the report.
+  await page.getByRole("button", { name: "Run the report" }).click();
   await expect(page).toHaveURL(/repo=fixture-org%2Ffixture-repo/);
   await expect(
     page.getByRole("heading", { level: 1, name: /fixture-org\/fixture-repo/ }),
   ).toBeVisible();
 });
 
-test("clicking Assess while an option is highlighted still starts the report", async ({ page }) => {
-  // The explicit Assess button must submit even when a suggestion is highlighted
+test("clicking Run-the-report while an option is highlighted still starts the report", async ({ page }) => {
+  // The explicit report button must submit even when a suggestion is highlighted
   // (hover / ArrowDown set `active`) — it must never silently fill instead of navigate.
   await page.addInitScript(([k]) => {
     window.localStorage.setItem(
@@ -107,7 +111,7 @@ test("clicking Assess while an option is highlighted still starts the report", a
   const combobox = await openCombobox(page);
   await combobox.fill("fixture-org/fixture-repo");
   await combobox.press("ArrowDown"); // highlights the matching option (active >= 0)
-  await page.getByRole("button", { name: "Assess" }).click();
+  await page.getByRole("button", { name: "Run the report" }).click();
   await expect(page).toHaveURL(/repo=fixture-org%2Ffixture-repo/);
   await expect(
     page.getByRole("heading", { level: 1, name: /fixture-org\/fixture-repo/ }),

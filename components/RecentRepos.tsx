@@ -23,7 +23,7 @@ export function RecentRepos() {
   const [now] = useState(() => Date.now());
   if (items.length === 0) return null;
   return (
-    <div className="mx-auto mt-8 max-w-xl text-left">
+    <div className="mx-auto mt-8 max-w-5xl text-left">
       <div className="flex items-center justify-between">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
           Recently viewed
