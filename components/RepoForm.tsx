@@ -26,7 +26,11 @@ export function RepoForm({
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [open, setOpen] = useState(false);
+  // When the field auto-focuses (the landing), open the list by default so the
+  // default suggestions are server-rendered and visible immediately — the native
+  // autofocus fires before hydration, so relying on onFocus alone leaves the list
+  // shut until a second interaction.
+  const [open, setOpen] = useState(autoFocus);
   const [active, setActive] = useState(-1);
   const recent = useRecentRepos();
   const suggestions = useMemo(
@@ -39,11 +43,20 @@ export function RepoForm({
     setBusy(true);
     router.push(`/report?repo=${encodeURIComponent(`${owner}/${repo}`)}`);
   }
+  /** Choosing a suggestion fills the input — it does NOT start the report. The
+   *  user assesses only via an explicit submit (the Assess button or Enter). */
+  function select(s: { owner: string; repo: string }) {
+    setValue(`${s.owner}/${s.repo}`);
+    setOpen(false);
+    setActive(-1);
+    setError(null);
+    inputRef.current?.focus();
+  }
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (open && active >= 0 && active < suggestions.length) {
-      const s = suggestions[active];
-      go(s.owner, s.repo);
+      // Enter on a highlighted option selects it (fill), then a second submit assesses.
+      select(suggestions[active]);
       return;
     }
     const parsed = parseRepoInput(value);
@@ -144,7 +157,7 @@ export function RepoForm({
                   aria-selected={i === active}
                   onMouseDown={(e) => {
                     e.preventDefault();
-                    go(s.owner, s.repo);
+                    select(s);
                   }}
                   onMouseEnter={() => setActive(i)}
                   className={`flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-[15px] ${i === active ? "bg-brand/10" : ""}`}
