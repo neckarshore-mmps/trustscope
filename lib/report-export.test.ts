@@ -27,8 +27,10 @@ describe("reportToMarkdown", () => {
     expect(md).toContain(`# Trust report — ${report.repo.owner}/${report.repo.name}`);
   });
   it("opens with Bodo as a fenced ASCII banner (monospace-safe)", () => {
-    expect(md).toContain("```\n" + BODO_ASCII + "\n```");
-    // The banner leads the document, above the title.
+    // startsWith (not toContain) enforces the contract: the banner LEADS the document — no preamble
+    // may precede it — and the fence keeps the monospace alignment.
+    expect(md.startsWith("```\n" + BODO_ASCII + "\n```\n")).toBe(true);
+    // Redundant with startsWith, kept as an explicit "banner is above the title" statement.
     expect(md.indexOf(BODO_ASCII)).toBeLessThan(
       md.indexOf(`# Trust report — ${report.repo.owner}/${report.repo.name}`),
     );
