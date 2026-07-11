@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { PILLAR_META } from "./report-core/pillars";
 import type { DueDiligenceSignal, Finding, Pillar, ReportModel } from "./report-core/types";
 import {
   displayDueDiligence,
@@ -13,7 +14,7 @@ import {
 
 function pillar(over: Partial<Pillar> & { key: Pillar["key"]; score: number | null }): Pillar {
   return {
-    id: 1,
+    id: PILLAR_META[over.key].id,
     key: over.key,
     title: over.title ?? over.key,
     question: "?",
@@ -80,24 +81,20 @@ describe("displayPillars", () => {
     expect(out.map((p) => p.key)).not.toContain("functional-quality");
     expect(out).toHaveLength(3);
   });
-  it("sorts worst-first: concern -> moderate -> strong", () => {
-    const out = displayPillars([security, governance, community, functional]);
+  it("keeps fixed pillar order P1 → P2 → P3, never reordering by score", () => {
+    // Input is worst-first; output must be fixed id order regardless of the scores.
+    const out = displayPillars([community, security, governance, functional]);
     expect(out.map((p) => p.title)).toEqual([
-      "Community & Sustainability", // 2.3 concern
-      "Trust & Governance", // 5.4 moderate
-      "Security & Supply Chain", // 9.1 strong
+      "Security & Supply Chain", // P1 (9.1 strong) — still first
+      "Trust & Governance", // P2 (5.4 moderate)
+      "Community & Sustainability", // P3 (2.3 concern) — worst, but stays last
     ]);
   });
-  it("sorts alphabetically within a band", () => {
-    const a = pillar({ key: "security-supply-chain", title: "Alpha", score: 1 });
-    const b = pillar({ key: "trust-governance", title: "Bravo", score: 2 });
-    // both concern -> alpha before bravo
-    expect(displayPillars([b, a]).map((p) => p.title)).toEqual(["Alpha", "Bravo"]);
-  });
-  it("trails a not-assessed non-FQ pillar behind the scored ones", () => {
+  it("keeps a not-assessed pillar in its fixed slot (does not trail it)", () => {
     const dead = pillar({ key: "security-supply-chain", title: "Security & Supply Chain", score: null });
-    const out = displayPillars([dead, governance]);
-    expect(out.map((p) => p.title)).toEqual(["Trust & Governance", "Security & Supply Chain"]);
+    const out = displayPillars([governance, dead]);
+    // P1 Security is not-assessed but keeps its fixed lead position, ahead of scored P2.
+    expect(out.map((p) => p.title)).toEqual(["Security & Supply Chain", "Trust & Governance"]);
   });
 });
 

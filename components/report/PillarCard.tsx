@@ -1,3 +1,4 @@
+import { pillarHue } from "@/config/pillars";
 import type { Finding, Pillar, ReportModel } from "@/lib/report-core/types";
 import { findingHasEvidence } from "@/lib/finding-evidence";
 import {
@@ -91,8 +92,11 @@ export function PillarCard({
       <div className="flex items-start gap-4">
         <ScoreBadge score={pillar.score} />
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-brand">
-            Pillar
+          <div
+            className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider"
+            style={{ color: pillarHue(pillar.id) }}
+          >
+            Pillar {pillar.id}
           </div>
           <h2
             id={`pillar-${pillar.id}`}

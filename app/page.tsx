@@ -57,11 +57,8 @@ const PILLARS = [
     q: "Will it be here in a year?",
     body: "Maintenance, contributors, and recent activity — read as a lifecycle stage, never as a grade.",
   },
-  {
-    id: 4,
-    q: "Is it well-built?",
-    body: "Honestly marked “not assessed”. Whether software is good is a hands-on judgement — we never fake it from automated signals.",
-  },
+  // Pillar 4 (Functional Quality) is Pro-only — the free version assesses three pillars, so it is
+  // not shown on the landing. It returns here when the Pro tier ships.
 ];
 
 const STEPS = [
@@ -144,12 +141,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Four pillars */}
+      {/* Three pillars (Functional Quality is Pro-only) */}
       <section className="mx-auto max-w-5xl px-5 py-7">
         <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
-          Four questions, four pillars — one synthesis
+          Three questions, three pillars — one synthesis
         </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {PILLARS.map((p) => {
             const meta = PILLARS_META[p.id - 1];
             return (

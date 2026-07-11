@@ -16,3 +16,12 @@ export const PILLARS_META: readonly PillarMeta[] = [
   { id: 3, key: "community-sustainability", title: "Community & Sustainability", hue: "#fcd34d" },
   { id: 4, key: "functional-quality", title: "Functional Quality", hue: "#94a3b8" },
 ];
+
+/**
+ * Canonical accent hue for a pillar id — the single source both the landing pillar
+ * cards and the report (Scoreboard tile + PillarCard header) read, so the per-pillar
+ * identity colour cannot drift between surfaces.
+ */
+export function pillarHue(id: 1 | 2 | 3 | 4): string {
+  return PILLARS_META.find((p) => p.id === id)?.hue ?? "#94a3b8";
+}
