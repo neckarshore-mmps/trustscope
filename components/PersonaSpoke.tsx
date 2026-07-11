@@ -71,7 +71,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
             {s.crossLinkLead}{" "}
             <Link
               href={other.spokeHref}
-              className="text-[var(--accent)] underline underline-offset-2"
+              className="text-[var(--accent)] underline underline-offset-2 light:text-[var(--accent-light)]"
             >
               {other.spoke.title}
             </Link>
@@ -96,7 +96,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                 aria-hidden="true"
               />
               <div className="font-semibold">
-                <span className="text-[var(--accent)]">{step.you ? "You" : "TrustScope"}</span>
+                <span className="text-[var(--accent)] light:text-[var(--accent-light)]">{step.you ? "You" : "TrustScope"}</span>
                 {" — "}
                 {step.role}
               </div>
