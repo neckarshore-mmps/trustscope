@@ -23,12 +23,30 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PATTERN='four[ -]pillar'
+EXCLUDE='^(app/opengraph-image\.alt\.txt|app/twitter-image\.alt\.txt|config/pillars\.test\.ts):'
 
-# -I skips binary files (PNG OG images live under app/). Case-insensitive.
-# Trailing `|| true` keeps a clean "no matches" (grep exit 1) from tripping set -e.
-matches="$(grep -rniIE "$PATTERN" app config public 2>/dev/null \
-  | grep -vE '^(app/opengraph-image\.alt\.txt|app/twitter-image\.alt\.txt|config/pillars\.test\.ts):' \
-  || true)"
+# Scan the user-facing directories. grep exit codes: 0 = match, 1 = no match,
+# >1 = a real error (missing/unreadable path). We must fail CLOSED on the last
+# case rather than mistaking a broken scan for a clean tree — so capture grep's
+# own exit code (not the pipeline's) and do NOT swallow stderr. -I skips binary
+# (PNG OG images live under app/).
+set +e
+raw="$(grep -rniIE "$PATTERN" app config public)"
+rc=$?
+set -e
+
+if [ "$rc" -gt 1 ]; then
+  echo "❌ Three-pillar guard: scan failed (grep exit $rc) — a target path is"
+  echo "   missing or unreadable. Failing closed rather than reporting a clean tree."
+  exit 1
+fi
+
+# rc is 0 (had matches) or 1 (none). Only when there were matches do we filter
+# out the deliberate, documented exceptions.
+matches=""
+if [ "$rc" -eq 0 ]; then
+  matches="$(printf '%s\n' "$raw" | grep -vE "$EXCLUDE" || true)"
+fi
 
 if [ -n "$matches" ]; then
   echo "❌ Three-pillar guard failed — user-facing 'four pillar' string(s) found:"
