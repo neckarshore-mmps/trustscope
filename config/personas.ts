@@ -58,7 +58,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
         {
           role: "reads the repo",
           you: false,
-          text: "Runs the full OpenSSF Scorecard and reads four pillars separately — never averaging the trade-offs away.",
+          text: "Runs the full OpenSSF Scorecard and reads three pillars separately — never averaging the trade-offs away.",
         },
         {
           role: "decide, then act",
@@ -67,7 +67,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
         },
       ],
       helpsSub:
-        "Four questions, answered separately — so the trade-off you're weighing stays visible instead of collapsing into one grade.",
+        "Three questions, answered separately — so the trade-off you're weighing stays visible instead of collapsing into one grade.",
       nsaHeading: "No single aggregate score. A verdict per pillar — the decision stays yours.",
       verdictCaption: null,
       pillars: [
@@ -80,12 +80,11 @@ export const PERSONAS: Record<PersonaId, Persona> = {
           blurb: "Ownership, licensing & security policy.",
         },
         { q: "Will it be here in a year?", blurb: "Activity & contributor lifecycle." },
-        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
       ],
       faqs: [
         {
           q: "What does TrustScope do for adopters?",
-          a: "It assesses a third-party open-source project before you depend on it, reading four pillars separately — Security & Supply Chain, Trust & Governance, Community & Sustainability, and Functional Quality — so you can decide adopt, proceed, or avoid.",
+          a: "It assesses a third-party open-source project before you depend on it, reading three pillars separately — Security & Supply Chain, Trust & Governance, and Community & Sustainability — so you can decide adopt, proceed, or avoid.",
         },
         {
           q: "How is this different from a star count or a green badge?",
@@ -107,7 +106,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
       title: "TrustScope for maintainers",
       heroTitle: "Before you publish, see your project the way evaluators will.",
       heroLede:
-        "The same four-pillar report an adopter gets on your repo — plus a friendly, concrete list of what to harden.",
+        "The same three-pillar report an adopter gets on your repo — plus a friendly, concrete list of what to harden.",
       submitLabel: "Check →",
       placeholder: "your-org/your-repo",
       accentHex: "#fbbf24",
@@ -121,7 +120,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
         {
           role: "mirrors your repo",
           you: false,
-          text: "Shows the same four-pillar report an adopter would see — nothing about how you're perceived is a surprise.",
+          text: "Shows the same three-pillar report an adopter would see — nothing about how you're perceived is a surprise.",
         },
         {
           role: "harden, then file",
@@ -130,7 +129,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
         },
       ],
       helpsSub:
-        "The four questions evaluators actually ask — each answered separately, so you know exactly what to harden.",
+        "The three questions evaluators actually ask — each answered separately, so you know exactly what to harden.",
       nsaHeading: "No single aggregate score — and never a badge. A verdict per pillar.",
       verdictCaption:
         "The verdict an adopter reaches on your repo — close the gaps before they do.",
@@ -144,12 +143,11 @@ export const PERSONAS: Record<PersonaId, Persona> = {
           blurb: "Ownership, licensing & security policy.",
         },
         { q: "Will it be here in a year?", blurb: "Activity & contributor lifecycle." },
-        { q: "Is it well-built?", blurb: "Testing, CI, review & build signals." },
       ],
       faqs: [
         {
           q: "What does TrustScope do for maintainers?",
-          a: "It shows the same four-pillar report an adopter sees on your repo — Security & Supply Chain, Trust & Governance, Community & Sustainability, Functional Quality — plus a constructive fix-list you can file as issues.",
+          a: "It shows the same three-pillar report an adopter sees on your repo — Security & Supply Chain, Trust & Governance, and Community & Sustainability — plus a constructive fix-list you can file as issues.",
         },
         {
           q: "Will TrustScope give my project a badge or score?",
@@ -157,7 +155,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
         },
         {
           q: "What do evaluators actually look for?",
-          a: "The four pillars — the full OpenSSF Scorecard plus governance and community signals. TrustScope makes each one legible so nothing is a surprise.",
+          a: "The three pillars — the full OpenSSF Scorecard plus governance and community signals. TrustScope makes each one legible so nothing is a surprise.",
         },
         {
           q: "How do I fix a finding?",

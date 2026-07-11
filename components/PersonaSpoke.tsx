@@ -104,26 +104,31 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
           How TrustScope helps
         </p>
         <p className="mt-2 max-w-[52ch] text-sm text-muted">{s.helpsSub}</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {PILLARS_META.map((meta, i) => (
-            <div key={meta.id} className="rounded-xl border border-border bg-surface p-4">
-              <span
-                className="rounded border px-1.5 py-0.5 font-mono text-[10.5px]"
-                style={{
-                  color: meta.hue,
-                  borderColor: `color-mix(in srgb, ${meta.hue} 40%, transparent)`,
-                  background: `color-mix(in srgb, ${meta.hue} 10%, transparent)`,
-                }}
-              >
-                Pillar {meta.id}
-              </span>
-              <h4 className="mt-2.5 text-sm font-semibold">{meta.title}</h4>
-              <div className="text-xs" style={{ color: meta.hue }}>
-                {s.pillars[i].q}
+        {/* Free product = three pillars; Functional Quality (Pillar 4) is Pro-only. The persona's
+            own pillar list drives the count — meta (title/hue) is zipped in by index. */}
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {s.pillars.map((p, i) => {
+            const meta = PILLARS_META[i];
+            return (
+              <div key={meta.id} className="rounded-xl border border-border bg-surface p-4">
+                <span
+                  className="rounded border px-1.5 py-0.5 font-mono text-[10.5px]"
+                  style={{
+                    color: meta.hue,
+                    borderColor: `color-mix(in srgb, ${meta.hue} 40%, transparent)`,
+                    background: `color-mix(in srgb, ${meta.hue} 10%, transparent)`,
+                  }}
+                >
+                  Pillar {meta.id}
+                </span>
+                <h4 className="mt-2.5 text-sm font-semibold">{meta.title}</h4>
+                <div className="text-xs" style={{ color: meta.hue }}>
+                  {p.q}
+                </div>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted">{p.blurb}</p>
               </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted">{s.pillars[i].blurb}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="mt-3.5 rounded-xl border border-dashed border-border bg-surface-2 p-4">
           <p className="text-[13.5px] font-semibold text-foreground">{s.nsaHeading}</p>

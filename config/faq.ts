@@ -8,11 +8,11 @@ export type FaqItem = { readonly q: string; readonly a: string };
 export const FAQ_ITEMS: readonly FaqItem[] = [
   {
     q: "What is TrustScope?",
-    a: "TrustScope reads a public GitHub repository across four pillars — Security & Supply Chain, Trust & Governance, Community & Sustainability, and Functional Quality — and gives a verdict per pillar, with no misleading single score.",
+    a: "TrustScope reads a public GitHub repository across three pillars — Security & Supply Chain, Trust & Governance, and Community & Sustainability — and gives a verdict per pillar, with no misleading single score.",
   },
   {
     q: "What is an adopter, and what is a maintainer?",
-    a: "An adopter is evaluating someone else's project before depending on it; a maintainer runs their own project to see and close the trust gaps adopters look for. Both read the same four-pillar report from opposite directions.",
+    a: "An adopter is evaluating someone else's project before depending on it; a maintainer runs their own project to see and close the trust gaps adopters look for. Both read the same three-pillar report from opposite directions.",
   },
   {
     q: "Do I need an account to read a report?",

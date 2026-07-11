@@ -56,8 +56,8 @@ export default function AboutPage() {
           guessing — a star count, a gut feeling, or a single number that hides the
           trade-off you actually care about. {PRODUCT_NAME} grew out of a Product Trust
           &amp; Quality Framework: turn the public signals a project already emits into a
-          calm, four-pillar read on how much you can trust it — and never fake the one
-          pillar (Functional Quality) that only a human can judge.
+          calm, three-pillar read on how much you can trust it — and never fake the
+          fourth (Functional Quality), the one only a human can judge.
         </p>
         <p>
           <span className="font-medium text-foreground/90">Made in Germany.</span> Self-hosted
