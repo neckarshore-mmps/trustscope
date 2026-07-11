@@ -3,11 +3,14 @@ import {
   displayDueDiligence,
   displayPillars,
   pillarBand,
+  reportBodoBackdrop,
   scoreboardFill,
   tldrBand,
 } from "@/lib/report-display";
 import type { Finding, ReportModel } from "@/lib/report-core/types";
 import { reportSynthesis } from "@/lib/report-summary";
+import { BODO_BACKDROPS } from "@/config/bodo";
+import { BODO_INLINE_SVG } from "@/config/bodo-svg";
 
 /**
  * Pure, deterministic serializers: ReportModel -> string. No I/O, no clock, no LLM — the same
@@ -112,6 +115,11 @@ export function reportToHtml(report: ReportModel): string {
   const e = escapeHtml;
   const pillars = displayPillars(report.pillars);
 
+  // Bodo's disc echoes the TL;DR ground band — the SAME source the web report + TL;DR box use, so
+  // the mascot cannot drift from the report it sits on (concern→red, moderate→orange, strong→teal,
+  // na→gray). Inlined so the standalone document stays self-contained.
+  const bodoHex = BODO_BACKDROPS[reportBodoBackdrop(report.pillars)].hex;
+
   const scoreboard = pillars
     .map((p) => {
       const band = pillarBand(p.score);
@@ -165,12 +173,17 @@ export function reportToHtml(report: ReportModel): string {
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Trust report — ${e(r.owner)}/${e(r.name)}</title>
-<style>:root{--ink:#1b1916;--muted:#5b6470;--line:#e4e7eb;--panel:#f7f8fa;--brand:#0d9488;--strong:#15803d;--moderate:#b45309;--concern:#be123c}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem;line-height:1.6;color:var(--ink);background:#fff}a{color:inherit}.eyebrow{margin:0;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}h1{margin:.3rem 0 0;font-size:1.9rem;line-height:1.15;font-weight:700;letter-spacing:-.01em}h1 a{text-decoration:none}h1 .owner{color:var(--muted);font-weight:600}.meta{margin:.5rem 0 0;color:var(--muted);font-size:.86rem}.doctrine{margin:1.1rem 0 0;padding-left:.9rem;border-left:3px solid var(--brand);color:#3a3f46;font-size:.95rem}.scoreboard{display:grid;grid-template-columns:1fr;gap:.7rem;margin:1.75rem 0 0}@media(min-width:34rem){.scoreboard{grid-template-columns:repeat(3,1fr)}}.tile{border:1px solid var(--line);border-radius:.7rem;padding:.85rem .9rem;background:var(--panel);display:flex;flex-direction:column}.tile-eyebrow{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}.tile-title{margin:.2rem 0 .55rem;font-size:.82rem;font-weight:600;line-height:1.25;flex:1}.tile-score{font-size:1.55rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.tile-max{font-size:.8rem;font-weight:600;color:var(--muted)}.tile-na{font-size:.9rem;font-weight:600;color:#64748b}.tile-bar{display:block;height:4px;margin-top:.6rem;border-radius:2px;background:var(--line);overflow:hidden}.tile-bar>span{display:block;height:100%;border-radius:2px;background:var(--muted)}.s-strong .tile-score{color:var(--strong)}.s-strong .tile-bar>span{background:var(--strong)}.s-moderate .tile-score{color:var(--moderate)}.s-moderate .tile-bar>span{background:var(--moderate)}.s-concern .tile-score{color:var(--concern)}.s-concern .tile-bar>span{background:var(--concern)}.tldr{margin:1.6rem 0 0;padding:1.1rem 1.2rem;border:1px solid;border-radius:.7rem}.tldr-head{display:flex;align-items:center;gap:.6rem}.tldr-head h2{margin:0;font-size:1.1rem}.chip{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}h2{margin:2.25rem 0 0;font-size:1.1rem;letter-spacing:-.01em}h3{margin:1.2rem 0 0;font-size:.95rem}.q{margin:.2rem 0;color:var(--muted);font-style:italic}.status{font-size:.88rem;color:#444}.fixes-h{margin-top:.6rem;font-weight:600}.fsc{font-weight:700;font-variant-numeric:tabular-nums}ul{padding-left:1.1rem}li{margin:.15rem 0}footer{margin-top:2.5rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--muted);font-size:.82rem}</style>
+<style>:root{--ink:#1b1916;--muted:#5b6470;--line:#e4e7eb;--panel:#f7f8fa;--brand:#0d9488;--strong:#15803d;--moderate:#b45309;--concern:#be123c}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem;line-height:1.6;color:var(--ink);background:#fff}a{color:inherit}.eyebrow{margin:0;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}h1{margin:.3rem 0 0;font-size:1.9rem;line-height:1.15;font-weight:700;letter-spacing:-.01em}h1 a{text-decoration:none}h1 .owner{color:var(--muted);font-weight:600}.meta{margin:.5rem 0 0;color:var(--muted);font-size:.86rem}.doctrine{margin:1.1rem 0 0;padding-left:.9rem;border-left:3px solid var(--brand);color:#3a3f46;font-size:.95rem}.masthead{display:flex;align-items:flex-start;gap:1rem}.bodo{flex:none;width:4.75rem;height:4.75rem;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(15,23,42,.10)}.bodo svg{width:120%;height:120%;display:block}.identity{min-width:0}.scoreboard{display:grid;grid-template-columns:1fr;gap:.7rem;margin:1.75rem 0 0}@media(min-width:34rem){.scoreboard{grid-template-columns:repeat(3,1fr)}}.tile{border:1px solid var(--line);border-radius:.7rem;padding:.85rem .9rem;background:var(--panel);display:flex;flex-direction:column}.tile-eyebrow{font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}.tile-title{margin:.2rem 0 .55rem;font-size:.82rem;font-weight:600;line-height:1.25;flex:1}.tile-score{font-size:1.55rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.tile-max{font-size:.8rem;font-weight:600;color:var(--muted)}.tile-na{font-size:.9rem;font-weight:600;color:#64748b}.tile-bar{display:block;height:4px;margin-top:.6rem;border-radius:2px;background:var(--line);overflow:hidden}.tile-bar>span{display:block;height:100%;border-radius:2px;background:var(--muted)}.s-strong .tile-score{color:var(--strong)}.s-strong .tile-bar>span{background:var(--strong)}.s-moderate .tile-score{color:var(--moderate)}.s-moderate .tile-bar>span{background:var(--moderate)}.s-concern .tile-score{color:var(--concern)}.s-concern .tile-bar>span{background:var(--concern)}.tldr{margin:1.6rem 0 0;padding:1.1rem 1.2rem;border:1px solid;border-radius:.7rem}.tldr-head{display:flex;align-items:center;gap:.6rem}.tldr-head h2{margin:0;font-size:1.1rem}.chip{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}h2{margin:2.25rem 0 0;font-size:1.1rem;letter-spacing:-.01em}h3{margin:1.2rem 0 0;font-size:.95rem}.q{margin:.2rem 0;color:var(--muted);font-style:italic}.status{font-size:.88rem;color:#444}.fixes-h{margin-top:.6rem;font-weight:600}.fsc{font-weight:700;font-variant-numeric:tabular-nums}ul{padding-left:1.1rem}li{margin:.15rem 0}footer{margin-top:2.5rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--muted);font-size:.82rem}</style>
 </head><body>
 <header>
+<div class="masthead">
+<span class="bodo" style="background:${bodoHex}">${BODO_INLINE_SVG}</span>
+<div class="identity">
 <p class="eyebrow">Trust report</p>
 <h1><a href="${e(r.url)}"><span class="owner">${e(r.owner)}/</span>${e(r.name)}</a></h1>
 <p class="meta">Assessed ${e(report.assessedAt)}${sc}${commit}</p>
+</div>
+</div>
 <p class="doctrine">${e(report.aggregateNote)}</p>
 </header>
 ${scoreboardSection}

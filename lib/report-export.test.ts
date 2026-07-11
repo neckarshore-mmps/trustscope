@@ -78,6 +78,12 @@ describe("reportToHtml", () => {
     expect(html).toContain(reportSynthesis(report));
     expect(html).toContain("Due diligence");
   });
+  it("inlines Bodo in the masthead, disc tinted to the TL;DR band", () => {
+    // Self-contained: the mascot travels as an inline <svg>, not an external asset.
+    expect(html).toContain('aria-label="Bodo, the TrustScope mascot"');
+    // The snakeoil fixture's worst pillar is a concern → the red disc (#f2a9a9).
+    expect(html).toContain("background:#f2a9a9");
+  });
   it("is deterministic", () => {
     expect(reportToHtml(report)).toBe(html);
   });
