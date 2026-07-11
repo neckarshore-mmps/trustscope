@@ -15,3 +15,21 @@ test("serves the seeded fixture report offline", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: /fixture-org\/fixture-repo/ }),
   ).toBeVisible();
 });
+
+test("renders pillars in fixed order P1 → P2 → P3, with identity hues", async ({ page }) => {
+  await page.goto("/report?repo=fixture-org/fixture-repo");
+  // Fixed order: the pillar section headings appear P1, P2, P3 regardless of score.
+  const pillarHeadings = page
+    .getByRole("heading", { level: 2 })
+    .filter({ hasText: /Security & Supply Chain|Trust & Governance|Community & Sustainability/ });
+  await expect(pillarHeadings.nth(0)).toHaveText("Security & Supply Chain");
+  await expect(pillarHeadings.nth(1)).toHaveText("Trust & Governance");
+  await expect(pillarHeadings.nth(2)).toHaveText("Community & Sustainability");
+  // Functional Quality is Pro-only — never on the free report.
+  await expect(page.getByRole("heading", { name: "Functional Quality" })).toHaveCount(0);
+  // Identity hue on the P1 eyebrow — the landing green #6ee7b7 = rgb(110, 231, 183).
+  await expect(page.getByText("Pillar 1", { exact: true }).first()).toHaveCSS(
+    "color",
+    "rgb(110, 231, 183)",
+  );
+});

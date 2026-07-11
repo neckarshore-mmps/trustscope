@@ -1,13 +1,15 @@
 import Link from "next/link";
+import { pillarHue } from "@/config/pillars";
 import type { Pillar, ReportModel } from "@/lib/report-core/types";
 import { displayPillars, scoreboardFill } from "@/lib/report-display";
 import { scoreBar, scoreColor } from "@/lib/ui";
 import { InfoIcon } from "./InfoIcon";
 
 /**
- * The score block at the very top (#403 a): one compact tile per SHOWN pillar (worst-first), each a
- * jump-link to its `#pillar-{id}` detail. Per-pillar readouts only — never a single aggregate. The
- * bar fills by INTENSITY (distance from a neutral 5); colour marks the direction.
+ * The score block at the very top (#403 a): one compact tile per SHOWN pillar in fixed P1→P2→P3
+ * order, each a jump-link to its `#pillar-{id}` detail. Per-pillar readouts only — never a single
+ * aggregate. The eyebrow carries the pillar's identity hue; the bar fills by INTENSITY (distance
+ * from a neutral 5) and its colour marks the score direction (a separate signal from the hue).
  */
 function Tile({ pillar }: { pillar: Pillar }) {
   const { score } = pillar;
@@ -17,7 +19,12 @@ function Tile({ pillar }: { pillar: Pillar }) {
       href={`#pillar-${pillar.id}`}
       className="group flex flex-col rounded-xl border border-border bg-surface/60 p-4 transition-colors hover:border-brand/40"
     >
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-brand">Pillar</span>
+      <span
+        className="text-[11px] font-semibold uppercase tracking-wider"
+        style={{ color: pillarHue(pillar.id) }}
+      >
+        Pillar {pillar.id}
+      </span>
       <span className="mt-1 flex-1 text-sm font-medium leading-snug text-foreground">
         {pillar.title}
       </span>

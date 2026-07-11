@@ -74,7 +74,7 @@ export function ReportView({
       {/* TL;DR — the two-second read, due diligence folded in, ground colour = worst pillar */}
       <Tldr report={report} />
 
-      {/* Pillars — worst-first (concern → moderate → strong); Functional Quality is Pro-only.
+      {/* Pillars — fixed order P1 → P2 → P3 (never reordered by findings); Functional Quality is Pro-only.
           Each pillar with fixes carries its own Convert-to-issue control (the reputation mechanism);
           the former bulk "Send the suggestions upstream" section is retired. */}
       <div className="mt-6 grid gap-4">

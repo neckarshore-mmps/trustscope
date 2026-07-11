@@ -44,6 +44,21 @@ test.describe("Footer version line + feedback", () => {
   });
 });
 
+test.describe("/ landing pillars", () => {
+  test("shows three pillars — Functional Quality (Pro-only) is not on the free landing", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(
+      page.getByRole("heading", { name: /Three questions, three pillars/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Security & Supply Chain" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Trust & Governance" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Community & Sustainability" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Functional Quality" })).toHaveCount(0);
+  });
+});
+
 test.describe("/changelog", () => {
   test("renders the changelog with the current version", async ({ page }) => {
     const res = await page.goto("/changelog");

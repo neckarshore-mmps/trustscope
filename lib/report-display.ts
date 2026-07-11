@@ -39,18 +39,17 @@ export function scoreboardFill(score: number | null): number {
 }
 
 /**
- * The pillars the non-Pro report shows: Functional Quality dropped, sorted worst-first
- * (concern -> moderate -> strong -> not-assessed), alphabetical within a band. Worst-first suits a
- * due-diligence read — problems surface at the top.
+ * The pillars the non-Pro report shows: Functional Quality (Pro-only) dropped, then in FIXED
+ * pillar order — P1 Security → P2 Trust → P3 Community. The order is a product rule: pillars never
+ * reorder by findings/score, and a not-assessed pillar keeps its fixed slot (it does not trail).
+ * The due-diligence read still surfaces problems first — via the TL;DR band + the concern-first
+ * order of findings WITHIN each pillar — just not by resequencing the pillars themselves.
  */
 export function displayPillars(pillars: readonly Pillar[]): Pillar[] {
   return pillars
     .filter((p) => p.key !== PRO_ONLY_PILLAR)
     .slice()
-    .sort((a, b) => {
-      const r = BAND_RANK[pillarBand(a.score)] - BAND_RANK[pillarBand(b.score)];
-      return r !== 0 ? r : a.title.localeCompare(b.title);
-    });
+    .sort((a, b) => a.id - b.id);
 }
 
 /**
