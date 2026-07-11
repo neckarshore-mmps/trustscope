@@ -44,6 +44,14 @@ test.describe("Footer version line + feedback", () => {
   });
 });
 
+test("landing hero shows the Bodo mascot", async ({ page }) => {
+  await page.goto("/");
+  // Scope to <main> — the small header logo also uses the bodo.svg alt.
+  await expect(
+    page.getByRole("main").getByRole("img", { name: /Bodo, the TrustScope mascot/i }),
+  ).toBeVisible();
+});
+
 test.describe("/ landing pillars", () => {
   test("shows three pillars — Functional Quality (Pro-only) is not on the free landing", async ({
     page,
