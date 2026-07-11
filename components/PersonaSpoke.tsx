@@ -16,7 +16,13 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
   const base = `https://${PRODUCT_SUBDOMAIN}`;
   const s = persona.spoke;
   return (
-    <div style={{ ["--accent" as string]: s.accentHex, ["--accent-ink" as string]: s.accentInk }}>
+    <div
+      style={{
+        ["--accent" as string]: s.accentHex,
+        ["--accent-light" as string]: s.accentHexLight,
+        ["--accent-ink" as string]: s.accentInk,
+      }}
+    >
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -47,7 +53,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
       {/* Hero + repo picker */}
       <section className="hero-glow">
         <div className="mx-auto max-w-2xl px-5 pb-6 pt-20 text-center sm:pt-24">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)] light:text-[var(--accent-light)]">
             {persona.tag}
           </span>
           <h1 className="mx-auto mt-3 max-w-[22ch] text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -65,7 +71,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
             {s.crossLinkLead}{" "}
             <Link
               href={other.spokeHref}
-              className="text-[var(--accent)] underline underline-offset-2"
+              className="text-[var(--accent)] underline underline-offset-2 light:text-[var(--accent-light)]"
             >
               {other.spoke.title}
             </Link>
@@ -90,7 +96,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                 aria-hidden="true"
               />
               <div className="font-semibold">
-                <span className="text-[var(--accent)]">{step.you ? "You" : "TrustScope"}</span>
+                <span className="text-[var(--accent)] light:text-[var(--accent-light)]">{step.you ? "You" : "TrustScope"}</span>
                 {" — "}
                 {step.role}
               </div>
@@ -133,13 +139,13 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         <div className="mt-3.5 rounded-xl border border-dashed border-border bg-surface-2 p-4">
           <p className="text-[13.5px] font-semibold text-foreground">{s.nsaHeading}</p>
           <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400">
+            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400 light:text-emerald-700">
               Adopt
             </span>
-            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400">
+            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400 light:text-amber-700">
               Proceed
             </span>
-            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400">
+            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400 light:text-rose-700">
               Avoid
             </span>
           </div>

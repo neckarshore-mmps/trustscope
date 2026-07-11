@@ -9,7 +9,7 @@ export function ReportError({
 }) {
   return (
     <div className="mx-auto max-w-xl px-5 py-20 text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-300 ring-1 ring-rose-500/25">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-300 light:text-rose-700 ring-1 ring-rose-500/25">
         <svg
           width="22"
           height="22"

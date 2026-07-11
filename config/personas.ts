@@ -24,6 +24,9 @@ export type Persona = {
     readonly submitLabel: string;
     readonly placeholder: string;
     readonly accentHex: string;
+    // Darker accent for text on the light-mode ground — the vivid accentHex fails
+    // WCAG contrast as text on light; this teal-700/amber-700 passes AA (~4.9:1).
+    readonly accentHexLight: string;
     readonly accentInk: string;
     readonly whoWhatWhy: readonly WhoWhatWhyStep[];
     readonly helpsSub: string;
@@ -48,6 +51,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
       submitLabel: "Assess →",
       placeholder: "ossf/scorecard  ·  https://github.com/owner/repo",
       accentHex: "#2dd4bf",
+      accentHexLight: "#0f766e",
       accentInk: "#04211d",
       whoWhatWhy: [
         {
@@ -110,6 +114,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
       submitLabel: "Check →",
       placeholder: "your-org/your-repo",
       accentHex: "#fbbf24",
+      accentHexLight: "#b45309",
       accentInk: "#2a1c00",
       whoWhatWhy: [
         {
