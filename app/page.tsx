@@ -1,6 +1,7 @@
-import Image from "next/image";
+import { BodoBadge } from "@/components/BodoBadge";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
+import { LANDING_BODO_BACKDROP } from "@/config/bodo";
 import { PILLARS_META } from "@/config/pillars";
 
 /** Adopter path — evaluating someone else's code. */
@@ -78,16 +79,8 @@ export default function Home() {
       {/* Hero — one picker, both roles; the try-box sits high, the hook right on top of it */}
       <section className="hero-glow">
         <div className="mx-auto max-w-2xl px-5 pb-10 pt-10 text-center sm:pt-14">
-          <div className="mb-5 flex items-center justify-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#eef4fa] ring-1 ring-black/5">
-              <Image
-                src="/bodo.svg"
-                alt="Bodo, the TrustScope mascot"
-                width={40}
-                height={40}
-                priority
-              />
-            </span>
+          <div className="mb-6 flex flex-col items-center gap-4">
+            <BodoBadge backdrop={LANDING_BODO_BACKDROP} sizeClass="h-44 w-44" priority />
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-muted">
               <span className="h-1.5 w-1.5 rounded-full bg-brand" />
               Built on the OpenSSF Scorecard
