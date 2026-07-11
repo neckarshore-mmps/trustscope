@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReportModel } from "@/lib/report-core/types";
 import type { ScorecardSource } from "@/lib/adapters";
 import { displayPillars } from "@/lib/report-display";
+import { BodoBadge } from "@/components/BodoBadge";
+import { REPORT_BODO_BACKDROP } from "@/config/bodo";
 import { PillarCard } from "./PillarCard";
 import { ExportActions } from "./ExportActions";
 import { InfoIcon } from "./InfoIcon";
@@ -32,28 +34,37 @@ export function ReportView({
       {/* Masthead — the repo identity as hero (mono repo-path), the no-grade doctrine foregrounded */}
       <header>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
-              Trust report
-            </p>
-            <h1 className="mt-1.5 break-words font-mono text-2xl font-semibold tracking-tight sm:text-[2rem]">
-              <a
-                href={report.repo.url}
-                target="_blank"
-                rel="noreferrer"
-                className="transition-colors hover:text-brand"
-              >
-                <span className="text-muted">{report.repo.owner}/</span>
-                {report.repo.name}
-              </a>
-            </h1>
-            <p className="mt-2 text-sm text-muted">
-              Assessed {fmtDate(report.assessedAt)}
-              {report.scorecard && <> · Scorecard {report.scorecard.version}</>} · via{" "}
-              {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
-              {cached && " · cached"}
-              <InfoIcon label="how this was assessed" />
-            </p>
+          {/* Identity lockup — Bodo (the reporter) hands you the report, sitting to the left of the
+              repo identity. Sized so the disc spans from the eyebrow down to the assessed line; the
+              aggregate note below flows full-width under the disc, wrapping the text around it. */}
+          <div className="flex items-start gap-4 sm:gap-5">
+            <BodoBadge
+              backdrop={REPORT_BODO_BACKDROP}
+              sizeClass="h-[88px] w-[88px] flex-none sm:h-24 sm:w-24"
+            />
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+                Trust report
+              </p>
+              <h1 className="mt-1.5 break-words font-mono text-2xl font-semibold tracking-tight sm:text-[2rem]">
+                <a
+                  href={report.repo.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition-colors hover:text-brand"
+                >
+                  <span className="text-muted">{report.repo.owner}/</span>
+                  {report.repo.name}
+                </a>
+              </h1>
+              <p className="mt-2 text-sm text-muted">
+                Assessed {fmtDate(report.assessedAt)}
+                {report.scorecard && <> · Scorecard {report.scorecard.version}</>} · via{" "}
+                {source === "fastpath" ? "OpenSSF dataset" : "on-demand run"}
+                {cached && " · cached"}
+                <InfoIcon label="how this was assessed" />
+              </p>
+            </div>
           </div>
           <Link
             href="/"
