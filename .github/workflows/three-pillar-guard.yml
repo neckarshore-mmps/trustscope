@@ -1,0 +1,29 @@
+# Three-pillar guard — fails if a user-facing "four pillar" string leaks into
+# app/, config/, or public/. The free product is three pillars; Functional Quality
+# is Pro-only. See DECISIONS.md → TS-FQ-PRO-ONLY-THREE-PILLARS and the header of
+# scripts/three-pillar-guard.sh for the deliberate, Founder-gated exceptions.
+name: Three-pillar guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default token — this workflow only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: No user-facing four-pillar copy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run three-pillar guard
+        run: bash scripts/three-pillar-guard.sh
