@@ -16,12 +16,15 @@ test("serves the seeded fixture report offline", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("shows Bodo in the report masthead", async ({ page }) => {
+test("shows Bodo in the report masthead, disc tinted to the TL;DR band", async ({ page }) => {
   await page.goto("/report?repo=fixture-org/fixture-repo");
   // Scoped to <main> — the site header also carries a Bodo logo.
-  await expect(
-    page.getByRole("main").getByAltText("Bodo, the TrustScope mascot"),
-  ).toBeVisible();
+  const bodo = page.getByRole("main").getByAltText("Bodo, the TrustScope mascot");
+  await expect(bodo).toBeVisible();
+  // The disc backdrop echoes the TL;DR ground band. The snakeoil fixture's worst pillar is a
+  // concern, so the band is 'concern' → the red disc (#f2a9a9 = rgb(242, 169, 169)).
+  const disc = bodo.locator("xpath=..");
+  await expect(disc).toHaveCSS("background-color", "rgb(242, 169, 169)");
 });
 
 test("renders pillars in fixed order P1 → P2 → P3, with identity hues", async ({ page }) => {

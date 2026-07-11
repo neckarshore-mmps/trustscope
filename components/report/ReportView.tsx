@@ -1,9 +1,8 @@
 import Link from "next/link";
 import type { ReportModel } from "@/lib/report-core/types";
 import type { ScorecardSource } from "@/lib/adapters";
-import { displayPillars } from "@/lib/report-display";
+import { displayPillars, reportBodoBackdrop } from "@/lib/report-display";
 import { BodoBadge } from "@/components/BodoBadge";
-import { REPORT_BODO_BACKDROP } from "@/config/bodo";
 import { PillarCard } from "./PillarCard";
 import { ExportActions } from "./ExportActions";
 import { InfoIcon } from "./InfoIcon";
@@ -36,10 +35,11 @@ export function ReportView({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           {/* Identity lockup — Bodo (the reporter) hands you the report, sitting to the left of the
               repo identity. Sized so the disc spans from the eyebrow down to the assessed line; the
-              aggregate note below flows full-width under the disc, wrapping the text around it. */}
+              aggregate note below flows full-width under the disc, wrapping the text around it.
+              The disc backdrop echoes the TL;DR ground band (same source — cannot drift). */}
           <div className="flex items-start gap-4 sm:gap-5">
             <BodoBadge
-              backdrop={REPORT_BODO_BACKDROP}
+              backdrop={reportBodoBackdrop(report.pillars)}
               sizeClass="h-[88px] w-[88px] flex-none sm:h-24 sm:w-24"
             />
             <div className="min-w-0">

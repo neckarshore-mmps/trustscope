@@ -6,6 +6,7 @@ import {
   displayPillars,
   partitionFindings,
   pillarBand,
+  reportBodoBackdrop,
   scoreboardFill,
   tldrBand,
 } from "./report-display";
@@ -117,6 +118,23 @@ describe("tldrBand", () => {
     const dead1 = pillar({ key: "security-supply-chain", score: null });
     const dead2 = pillar({ key: "trust-governance", score: null });
     expect(tldrBand([dead1, dead2])).toBe("na");
+  });
+});
+
+// ---- reportBodoBackdrop ---------------------------------------------------
+
+describe("reportBodoBackdrop", () => {
+  const strong = pillar({ key: "security-supply-chain", score: 9.1 });
+  const moderate = pillar({ key: "trust-governance", score: 5.4 });
+  const concern = pillar({ key: "community-sustainability", score: 2.3 });
+  it("echoes the TL;DR band — concern→red, moderate→orange, strong→teal", () => {
+    expect(reportBodoBackdrop([strong, moderate, concern])).toBe("red");
+    expect(reportBodoBackdrop([strong, moderate])).toBe("orange");
+    expect(reportBodoBackdrop([strong])).toBe("teal");
+  });
+  it("falls back to the neutral gray disc when nothing is assessed", () => {
+    const dead = pillar({ key: "security-supply-chain", score: null });
+    expect(reportBodoBackdrop([dead])).toBe("gray");
   });
 });
 

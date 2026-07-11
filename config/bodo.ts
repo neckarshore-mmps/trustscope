@@ -20,12 +20,10 @@ export type BodoBackdrop = keyof typeof BODO_BACKDROPS;
 export const LANDING_BODO_BACKDROP: BodoBackdrop = "gray";
 
 /**
- * The report masthead uses the gray disc too — deliberately neutral. A coloured disc
- * (teal/orange/red) would read as a grade (good/ok/bad), and the report's whole doctrine
- * is that there is no single score. Kept as its own constant so the tint can be revisited
- * per context without touching the landing.
+ * The report masthead's disc is NOT a fixed constant — it echoes the TL;DR ground band, so Bodo
+ * shows the same colour the report already carries (teal/orange/red, or gray when nothing is
+ * assessed). See `reportBodoBackdrop()` in `lib/report-display.ts` for the single-source mapping.
  */
-export const REPORT_BODO_BACKDROP: BodoBackdrop = "gray";
 
 /**
  * Bodo's SVG carries generous internal padding, so the art is scaled up inside the
