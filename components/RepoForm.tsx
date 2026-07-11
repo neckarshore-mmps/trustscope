@@ -52,13 +52,11 @@ export function RepoForm({
     setError(null);
     inputRef.current?.focus();
   }
+  /** Explicit submission (the Assess button, or Enter with no highlighted option):
+   *  always assesses the input value. Highlighted-option selection is handled in
+   *  onKeyDown, so clicking Assess navigates even while a suggestion is highlighted. */
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (open && active >= 0 && active < suggestions.length) {
-      // Enter on a highlighted option selects it (fill), then a second submit assesses.
-      select(suggestions[active]);
-      return;
-    }
     const parsed = parseRepoInput(value);
     if (!parsed) {
       setError("Enter a GitHub repo — e.g. ossf/scorecard, or a full github.com URL.");
@@ -75,6 +73,11 @@ export function RepoForm({
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && open && active >= 0 && active < suggestions.length) {
+      // Enter on a highlighted option selects it (fills the input) and preventDefault
+      // stops the implicit form submit; a second Enter (nothing highlighted) assesses.
+      e.preventDefault();
+      select(suggestions[active]);
     } else if (e.key === "Escape") {
       setOpen(false);
       setActive(-1);

@@ -94,6 +94,26 @@ test("selecting a suggestion fills the input; it does NOT start the report", asy
   ).toBeVisible();
 });
 
+test("clicking Assess while an option is highlighted still starts the report", async ({ page }) => {
+  // The explicit Assess button must submit even when a suggestion is highlighted
+  // (hover / ArrowDown set `active`) — it must never silently fill instead of navigate.
+  await page.addInitScript(([k]) => {
+    window.localStorage.setItem(
+      k,
+      JSON.stringify([{ owner: "fixture-org", repo: "fixture-repo", viewedAt: "2026-07-03T00:00:00Z" }]),
+    );
+  }, [RECENT_KEY]);
+  await page.goto("/");
+  const combobox = await openCombobox(page);
+  await combobox.fill("fixture-org/fixture-repo");
+  await combobox.press("ArrowDown"); // highlights the matching option (active >= 0)
+  await page.getByRole("button", { name: "Assess" }).click();
+  await expect(page).toHaveURL(/repo=fixture-org%2Ffixture-repo/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: /fixture-org\/fixture-repo/ }),
+  ).toBeVisible();
+});
+
 test("keyboard: ArrowDown tracks aria-activedescendant; Enter selects then submits, Escape closes", async ({
   page,
 }) => {
