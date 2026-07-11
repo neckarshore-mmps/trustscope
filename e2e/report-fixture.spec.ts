@@ -16,6 +16,14 @@ test("serves the seeded fixture report offline", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("shows Bodo in the report masthead", async ({ page }) => {
+  await page.goto("/report?repo=fixture-org/fixture-repo");
+  // Scoped to <main> — the site header also carries a Bodo logo.
+  await expect(
+    page.getByRole("main").getByAltText("Bodo, the TrustScope mascot"),
+  ).toBeVisible();
+});
+
 test("renders pillars in fixed order P1 → P2 → P3, with identity hues", async ({ page }) => {
   await page.goto("/report?repo=fixture-org/fixture-repo");
   // Fixed order: the pillar section headings appear P1, P2, P3 regardless of score.
