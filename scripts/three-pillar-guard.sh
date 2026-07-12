@@ -13,9 +13,12 @@
 #
 # Deliberate, Founder-gated exceptions (excluded below, each a tracked backlog item):
 #   - CHANGELOG.md                 versioned release history; retroactive-edit is a Founder call (T-TS-CHANGELOG-FOUR-PILLAR)
-#   - app/opengraph-image.alt.txt  static OG asset — design regen pending          (T-TS-OG-IMAGE-THREE-PILLAR)
-#   - app/twitter-image.alt.txt    static OG asset — design regen pending          (T-TS-OG-IMAGE-THREE-PILLAR)
 #   - config/pillars.test.ts       internal 4-pillar DATA MODEL test (not user-facing)
+#
+# The OG/Twitter assets (app/opengraph-image.* + twitter-image.* + alt.txt) were regenerated to
+# three-pillar (2026-07-12, T-TS-OG-IMAGE-THREE-PILLAR done) and are no longer excluded — the alt
+# text is now actively guarded against a four-pillar regression. Regenerate the PNGs from the SVG
+# master with: rsvg-convert -w 1280 -h 640 assets/social-preview.svg -o app/opengraph-image.png
 #
 # CHANGELOG.md is out of scope by directory (only app/ config/ public/ are scanned).
 set -euo pipefail
@@ -23,7 +26,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PATTERN='four[ -]pillar'
-EXCLUDE='^(app/opengraph-image\.alt\.txt|app/twitter-image\.alt\.txt|config/pillars\.test\.ts):'
+EXCLUDE='^(config/pillars\.test\.ts):'
 
 # Scan the user-facing directories. grep exit codes: 0 = match, 1 = no match,
 # >1 = a real error (missing/unreadable path). We must fail CLOSED on the last
