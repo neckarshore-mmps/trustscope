@@ -20,6 +20,16 @@ updates:
       - dependencies
     commit-message:
       prefix: chore(deps)
+    ignore:
+      # eslint MAJOR is deferred: the Next lint stack (eslint-config-next ->
+      # eslint-plugin-react@7.37.5) peer-caps at `eslint@^9.7` and still calls
+      # `context.getFilename()`, which ESLint 10 removed — the lint run crashes
+      # at rule-load before checking a single line (PR #7, Issue #30). No fixed
+      # release exists upstream yet. Re-enable by removing this ignore once
+      # eslint-config-next officially supports ESLint 10. Minor/patch still flow.
+      - dependency-name: "eslint"
+        update-types:
+          - "version-update:semver-major"
     groups:
       # Grouping is aligned with the auto-merge safe class (dependabot-auto-merge.yml)
       # so the boring class self-clears atomically and only the review-worthy bumps
