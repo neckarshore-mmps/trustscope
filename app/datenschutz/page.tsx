@@ -198,10 +198,16 @@ export default function DatenschutzPage() {
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           GitHub wird von der GitHub, Inc. (USA) als eigenständig Verantwortliche betrieben.
           Mit der Anmeldung und dem Erstellen des Issues werden personenbezogene Daten in
-          die USA übermittelt. Als Rechtsgrundlage kommen die Erforderlichkeit für die von
-          Ihnen veranlasste Funktion (Art. 49 Abs. 1 lit. b DSGVO) sowie die Zertifizierung
-          von GitHub, Inc. unter dem EU-U.S. Data Privacy Framework (Angemessenheit,
-          Art. 45 DSGVO) in Betracht.
+          die USA übermittelt. Vorrangige Rechtsgrundlage der Übermittlung ist ein
+          Angemessenheitsbeschluss nach Art. 45 DSGVO: GitHub, Inc. ist unter dem
+          EU-U.S. Data Privacy Framework selbstzertifiziert (Teilnehmer-Nr. 6174,
+          einschließlich UK Extension und Swiss-U.S. DPF), für das die Europäische
+          Kommission ein angemessenes Datenschutzniveau festgestellt hat. Unabhängig
+          davon und als dauerhafte Auffanggrundlage ist die Übermittlung nach
+          Art. 49 Abs. 1 lit. b DSGVO gerechtfertigt, weil sie für die von Ihnen selbst
+          veranlasste Funktion – das Erstellen des Issues in Ihrem Namen – erforderlich
+          ist; diese Grundlage bleibt auch dann tragfähig, falls der
+          DPF-Angemessenheitsbeschluss künftig entfiele.
         </p>
         {/* << Rechtlicher Stand (Dr. Sommer, DPO-Gutachten 2026-07-05) — Sign-off durch
             Founder + Dr. Sommer vor Entfernen des DRAFT-Markers:
@@ -216,19 +222,17 @@ export default function DatenschutzPage() {
               persistiert werden nur Access-Token + opake Nutzer-ID (sub).
             - GitHub-OAuth-Login ist in Produktion AKTIV (GITHUB_CLIENT_ID/SECRET gesetzt,
               verifiziert 2026-07-03 via `vercel env ls production`).
-            - OFFENE DPO-Frage vor Sign-off: US-Transfer-Primärgrundlage — Art. 45
-              (DPF-Angemessenheit, rechtlich vorrangig) vs. Art. 49(1)(b) (nutzerveranlasst,
-              immun gegen DPF-Status-Drift). Der § 5-Absatz nennt daher bewusst BEIDE
-              Grundlagen neutral ("kommen in Betracht"); die verbindliche Fassung schärft auf
-              die von Dr. Sommer bestimmte Primärgrundlage. GitHub, Inc. ist EU-U.S.-DPF-
-              selbstzertifiziert (participant/6174; "Active" beim Sign-off am DPF-Register
-              gegenprüfen). — D7 >> */}
+            - US-Transfer-Grundlage (Dr.-Sommer-Bestimmung 2026-07-12, Work-Order A3):
+              § 5 führt jetzt Art. 45 DSGVO (DPF-Angemessenheit, GitHub participant/6174,
+              rechtlich vorrangig) als PRIMÄRgrundlage und behält Art. 49(1)(b)
+              (nutzerveranlasst, immun gegen DPF-Status-Drift) als eigenständige, dauerhafte
+              Auffanggrundlage. Beim Sign-off "Active" am DPF-Register gegenprüfen. — D7 >> */}
       </section>
 
-      {/* § 6 Lokale Speicherung (Recently Viewed) */}
+      {/* § 6 Lokale Speicherung im Browser (Recently Viewed + Theme) */}
       <section className="mx-auto max-w-3xl px-5 pb-12">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-muted">
-          § 6 · Lokale Speicherung (zuletzt angesehene Repositories)
+          § 6 · Lokale Speicherung im Browser
         </h2>
         <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Damit Sie zuletzt angesehene Repositories schnell wiederfinden, speichert{" "}
@@ -238,6 +242,15 @@ export default function DatenschutzPage() {
           Gespeichert werden nur die von Ihnen selbst aufgerufenen Repository-Kennungen
           (<code className={CODE}>owner/repo</code>) samt Zeitpunkt — keine
           personenbezogenen Daten über Sie.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
+          Zusätzlich merkt sich {PRODUCT_NAME} unter dem Schlüssel{" "}
+          <code className={CODE}>ts-mode</code> Ihre gewählte Darstellung (Wert{" "}
+          <code className={CODE}>light</code> oder <code className={CODE}>dark</code>),
+          damit die hell/dunkel-Ansicht bei Ihrem nächsten Besuch erhalten bleibt. Auch
+          dies ist eine für die von Ihnen gewünschte Komfortfunktion unbedingt
+          erforderliche Speicherung im Sinne des § 25 Abs. 2 Nr. 2 TDDDG und enthält
+          keine personenbezogenen Daten über Sie.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Diese Angaben verbleiben auf Ihrem Gerät und werden nicht an unseren Server
