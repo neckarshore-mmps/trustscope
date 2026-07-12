@@ -116,7 +116,7 @@ infrastructure seams are scalable from the start; v2 is pure ADD.
 - **Affects:** `displayPillars` / `displayDueDiligence` (`lib/report-display.ts`) filter
   `PRO_ONLY_PILLAR` out of every non-Pro surface; a **CI grep-gate** (`scripts/three-pillar-guard.sh`)
   fails any build that leaks a user-facing "four-pillar" string into `app/`, `config/`, or `public/`.
-  Deliberate, Founder-gated exclusions from that gate (each a tracked backlog item): the static OG/Twitter
-  assets (`T-TS-OG-IMAGE-THREE-PILLAR`, design regen pending) and `CHANGELOG.md` release history
-  (`T-TS-CHANGELOG-FOUR-PILLAR`, a retroactive-edit Founder call). Building the Pro tier itself (pricing,
-  gating, the P4 computation path) remains a deferred v2 ADD (§3).
+  The one remaining deliberate, Founder-gated exclusion from that gate is `CHANGELOG.md` release history
+  (`T-TS-CHANGELOG-FOUR-PILLAR`, a retroactive-edit Founder call). The static OG/Twitter assets were
+  regenerated to three pillars (2026-07-12, `T-TS-OG-IMAGE-THREE-PILLAR` done) and are no longer excluded.
+  Building the Pro tier itself (pricing, gating, the P4 computation path) remains a deferred v2 ADD (§3).

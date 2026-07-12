@@ -17,8 +17,8 @@
 #
 # The OG/Twitter assets (app/opengraph-image.* + twitter-image.* + alt.txt) were regenerated to
 # three-pillar (2026-07-12, T-TS-OG-IMAGE-THREE-PILLAR done) and are no longer excluded — the alt
-# text is now actively guarded against a four-pillar regression. Regenerate the PNGs from the SVG
-# master with: rsvg-convert -w 1280 -h 640 assets/social-preview.svg -o app/opengraph-image.png
+# text is now actively guarded against a four-pillar regression. To regenerate all served assets
+# (both PNGs + the SVG master copy) from the SVG, follow the full sequence in assets/README.md.
 #
 # CHANGELOG.md is out of scope by directory (only app/ config/ public/ are scanned).
 set -euo pipefail

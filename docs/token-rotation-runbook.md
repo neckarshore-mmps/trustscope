@@ -24,7 +24,10 @@ revoked, on-demand reports fail with a 401 ("Couldn't generate the report").
 
 - **Cadence:** daily is the default. Adjust the `cron` in `token-health.yml` if you want more/less.
 - **Channel:** the GitHub-Issue alert is on with no setup. A 14-day expiry pre-warning also opens an
-  Issue before a PAT lapses. If you additionally want push alerts (Slack/Discord), add a notify step.
+  Issue before the two **E2E test PATs** (`E2E_CLASSIC_PAT` / `E2E_FINEGRAINED_PAT`) lapse — this does
+  **not** cover the production `GITHUB_AUTH_TOKEN` (stored in Vercel), whose expiry stays *reactive-only*
+  (the health-check catches it after it fails); rotate it via the calendar-reminder path below. If you
+  additionally want push alerts (Slack/Discord), add a notify step.
 - **Optional:** set a calendar reminder for the PAT's own expiry date. The health-check catches
   expiry *reactively* and the pre-warning gives 14 days' lead; a calendar reminder is belt-and-braces.
 

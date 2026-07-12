@@ -8,7 +8,7 @@
 > picker tests incl. keyboard semantics). Combobox a11y keyboard walk + visual-accept are the open
 > manual items (tracked separately). Plan-review open items 1 (ordering pinned→recent→A-Z) and 3
 > (Playwright-only gating) shipped as proposed. Kept as the record; unchecked boxes = plan-as-written.
-
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the plain repo input into an accessible, searchable combobox (seeds + your recently-viewed, free entry preserved) and add a client-local Recently-Viewed strip on the landing page.
