@@ -39,25 +39,32 @@ test.describe("Legal pages render and respond 200", () => {
   });
 
   // A2 (Work-Order 2026-07-12): § 6 must disclose the ts-mode theme localStorage key.
+  // Scoped to the theme paragraph itself, so it can't pass on §6's OTHER TDDDG mention.
   test("/datenschutz § 6 discloses the ts-mode theme key", async ({ page }) => {
     await page.goto("/datenschutz");
-    const section = page.locator("section", {
-      has: page.getByRole("heading", { name: /Lokale Speicherung/i }),
-    });
-    await expect(section.getByText("ts-mode")).toBeVisible();
-    await expect(section.getByText(/TDDDG/).first()).toBeVisible();
+    const themePara = page
+      .locator("section", { has: page.getByRole("heading", { name: /Lokale Speicherung/i }) })
+      .locator("p", { hasText: "ts-mode" });
+    await expect(themePara).toBeVisible();
+    await expect(themePara).toContainText("light");
+    await expect(themePara).toContainText("dark");
+    await expect(themePara).toContainText("TDDDG");
   });
 
   // A3 (Work-Order 2026-07-12): § 5 leads Art. 45 DPF (participant 6174) as the primary
-  // transfer basis and keeps Art. 49(1)(b) as the durable independent fallback.
+  // transfer basis and keeps Art. 49(1)(b) as the independent per-transfer fallback.
+  // Scoped to the ONE transfer paragraph, so separate mentions can't satisfy the hierarchy.
   test("/datenschutz § 5 leads Art. 45 DPF and keeps Art. 49(1)(b)", async ({ page }) => {
     await page.goto("/datenschutz");
-    await expect(
-      page.getByText(/Vorrangige Rechtsgrundlage der Übermittlung ist ein/),
-    ).toBeVisible();
-    await expect(page.getByText(/Art\. 45 DSGVO/).first()).toBeVisible();
-    await expect(page.getByText(/6174/)).toBeVisible();
-    await expect(page.getByText(/Art\. 49 Abs\. 1 lit\. b DSGVO/)).toBeVisible();
+    const transferPara = page
+      .locator("section", { has: page.getByRole("heading", { name: /Anmeldung mit GitHub/i }) })
+      .locator("p", { hasText: /Vorrangige Rechtsgrundlage/ });
+    await expect(transferPara).toBeVisible();
+    await expect(transferPara).toContainText("Art. 45 DSGVO");
+    await expect(transferPara).toContainText("6174");
+    await expect(transferPara).toContainText("Art. 49 Abs. 1 lit. b DSGVO");
+    // the fallback is framed as the durable independent basis if DPF adequacy lapses
+    await expect(transferPara).toContainText(/entfiele/);
   });
 });
 

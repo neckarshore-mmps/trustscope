@@ -202,11 +202,11 @@ export default function DatenschutzPage() {
           Angemessenheitsbeschluss nach Art. 45 DSGVO: GitHub, Inc. ist unter dem
           EU-U.S. Data Privacy Framework selbstzertifiziert (Teilnehmer-Nr. 6174,
           einschließlich UK Extension und Swiss-U.S. DPF), für das die Europäische
-          Kommission ein angemessenes Datenschutzniveau festgestellt hat. Unabhängig
-          davon und als dauerhafte Auffanggrundlage ist die Übermittlung nach
-          Art. 49 Abs. 1 lit. b DSGVO gerechtfertigt, weil sie für die von Ihnen selbst
-          veranlasste Funktion – das Erstellen des Issues in Ihrem Namen – erforderlich
-          ist; diese Grundlage bleibt auch dann tragfähig, falls der
+          Kommission ein angemessenes Datenschutzniveau festgestellt hat. Ergänzend ist
+          die konkrete, von Ihnen selbst ausgelöste Übermittlung – das Erstellen des
+          Issues in Ihrem Namen – nach Art. 49 Abs. 1 lit. b DSGVO für die Erfüllung
+          dieser von Ihnen gewünschten Funktion erforderlich; auf diese Grundlage kann
+          die einzelne Übermittlung im Bedarfsfall auch dann gestützt werden, falls der
           DPF-Angemessenheitsbeschluss künftig entfiele.
         </p>
         {/* << Rechtlicher Stand (Dr. Sommer, DPO-Gutachten 2026-07-05) — Sign-off durch
@@ -225,8 +225,10 @@ export default function DatenschutzPage() {
             - US-Transfer-Grundlage (Dr.-Sommer-Bestimmung 2026-07-12, Work-Order A3):
               § 5 führt jetzt Art. 45 DSGVO (DPF-Angemessenheit, GitHub participant/6174,
               rechtlich vorrangig) als PRIMÄRgrundlage und behält Art. 49(1)(b)
-              (nutzerveranlasst, immun gegen DPF-Status-Drift) als eigenständige, dauerhafte
-              Auffanggrundlage. Beim Sign-off "Active" am DPF-Register gegenprüfen. — D7 >> */}
+              (nutzerveranlasst, immun gegen DPF-Status-Drift) als eigenständige, per
+              Einzelübermittlung wirksame Auffanggrundlage — bewusst NICHT als systematische
+              Dauergrundlage formuliert (EDPB: Art.-49-Derogationen sind Ausnahmen; CodeRabbit
+              #95 Major, gestrafft). Beim Sign-off "Active" am DPF-Register gegenprüfen. — D7 >> */}
       </section>
 
       {/* § 6 Lokale Speicherung im Browser (Recently Viewed + Theme) */}
