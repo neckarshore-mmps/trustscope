@@ -23,6 +23,11 @@ Reference behavior measured 2026-07-02 (scorecard 5.5.0 / dataset image v5.1.1):
 
 ## 👤 OWNER — one-time setup: two repo secrets
 
+> **Status: DONE (2026-07-03).** Both secrets (`E2E_CLASSIC_PAT`, `E2E_FINEGRAINED_PAT`) are set;
+> the nightly contract run has been green since. A 14-day expiry pre-warning (`token-health.yml`)
+> opens an Issue before either PAT lapses. The steps below are kept as the rotation reference for
+> when a token expires or is replaced.
+
 The test only runs once both secrets exist; until then it self-skips (green).
 
 ### 1. Create the two tokens

@@ -1,5 +1,12 @@
 # Due-Diligence install-scripts signal — Implementation Plan
 
+> **Status: SHIPPED** — [PR #43](https://github.com/neckarshore-mmps/trustscope/pull/43) (`8ade79a`).
+> All phases below are implemented on `main`: the manifest adapter, the due-diligence signal,
+> `buildReport`/`generateReport` wiring, the e2e assertion, and the README note (which links to the
+> **Security & Supply Chain / Pillar 1** section — `#pillar-1` post-[#74](https://github.com/neckarshore-mmps/trustscope/pull/74), not the `#pillar-2` the steps predate). Automated gates green (Vitest + tsc + Playwright). Founder
+> visual-accept of the report note is the one open manual item (tracked separately). Kept as the
+> record of what shipped; the unchecked boxes reflect the plan-as-written, not remaining work.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add one calm Due-Diligence signal — a note when a package declares npm install-time lifecycle scripts (`preinstall`/`install`/`postinstall`).
