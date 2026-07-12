@@ -1,8 +1,13 @@
-# Token-Health enhancement — build spec (next session)
+# Token-Health enhancement — build spec
+
+> **Status: SHIPPED (2026-07-02).** Both changes below are live in `token-health.yml`:
+> the failed-check alert now opens/updates a GitHub Issue via `scripts/token-health-issue.sh`
+> (section b), and a 14-day expiry pre-warning runs against the E2E PATs. Kept as the durable
+> spec of record. Original framing ("build spec (next session)") preserved below for history.
 
 Enhances the existing daily token-health monitoring (workflow `token-health.yml`,
 script `token-health-check.sh`, shipped in PR #16) with two Founder-requested changes.
-**Deferred to a fresh session by design** (context budget); this is the durable spec so it
+~~**Deferred to a fresh session by design** (context budget)~~; this is the durable spec so it
 can be built without re-deriving. Owner decided the alert channel + supplied the token data below.
 
 ## b — Alert as a repo Issue, not email (Founder preference)

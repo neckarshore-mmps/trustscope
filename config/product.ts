@@ -1,6 +1,6 @@
 /**
  * Central product identity. Rename = change one place (work-order §3 #4/#5).
- * "TrustScope" is a working title; the subdomain is a launch-gated User-Action (§7).
+ * "TrustScope" is a working title; the subdomain (trustscope.neckarshore.ai) is live in production.
  */
 export const PRODUCT_NAME = "TrustScope";
 export const PRODUCT_TAGLINE =

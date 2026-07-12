@@ -35,17 +35,17 @@
   <text x="168" y="130" class="sans" font-size="40" font-weight="600" letter-spacing="-0.8" fill="#e6edf3">TrustScope</text>
 
   <!-- Headline -->
-  <text x="80" y="266" class="sans" font-size="78" font-weight="700" letter-spacing="-2.4" fill="#e6edf3">Four pillars of trust.</text>
+  <text x="80" y="266" class="sans" font-size="78" font-weight="700" letter-spacing="-2.4" fill="#e6edf3">Three pillars of trust.</text>
   <text x="80" y="356" class="sans" font-size="78" font-weight="700" letter-spacing="-2.4" fill="#2dd4bf">No single fake score.</text>
 
   <!-- Subline -->
-  <text x="80" y="428" class="sans" font-size="28" font-weight="400" letter-spacing="-0.2" fill="#90a1b6">Paste a public GitHub repo &#8594; a deterministic four-pillar trust report.</text>
+  <text x="80" y="428" class="sans" font-size="28" font-weight="400" letter-spacing="-0.2" fill="#90a1b6">Paste a public GitHub repo &#8594; a deterministic three-pillar trust report.</text>
 
   <!-- Hairline -->
   <rect x="80" y="474" width="1120" height="1" fill="url(#hair)"/>
 
   <!-- Pillars -->
-  <text x="80" y="516" class="sans" font-size="23" font-weight="500" letter-spacing="0.2" fill="#90a1b6">Security &amp; Supply Chain&#160;&#160;&#183;&#160;&#160;Trust &amp; Governance&#160;&#160;&#183;&#160;&#160;Community&#160;&#160;&#183;&#160;&#160;Functional Quality</text>
+  <text x="80" y="516" class="sans" font-size="23" font-weight="500" letter-spacing="0.2" fill="#90a1b6">Security &amp; Supply Chain&#160;&#160;&#183;&#160;&#160;Trust &amp; Governance&#160;&#160;&#183;&#160;&#160;Community &amp; Sustainability</text>
 
   <!-- Footer -->
   <text x="80" y="566" class="sans" font-size="23" font-weight="600" letter-spacing="0" fill="#2dd4bf">trustscope.neckarshore.ai<tspan dx="30" fill="#90a1b6" font-weight="400">Built on the OpenSSF Scorecard&#160;&#160;&#183;&#160;&#160;by Neckarshore AI</tspan></text>
