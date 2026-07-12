@@ -239,15 +239,15 @@ jobs:
           name: stats-json
 
       # Publish the stats.json to the UNPROTECTED `stats-data` branch (never main — main's
-      # protection stays 100% intact). stats-data is a dedicated single-file data branch: it carries
-      # ONLY stats.json, isolated from main's code history.
+      # protection stays 100% intact). stats-data is a dedicated data branch: it carries ONLY
+      # stats.json (the data) + vercel.json (the deploy-gate, see below), isolated from main's history.
       #
       # Built with git PLUMBING (hash-object → mktree → commit-tree → push), NOT a working-tree
       # branch switch. A `git checkout` to stats-data would abort: stats-data shares no history with
       # main, so git treats every main file as "would be overwritten" and refuses. Plumbing never
-      # touches the working tree or switches branches — it writes one blob + one tree + one commit
-      # to the object DB and pushes the ref. The tree is exactly {stats.json}; the commit chains
-      # onto the previous stats-data tip (history preserved) or starts a fresh root (first run).
+      # touches the working tree or switches branches — it writes two blobs + one tree + one commit
+      # to the object DB and pushes the ref. The tree is exactly {stats.json, vercel.json}; the commit
+      # chains onto the previous stats-data tip (history preserved) or starts a fresh root (first run).
       #
       # Diff-guard on the meaningful fields only (everything EXCEPT the always-changing updatedAt):
       # a new push has a new audited_sha → publish (keeps the number fresh); a re-run on the same
@@ -264,16 +264,30 @@ jobs:
         run: |
           set -euo pipefail
           norm() { jq -S 'del(.updatedAt)' "$1" 2>/dev/null; }
+          # A static vercel.json committed ALONGSIDE stats.json on the stats-data branch. Vercel reads
+          # git.deploymentEnabled from the vercel.json of the PUSHED branch — empirically confirmed on
+          # 2026-07-12 (two emits, the config live on main for 3h, both still Error-deployed): a config
+          # on main does NOT gate a branch that carries no vercel.json of its own. So the gate must
+          # live ON stats-data. deploymentEnabled:false stops Vercel auto-deploying this data-only
+          # branch (the recurring red ~5s Error preview per emit). Compact one-liner, no formatting.
+          VERCEL_JSON='{"$schema":"https://openapi.vercel.sh/vercel.json","git":{"deploymentEnabled":false}}'
           # Reliably materialize refs/remotes/origin/stats-data (a bare `fetch <branch>` only sets
           # FETCH_HEAD). Fails harmlessly on the first run (the branch does not exist yet).
           git fetch origin +refs/heads/stats-data:refs/remotes/origin/stats-data 2>/dev/null || true
+          # Skip (no churn) ONLY when stats.json is unchanged AND the deploy-gate vercel.json is
+          # already present on stats-data. The vercel.json clause forces the one-time backfill push
+          # even on a same-sha re-run, so the gate lands the first time this ships.
           if git show origin/stats-data:stats.json > /tmp/prev-stats.json 2>/dev/null \
-             && [ "$(norm /tmp/prev-stats.json)" = "$(norm stats.json)" ]; then
-            echo "stats.json unchanged (ignoring timestamp) — nothing to publish."
+             && [ "$(norm /tmp/prev-stats.json)" = "$(norm stats.json)" ] \
+             && git cat-file -e origin/stats-data:vercel.json 2>/dev/null; then
+            echo "stats.json unchanged and deploy-gate vercel.json present — nothing to publish."
             exit 0
           fi
-          BLOB=$(git hash-object -w stats.json)
-          TREE=$(printf '100644 blob %s\tstats.json\n' "$BLOB" | git mktree)
+          STATS_BLOB=$(git hash-object -w stats.json)
+          VERCEL_BLOB=$(printf '%s\n' "$VERCEL_JSON" | git hash-object -w --stdin)
+          # mktree entries MUST be name-sorted: stats.json < vercel.json. The tree is now exactly
+          # {stats.json, vercel.json} — stats.json is the data, vercel.json is the deploy-gate.
+          TREE=$(printf '100644 blob %s\tstats.json\n100644 blob %s\tvercel.json\n' "$STATS_BLOB" "$VERCEL_BLOB" | git mktree)
           MSG="chore(stats): emit stats.json @ ${GITHUB_SHA:0:7}"
           if git rev-parse --verify origin/stats-data >/dev/null 2>&1; then
             COMMIT=$(git commit-tree "$TREE" -p origin/stats-data -m "$MSG")
