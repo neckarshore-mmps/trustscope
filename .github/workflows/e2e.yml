@@ -61,11 +61,29 @@ jobs:
       - name: Run Playwright e2e
         run: npm run test:e2e
 
-  # Estate stats.json producer (test-scope facet, backlog #394). Publishes a contract-conformant
-  # stats.json to the UNPROTECTED `stats-data` branch on every push:main, AFTER the e2e gate. Runs
-  # even when e2e fails (if: always) so a non-green run emits red:true — never a stale-green count.
-  # contents:write is scoped to THIS job only; publishing to stats-data (not main) keeps main's
-  # branch protection fully intact — no bypass actor, no weakened required check.
+  # Estate stats.json producer (test-scope facet, backlog #394), SPLIT across two jobs for
+  # least-privilege (T-TS-STATS-EMIT-SCOPED-AUTH / #91, CodeRabbit Major on #90):
+  #
+  #   generate-stats  (contents: READ)  — runs `npm ci` + the third-party test-stats-action to
+  #                                       produce a contract-conformant stats.json, uploaded as an
+  #                                       artifact. Even though a third-party action can pull
+  #                                       github.token via its own action.yml default, the token it
+  #                                       gets here is READ-scoped and cannot push anywhere.
+  #   publish-stats   (contents: WRITE) — downloads that artifact and pushes it to the UNPROTECTED
+  #                                       stats-data branch. Runs NO `npm ci` and NO third-party
+  #                                       `uses:` — nothing but first-party checkout/download +
+  #                                       git plumbing ever executes while the write token is in scope.
+  #
+  # Why the split, not just persist-credentials:false: the #90 Major named TWO vectors — npm-ci
+  # lifecycle scripts AND the third-party test-stats-action. persist-credentials:false closes only
+  # the first (token out of .git/config). A third-party action still reaches a job-scoped
+  # github.token via its manifest default (GitHub: "an action can access the GITHUB_TOKEN through
+  # the github.token context even if the workflow does not explicitly pass it"). Separating the
+  # write permission onto a job that runs no untrusted code closes the second vector structurally.
+  #
+  # Publishes on every push:main, AFTER the e2e gate. Runs even when e2e fails (if: always) so a
+  # non-green run emits red:true — never a stale-green count. Publishing to stats-data (not main)
+  # keeps main's branch protection fully intact — no bypass actor, no weakened required check.
   #
   # Counts come from each runner's OWN reporter (never grep):
   #   unit → vitest --reporter=json .numPassedTests (this job re-runs the cheap suite)
@@ -73,29 +91,19 @@ jobs:
   # Both are executed AND CI-gated AND DISJOINT (vitest = lib/app/config, playwright = e2e/),
   # so both sum into tests.total. The nightly e2e-scorecard-contract is NOT push/PR-gated (needs
   # secrets, self-skips) → deliberately NOT counted. `red` = (unit failed OR e2e failed).
-  emit-stats:
-    name: Emit stats.json (estate producer)
+  generate-stats:
+    name: Generate stats.json (estate producer)
     needs: e2e
     if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: write
-    concurrency:
-      # Serialize emits so two rapid pushes cannot race on the git push to stats-data.
-      group: emit-stats-${{ github.ref }}
-      cancel-in-progress: false
+      contents: read
 
     steps:
-      # persist-credentials:false (T-TS-STATS-EMIT-SCOPED-AUTH / #91) — do NOT leave the job's
-      # write-capable GITHUB_TOKEN in .git/config for the whole job, where `npm ci` dependency
-      # lifecycle scripts and the third-party test-stats-action could read it. CodeRabbit Major on
-      # #90: a persisted write token on a security/trust product is an avoidable supply-chain
-      # exposure. The publish step below re-grants auth ONLY on its final `git push`, via the
-      # GitHub-canonical http.extraheader pattern — scoped to the one step that actually needs
-      # contents:write on the UNPROTECTED stats-data branch. The interim reads (git fetch/show of
-      # origin/stats-data) are anonymous over https — trustscope is a PUBLIC repo, so read needs no
-      # credential; only the push does.
+      # persist-credentials:false — belt for the read job too: keep even the read-scoped token out
+      # of .git/config so npm-ci lifecycle scripts can't read it. The real defence is that this job
+      # has ONLY contents:read; the WRITE token lives exclusively on publish-stats below.
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
@@ -146,6 +154,8 @@ jobs:
       # never tag-floated). 54ae407 is the PIR-passed pin (fixes the 7a53ad0d manifest-load bug
       # that broke producer #1's first real emit). Supports declared/red/red_detail + vitest &
       # playwright runners. declared is left empty: no executed-but-ungated suite is counted.
+      # Runs under contents:read — even if this third-party action pulls github.token via its own
+      # manifest default, the token is read-scoped and cannot push (the whole point of the split).
       - name: Emit stats.json
         uses: neckarshore-ai/test-stats-action@54ae407769bdfea6b8fed2672f0ceefa5ef2588a
         with:
@@ -160,7 +170,8 @@ jobs:
 
       # Structural contract gate — invariants that hold on BOTH green and red runs. Deliberately
       # does NOT assert a golden total (a red run legitimately undercounts and must still emit
-      # red:true, so a hard-coded number here would block the honest red emit).
+      # red:true, so a hard-coded number here would block the honest red emit). Fail-fast BEFORE
+      # the artifact upload, so publish-stats can never receive a malformed stats.json.
       - name: Validate emitted stats.json against the contract
         run: |
           jq -e --arg repo "$GITHUB_REPOSITORY" '
@@ -174,7 +185,53 @@ jobs:
             || { echo "::error::stats.json failed contract validation"; cat stats.json; exit 1; }
           echo "stats.json is contract-valid:"; cat stats.json
 
-      # Publish the emitted stats.json to the UNPROTECTED `stats-data` branch (never main — main's
+      # Hand the validated stats.json to publish-stats (the ONLY contents:write job). This artifact
+      # is the sole channel between the jobs — publish-stats rebuilds nothing, it just pushes this
+      # exact file. retention-days:1 — this is transient CI plumbing, not an archive.
+      - name: Upload stats.json artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: stats-json
+          path: stats.json
+          retention-days: 1
+          if-no-files-found: error
+
+  # Publish job — the ONLY contents:write job, and it runs NO `npm ci` and NO third-party `uses:`.
+  # It downloads the validated stats.json and pushes it to the UNPROTECTED stats-data branch. No
+  # untrusted code executes while the write token is in scope — that is the whole point of the
+  # split (#91). Gated on generate-stats succeeding: a contract-validation failure there fails that
+  # job → needs.generate-stats.result != 'success' → this job is skipped, so a malformed stats.json
+  # is never published.
+  publish-stats:
+    name: Publish stats.json (stats-data branch)
+    needs: generate-stats
+    if: always() && needs.generate-stats.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      # Serialize the PUSH (the thing that can race on stats-data), not the generation above.
+      group: publish-stats-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      # persist-credentials:false — keep the write token out of .git/config; auth is re-granted
+      # ONLY on the final `git push` via http.extraheader below. The interim reads (git fetch/show
+      # of origin/stats-data) are anonymous over https — trustscope is PUBLIC, so read needs no
+      # credential; only the push does.
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # Bring in the validated stats.json produced by generate-stats. No `path:` → lands in the
+      # working tree root (cwd), exactly where the plumbing below reads `stats.json` from.
+      - name: Download stats.json artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: stats-json
+
+      # Publish the stats.json to the UNPROTECTED `stats-data` branch (never main — main's
       # protection stays 100% intact). stats-data is a dedicated single-file data branch: it carries
       # ONLY stats.json, isolated from main's code history.
       #
@@ -194,9 +251,8 @@ jobs:
           GIT_AUTHOR_EMAIL: "github-actions[bot]@users.noreply.github.com"
           GIT_COMMITTER_NAME: "github-actions[bot]"
           GIT_COMMITTER_EMAIL: "github-actions[bot]@users.noreply.github.com"
-          # Scoped write auth (#91): the token is exposed to THIS publish step only (not the whole
-          # job), and consumed ONLY on the final `git push` via http.extraheader below. github.token
-          # is the job's contents:write GITHUB_TOKEN.
+          # Scoped write auth (#91): consumed ONLY on the final `git push` via http.extraheader.
+          # github.token is this job's contents:write GITHUB_TOKEN.
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
@@ -222,11 +278,11 @@ jobs:
           # already aborts on a failed commit-tree substitution; this is the explicit guard so a
           # branch deletion can never depend on implicit -e (data-integrity belt on the trust product).
           [ -n "$COMMIT" ] || { echo "::error::commit-tree produced no commit — refusing to push (would delete stats-data)"; exit 1; }
-          # Scoped push auth (#91): persist-credentials:false kept the write token out of .git/config
-          # for the whole job, so auth is supplied inline for THIS push only. http.extraheader (the
-          # actions/checkout-canonical pattern) — NOT a token-in-URL, which can leak into git's error
-          # output. `base64 | tr -d '\n'` because ubuntu `base64` wraps at 76 columns. printf is a
-          # bash builtin (no argv exposure of the token) and this script runs without `set -x`, so the
+          # Scoped push auth (#91): persist-credentials:false kept the write token out of .git/config,
+          # so auth is supplied inline for THIS push only. http.extraheader (the actions/checkout-
+          # canonical pattern) — NOT a token-in-URL, which can leak into git's error output.
+          # `base64 | tr -d '\n'` because ubuntu `base64` wraps at 76 columns. printf is a bash
+          # builtin (no argv exposure of the token) and this script runs without `set -x`, so the
           # base64 credential is never echoed to the Actions log.
           git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')" \
             push origin "${COMMIT}:refs/heads/stats-data"
