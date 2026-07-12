@@ -4,9 +4,11 @@ import type { ScorecardSource } from "@/lib/adapters";
 import { displayPillars, reportBodoBackdrop } from "@/lib/report-display";
 import { BodoBadge } from "@/components/BodoBadge";
 import { PillarCard } from "./PillarCard";
+import { BadgeSnippet } from "./BadgeSnippet";
 import { ExportActions } from "./ExportActions";
 import { InfoIcon } from "./InfoIcon";
 import { Scoreboard } from "./Scoreboard";
+import { ShareReport } from "./ShareReport";
 import { Tldr } from "./Tldr";
 
 function fmtDate(iso: string): string {
@@ -77,6 +79,8 @@ export function ReportView({
           {report.aggregateNote}
           <InfoIcon label="why there is no single score" />
         </p>
+        {/* B2: invite sharing — the report URL persists + unfurls (B1 card), so make spreading it one click. */}
+        <ShareReport owner={report.repo.owner} repo={report.repo.name} />
       </header>
 
       {/* Scoreboard — the per-pillar scores surfaced at the very top (#403 a) */}
@@ -96,6 +100,9 @@ export function ReportView({
 
       {/* Export — always shown, independent of fixes (§A slot 7) */}
       <ExportActions report={report} />
+
+      {/* B4: README trust badge + copy-snippet (dogfood + cross-sell) */}
+      <BadgeSnippet owner={report.repo.owner} repo={report.repo.name} />
 
       <p className="mt-8 text-center text-xs text-muted/70">
         Report generated {fmtDate(report.generatedAt)} · commit{" "}
