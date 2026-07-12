@@ -10,7 +10,7 @@ internal, Founder-decided v1 build work-order (#274).
 | 1 | Audience | **Adopter/Evaluator** — someone vetting a *third-party* tool before adopting it. Not the maintainer/badge path (that competes with OpenSSF's own badge). |
 | 2 | Format | **Web report-generator** — repo URL in → report out. |
 | 3 | Depth | **Deterministic-pure — no LLM, no API key.** Rule-based fix text from the Hardening Standard §3. |
-| 4 | Pillars | **Three pillars shown; Functional Quality is Pro-only.** P1 full Scorecard · P2 Trust/Governance · P3 lifecycle. **P4 Functional Quality = Pro-only — dropped from every free surface, never faked. No single aggregate score.** _(Revised 2026-07-11 (#80) — originally "All four shown"; see §9.)_ |
+| 4 | Pillars | **Three pillars shown; Functional Quality is Pro-only.** P1 Security & Supply Chain (full Scorecard) · P2 Trust & Governance · P3 Community & Sustainability (lifecycle). **P4 Functional Quality = Pro-only — dropped from every free surface, never faked. No single aggregate score.** _(Revised 2026-07-11 (#80) — originally "All four shown"; see §9.)_ |
 | 5 | Third-party posture | **Constructive + consent.** Offer to file a constructive fix-issue upstream. |
 | 6 | Fix-issue mechanism | **File via GitHub OAuth AS THE USER** (the issue is the user's own action) with a "via TrustScope" footer. **Bot-identity forbidden** — unsolicited bot-issues break consent. |
 
