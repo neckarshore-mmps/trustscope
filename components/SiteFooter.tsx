@@ -32,6 +32,51 @@ export function SiteFooter() {
           </p>
         </div>
 
+        {/* B3 (GTM cross-link): the estate's three public tools — Read · Maintain · Trust.
+            Every visitor to any tool discovers the other two. md-viewer = live web twin;
+            OVA = the neckarshore.ai product page; TrustScope self-links home. */}
+        <div className="w-full max-w-2xl border-t border-border/40 pt-6">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted/70">
+            More Neckarshore tooling
+          </p>
+          <nav
+            aria-label="More Neckarshore tooling"
+            className="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm"
+          >
+            <a
+              className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-foreground"
+              href="https://md.neckarshore.ai"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+                Read
+              </span>
+              md-viewer
+            </a>
+            <a
+              className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-foreground"
+              href="https://neckarshore.ai/products/obsidian-vault-autopilot"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+                Maintain
+              </span>
+              Vault Autopilot
+            </a>
+            <Link
+              className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-foreground"
+              href="/"
+            >
+              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+                Trust
+              </span>
+              {PRODUCT_NAME}
+            </Link>
+          </nav>
+        </div>
+
         <nav
           aria-label="Legal and feedback"
           className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2"

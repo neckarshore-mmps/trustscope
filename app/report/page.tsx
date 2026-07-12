@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { parseRepoInput } from "@/lib/parse-repo-input";
+import { PRODUCT_NAME } from "@/config/product";
 import { resolveReport } from "@/lib/resolve-report";
 import { RecordView } from "@/components/RecordView";
 import { ReportError } from "@/components/report/ReportError";
@@ -21,7 +22,33 @@ export async function generateMetadata({
   const { repo } = await searchParams;
   const parsed = repo ? parseRepoInput(repo) : null;
   const title = parsed ? `${parsed.owner}/${parsed.repo}` : "Report";
-  return { title, robots: { index: false, follow: true } };
+
+  // B1: a per-report social card so a shared /report?repo=X link unfurls the visitor's
+  // OWN repo + its three pillars, not the static homepage card. Falls back to the layout's
+  // default card for an invalid/absent repo.
+  if (!parsed) return { title, robots: { index: false, follow: true } };
+
+  const slug = `${parsed.owner}/${parsed.repo}`;
+  const ogUrl = `/report/og?repo=${encodeURIComponent(slug)}`;
+  const description = `How far can you trust ${slug}? A three-pillar trust report — security & supply chain, governance, community — with no single aggregate score.`;
+
+  return {
+    title,
+    description,
+    robots: { index: false, follow: true },
+    openGraph: {
+      title: `${slug} · ${PRODUCT_NAME} trust report`,
+      description,
+      type: "article",
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: `${PRODUCT_NAME} trust report for ${slug}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${slug} · ${PRODUCT_NAME}`,
+      description,
+      images: [ogUrl],
+    },
+  };
 }
 
 export default async function ReportPage({
