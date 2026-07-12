@@ -1,10 +1,15 @@
 import { PILLARS_META } from "@/config/pillars";
+import { scoreboardFill } from "@/lib/report-display";
+import { PASS_THRESHOLD } from "@/lib/report-core/thresholds";
 import type { ReportModel } from "@/lib/report-core/types";
 
 /**
  * B1 (per-report social card) data selection — the pure, testable seam behind the
  * `/report/og` ImageResponse route. Kept free of any rendering so the "which pillars,
- * what scores, in what order" rules can be unit-tested without Satori/next-og.
+ * what scores, what colours, in what order" rules can be unit-tested without Satori/next-og.
+ *
+ * The card mirrors the on-page Scoreboard tile: identity HUE on the eyebrow, the score
+ * coloured by DIRECTION (green/amber/red), and a fill bar whose length is intensity.
  *
  * Doctrine held here:
  *   - The Pro-only pillar (Functional Quality, id 4) is dropped — the card shows the
@@ -19,11 +24,39 @@ import type { ReportModel } from "@/lib/report-core/types";
 /** Functional Quality — Pro-only, never shown on the free card. */
 const PRO_ONLY_PILLAR_ID = 4;
 
+// Display-only midpoint (shared with lib/ui.ts): amber floor for the rose/amber split.
+const AMBER_FLOOR = 4;
+
+// Direction hexes, matching the Tailwind classes lib/ui.ts uses (Satori needs hex, not classes).
+const DIRECTION = {
+  strong: { text: "#6ee7b7", bar: "#34d399" }, // emerald-300 / emerald-400  (score >= PASS_THRESHOLD)
+  moderate: { text: "#fcd34d", bar: "#fbbf24" }, // amber-300 / amber-400     (score >= AMBER_FLOOR)
+  weak: { text: "#fda4af", bar: "#fb7185" }, // rose-300 / rose-400           (below AMBER_FLOOR)
+  none: { text: "#94a3b8", bar: "#475569" }, // slate-400 / slate-600         (not assessed)
+} as const;
+
+/** Direction colours for a 0–10 score (or null). Same thresholds as scoreColor/scoreBar. */
+export function scoreDirection(score: number | null): { text: string; bar: string } {
+  if (score === null) return DIRECTION.none;
+  if (score >= PASS_THRESHOLD) return DIRECTION.strong;
+  if (score >= AMBER_FLOOR) return DIRECTION.moderate;
+  return DIRECTION.weak;
+}
+
 export interface OgPillarCell {
+  /** Pillar id 1–3 (fixed order). */
+  id: 1 | 2 | 3;
   title: string;
+  /** Identity accent (the eyebrow), never a score signal. */
   hue: string;
   /** 0–10 mean, or null when not assessed / no cached report. */
   score: number | null;
+  /** Bar length 0–100 (intensity = distance from a neutral 5); 0 when not assessed. */
+  fill: number;
+  /** Score-text hex by direction. */
+  scoreHex: string;
+  /** Bar-fill hex by direction. */
+  barHex: string;
 }
 
 export interface OgCardData {
@@ -48,10 +81,18 @@ export function buildOgCardData(
 
   return {
     repoLabel: `${parsed.owner}/${parsed.repo}`,
-    pillars: shown.map((p) => ({
-      title: p.title,
-      hue: p.hue,
-      score: report ? (scoreById.get(p.id) ?? null) : null,
-    })),
+    pillars: shown.map((p) => {
+      const score = report ? (scoreById.get(p.id) ?? null) : null;
+      const dir = scoreDirection(score);
+      return {
+        id: p.id as 1 | 2 | 3,
+        title: p.title,
+        hue: p.hue,
+        score,
+        fill: scoreboardFill(score),
+        scoreHex: dir.text,
+        barHex: dir.bar,
+      };
+    }),
   };
 }

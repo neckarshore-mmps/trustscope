@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { parseRepoInput } from "@/lib/parse-repo-input";
 import { getReportStore } from "@/lib/store";
 import { CACHE_TTL_MS } from "@/lib/resolve-report";
-import { buildOgCardData } from "@/lib/og-card";
+import { buildOgCardData, type OgPillarCell } from "@/lib/og-card";
 import type { ReportModel } from "@/lib/report-core/types";
 import { PRODUCT_NAME } from "@/config/product";
 
@@ -20,6 +20,10 @@ const BORDER = "#223041";
 const FG = "#e6edf3";
 const MUTED = "#90a1b6";
 const BRAND = "#2dd4bf";
+
+// Label-only tiles (the three free pillars, no scores) when there is no valid repo — derived
+// from the same helper so hues/order can't drift from the scored path.
+const FALLBACK_PILLARS: OgPillarCell[] = buildOgCardData({ owner: "", repo: "" }, null).pillars;
 
 /** Cache-only read: a stored report within the TTL, else null. Never throws, never generates. */
 async function readCachedReport(parsed: {
@@ -98,17 +102,11 @@ export async function GET(req: Request): Promise<Response> {
           </div>
         </div>
 
-        {/* Pillar row */}
+        {/* Pillar row — real Scoreboard tiles: hue eyebrow, direction-coloured score, intensity bar */}
         <div style={{ display: "flex", gap: 20 }}>
-          {(
-            card?.pillars ?? [
-              { title: "Security & Supply Chain", hue: "#6ee7b7", score: null },
-              { title: "Trust & Governance", hue: "#7dd3fc", score: null },
-              { title: "Community & Sustainability", hue: "#fcd34d", score: null },
-            ]
-          ).map((p) => (
+          {(card?.pillars ?? FALLBACK_PILLARS).map((p) => (
             <div
-              key={p.title}
+              key={p.id}
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -119,35 +117,65 @@ export async function GET(req: Request): Promise<Response> {
                 padding: "22px 24px",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor: p.hue,
-                    display: "flex",
-                  }}
-                />
-                <div style={{ display: "flex", fontSize: 19, color: FG, fontWeight: 600 }}>
-                  {p.title}
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  letterSpacing: 1.5,
+                  textTransform: "uppercase",
+                  color: p.hue,
+                }}
+              >
+                Pillar {p.id}
               </div>
               <div
                 style={{
                   display: "flex",
-                  alignItems: "baseline",
-                  marginTop: 16,
-                  color: p.score === null ? MUTED : FG,
+                  fontSize: 19,
+                  color: FG,
+                  fontWeight: 600,
+                  marginTop: 8,
+                  lineHeight: 1.15,
                 }}
               >
-                <div style={{ display: "flex", fontSize: 40, fontWeight: 700 }}>
-                  {p.score === null ? "—" : p.score.toFixed(1)}
+                {p.title}
+              </div>
+              {p.score === null ? (
+                <div style={{ display: "flex", fontSize: 22, color: MUTED, marginTop: 16 }}>
+                  Not assessed
                 </div>
-                {p.score !== null && (
-                  <div style={{ display: "flex", fontSize: 20, color: MUTED, marginLeft: 6 }}>
+              ) : (
+                <div style={{ display: "flex", alignItems: "baseline", marginTop: 16 }}>
+                  <div style={{ display: "flex", fontSize: 46, fontWeight: 700, color: p.scoreHex }}>
+                    {p.score.toFixed(1)}
+                  </div>
+                  <div style={{ display: "flex", fontSize: 20, color: MUTED, marginLeft: 8 }}>
                     / 10
                   </div>
+                </div>
+              )}
+              {/* Intensity bar — length = distance from a neutral 5, colour = direction */}
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 18,
+                  height: 6,
+                  width: "100%",
+                  borderRadius: 999,
+                  backgroundColor: BORDER,
+                }}
+              >
+                {p.score !== null && (
+                  <div
+                    style={{
+                      display: "flex",
+                      height: 6,
+                      width: `${p.fill}%`,
+                      borderRadius: 999,
+                      backgroundColor: p.barHex,
+                    }}
+                  />
                 )}
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildOgCardData } from "./og-card";
+import { buildOgCardData, scoreDirection } from "./og-card";
 import type { ReportModel, Pillar } from "@/lib/report-core/types";
 
 function pillar(id: 1 | 2 | 3 | 4, score: number | null): Pillar {
@@ -64,5 +64,32 @@ describe("buildOgCardData", () => {
   it("never surfaces the Pro-only Functional Quality pillar", () => {
     const card = buildOgCardData({ owner: "o", repo: "r" }, report([1, 2, 3, 4]));
     expect(card.pillars.some((p) => p.title.includes("Functional"))).toBe(false);
+  });
+
+  it("carries pillar ids 1→2→3 for the tile eyebrows", () => {
+    const card = buildOgCardData({ owner: "o", repo: "r" }, null);
+    expect(card.pillars.map((p) => p.id)).toEqual([1, 2, 3]);
+  });
+
+  it("colours the score by DIRECTION and sets an intensity fill", () => {
+    const card = buildOgCardData({ owner: "o", repo: "r" }, report([9, 5, 2, 8]));
+    // 9 → strong (emerald), 5 → moderate (amber), 2 → weak (rose)
+    expect(card.pillars.map((p) => p.scoreHex)).toEqual(["#6ee7b7", "#fcd34d", "#fda4af"]);
+    // fill = round(max(s, 10-s) * 10): 9→90, 5→50, 2→80
+    expect(card.pillars.map((p) => p.fill)).toEqual([90, 50, 80]);
+  });
+
+  it("uses the slate 'none' direction + zero fill for null scores", () => {
+    const card = buildOgCardData({ owner: "o", repo: "r" }, null);
+    expect(card.pillars.every((p) => p.scoreHex === "#94a3b8" && p.fill === 0)).toBe(true);
+  });
+});
+
+describe("scoreDirection", () => {
+  it("maps the same thresholds as scoreColor/scoreBar (>=8 strong, >=4 amber, else weak)", () => {
+    expect(scoreDirection(8).bar).toBe("#34d399");
+    expect(scoreDirection(4).bar).toBe("#fbbf24");
+    expect(scoreDirection(3.9).bar).toBe("#fb7185");
+    expect(scoreDirection(null).bar).toBe("#475569");
   });
 });
