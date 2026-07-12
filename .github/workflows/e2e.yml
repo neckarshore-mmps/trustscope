@@ -274,13 +274,15 @@ jobs:
           # Reliably materialize refs/remotes/origin/stats-data (a bare `fetch <branch>` only sets
           # FETCH_HEAD). Fails harmlessly on the first run (the branch does not exist yet).
           git fetch origin +refs/heads/stats-data:refs/remotes/origin/stats-data 2>/dev/null || true
-          # Skip (no churn) ONLY when stats.json is unchanged AND the deploy-gate vercel.json is
-          # already present on stats-data. The vercel.json clause forces the one-time backfill push
-          # even on a same-sha re-run, so the gate lands the first time this ships.
+          # Skip (no churn) ONLY when stats.json is unchanged AND the deploy-gate vercel.json on
+          # stats-data matches the current $VERCEL_JSON. Comparing CONTENT (not mere presence) means
+          # the one-time backfill lands even on a same-sha re-run, AND any future change to the gate
+          # literal self-heals onto stats-data without waiting for a coincident stats.json change.
+          # ($(…) strips the stored blob's trailing newline, so the compare is exact.)
           if git show origin/stats-data:stats.json > /tmp/prev-stats.json 2>/dev/null \
              && [ "$(norm /tmp/prev-stats.json)" = "$(norm stats.json)" ] \
-             && git cat-file -e origin/stats-data:vercel.json 2>/dev/null; then
-            echo "stats.json unchanged and deploy-gate vercel.json present — nothing to publish."
+             && [ "$(git show origin/stats-data:vercel.json 2>/dev/null)" = "$VERCEL_JSON" ]; then
+            echo "stats.json unchanged and deploy-gate vercel.json up to date — nothing to publish."
             exit 0
           fi
           STATS_BLOB=$(git hash-object -w stats.json)
