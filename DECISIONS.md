@@ -10,13 +10,13 @@ internal, Founder-decided v1 build work-order (#274).
 | 1 | Audience | **Adopter/Evaluator** — someone vetting a *third-party* tool before adopting it. Not the maintainer/badge path (that competes with OpenSSF's own badge). |
 | 2 | Format | **Web report-generator** — repo URL in → report out. |
 | 3 | Depth | **Deterministic-pure — no LLM, no API key.** Rule-based fix text from the Hardening Standard §3. |
-| 4 | Pillars | **All four shown.** P1 full Scorecard · P2 Trust/Governance · P3 lifecycle. **P4 = "not assessed" — never faked** (trails by number so N/A never leads). **No single aggregate score.** |
+| 4 | Pillars | **Three pillars shown; Functional Quality is Pro-only.** P1 full Scorecard · P2 Trust/Governance · P3 lifecycle. **P4 Functional Quality = Pro-only — dropped from every free surface, never faked. No single aggregate score.** _(Revised 2026-07-11 (#80) — originally "All four shown"; see §9.)_ |
 | 5 | Third-party posture | **Constructive + consent.** Offer to file a constructive fix-issue upstream. |
 | 6 | Fix-issue mechanism | **File via GitHub OAuth AS THE USER** (the issue is the user's own action) with a "via TrustScope" footer. **Bot-identity forbidden** — unsolicited bot-issues break consent. |
 
-**Reputation mechanism:** the four-pillar synthesis is the visible differentiator beyond raw
-Scorecard, and the "via TrustScope" constructive issues put Neckarshore's name on concrete
-improvements to real projects. Both are foregrounded in the UI, not footnoted.
+**Reputation mechanism:** the multi-pillar synthesis (three pillars free) is the visible
+differentiator beyond raw Scorecard, and the "via TrustScope" constructive issues put Neckarshore's
+name on concrete improvements to real projects. Both are foregrounded in the UI, not footnoted.
 
 ## 2. Org-home = `neckarshore-mmps/trustscope`
 
@@ -51,7 +51,7 @@ infrastructure seams are scalable from the start; v2 is pure ADD.
 - **Decision:** the `ReportModel.aggregateScore` is always `null`; per-pillar scores only.
 - **Rationale:** framework doctrine. Each pillar answers a different question; a lone number hides
   the trade-off an adopter is weighing (a secure solo-maintained library is not "7/10").
-- **Affects:** the UI foregrounds the four-pillar rationale; there is no place a mean-of-means could leak in.
+- **Affects:** the UI foregrounds the multi-pillar rationale (three pillars free); there is no place a mean-of-means could leak in.
 
 ## 5. Scorecard runner: fast-path → Docker (dev) / binary (prod)
 
@@ -100,3 +100,23 @@ infrastructure seams are scalable from the start; v2 is pure ADD.
   standard's uniform *in-app-changelog sourcing* rule (md-viewer uses a build-time base64 embed; this is
   the Server-Component-parse variant for framework apps). The estate-wide decision remains **MASCHIN +
   Founder** to ratify; TrustScope proves one pattern. Founder-approved 2026-07-11 (this session).
+
+## 9. Functional Quality is Pro-only — three pillars free (`TS-FQ-PRO-ONLY-THREE-PILLARS`)
+
+- **Decision:** the **free** report assesses **three** pillars — P1 Security & Supply Chain · P2 Trust &
+  Governance · P3 Community & Sustainability. **P4 Functional Quality is Pro-only**: it stays in the
+  internal data model but is dropped from *every* free surface (the pillar itself and its due-diligence
+  signals), never shown as a faked or "not assessed" score. **No single aggregate score** still holds.
+  Shipped 2026-07-11 ([#80](https://github.com/neckarshore-mmps/trustscope/pull/80)); this **supersedes
+  the original locked decision #4 ("All four shown, P4 = not assessed")**.
+- **Rationale:** a visible "not assessed" fourth pillar read as an unfinished report rather than a
+  deliberate scope line. Functional Quality is a hands-on judgement that belongs to the paid tier, so it
+  is withheld cleanly rather than shown empty — the free report is honestly *complete at three pillars*,
+  not *four-minus-one*. Keeping P4 in the data model preserves the AP-1 Pro seam (pure ADD, no rewrite).
+- **Affects:** `displayPillars` / `displayDueDiligence` (`lib/report-display.ts`) filter
+  `PRO_ONLY_PILLAR` out of every non-Pro surface; a **CI grep-gate** (`scripts/three-pillar-guard.sh`)
+  fails any build that leaks a user-facing "four-pillar" string into `app/`, `config/`, or `public/`.
+  Deliberate, Founder-gated exclusions from that gate (each a tracked backlog item): the static OG/Twitter
+  assets (`T-TS-OG-IMAGE-THREE-PILLAR`, design regen pending) and `CHANGELOG.md` release history
+  (`T-TS-CHANGELOG-FOUR-PILLAR`, a retroactive-edit Founder call). Building the Pro tier itself (pricing,
+  gating, the P4 computation path) remains a deferred v2 ADD (§3).
