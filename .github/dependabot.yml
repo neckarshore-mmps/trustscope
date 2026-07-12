@@ -30,6 +30,19 @@ updates:
       - dependency-name: "eslint"
         update-types:
           - "version-update:semver-major"
+      # typescript MAJOR is deferred: the Next lint stack bundles
+      # `@typescript-eslint/typescript-estree`, which reads TypeScript internal
+      # APIs that the TS 7 native compiler port reshaped — the lint run crashes
+      # at parser-load with `TypeError: Cannot read properties of undefined
+      # (reading 'Cjs')` before checking a single line (PR #68, Issue #30). Note
+      # `tsc --noEmit` itself is GREEN on TS 7 — this is a lint-toolchain lag,
+      # NOT a compiler problem. No fixed upstream release of typescript-eslint
+      # supports the TS 7 native API yet. Re-enable by removing this ignore once
+      # eslint-config-next's bundled typescript-eslint supports TS 7. Minor/patch
+      # still flow.
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
     groups:
       # Grouping is aligned with the auto-merge safe class (dependabot-auto-merge.yml)
       # so the boring class self-clears atomically and only the review-worthy bumps
