@@ -212,7 +212,14 @@ jobs:
       contents: write
     concurrency:
       # Serialize the PUSH (the thing that can race on stats-data), not the generation above.
+      # queue: max (not the default queue: single) so a burst of push:main events cannot evict an
+      # already-pending publish — cancel-in-progress:false protects only the RUNNING job, so a third
+      # overlapping push would otherwise drop the second's pending publish (CodeRabbit Major, #92).
+      # max + cancel-in-progress:false is the ALLOWED combination (max + true is a validation error).
+      # generate-stats is deliberately NOT in this group: it does not push, and for a latest-snapshot
+      # artifact its generation order is irrelevant.
       group: publish-stats-${{ github.ref }}
+      queue: max
       cancel-in-progress: false
 
     steps:
