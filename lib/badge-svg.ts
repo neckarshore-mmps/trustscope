@@ -33,10 +33,14 @@ export interface BadgeOptions {
 }
 
 export function badgeSvg(opts: BadgeOptions = {}): string {
-  const label = esc(opts.label ?? "TrustScope");
-  const message = esc(opts.message ?? "trust report");
-  const lw = seg(label);
-  const mw = seg(message);
+  const rawLabel = opts.label ?? "TrustScope";
+  const rawMessage = opts.message ?? "trust report";
+  // Measure the RAW glyphs; escape only for output. Measuring escaped text would inflate the
+  // width of any input with &, <, >, or " (e.g. "&" → "&amp;", 1 glyph counted as 5).
+  const lw = seg(rawLabel);
+  const mw = seg(rawMessage);
+  const label = esc(rawLabel);
+  const message = esc(rawMessage);
   const total = lw + mw;
   const alt = `${label}: ${message}`;
 

@@ -37,4 +37,10 @@ describe("badgeSvg", () => {
     const w = (s: string) => Number(s.match(/^<svg[^>]*\swidth="(\d+)"/)![1]);
     expect(w(long)).toBeGreaterThan(w(short));
   });
+
+  it("sizes by RAW glyph count, not escaped length (CodeRabbit #96 fix)", () => {
+    const w = (s: string) => Number(s.match(/^<svg[^>]*\swidth="(\d+)"/)![1]);
+    // "a&b" and "axb" are both 3 glyphs — the escaped '&amp;' must not inflate the width.
+    expect(w(badgeSvg({ label: "a&b" }))).toBe(w(badgeSvg({ label: "axb" })));
+  });
 });
