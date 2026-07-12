@@ -27,6 +27,10 @@ export const FAQ_ITEMS: readonly FaqItem[] = [
     a: "The full OpenSSF Scorecard plus public GitHub governance and lifecycle signals. The same repository always produces the same report — it is deterministic, with no LLM in the loop.",
   },
   {
+    q: "What are the due-diligence notes in a report?",
+    a: "Alongside the three pillars, a report surfaces a few quiet due-diligence notes — calm nudges derived from existing data, never a score. One example is install scripts: some npm packages run their own steps the moment they are installed (preinstall / install / postinstall), so arbitrary code runs during npm install. Often legitimate (native builds), but worth a look before adopting — the note points you to a constructive next step (npm install --ignore-scripts to inspect first) and never accuses.",
+  },
+  {
     q: "Does TrustScope store my data?",
     a: "Reading a report stores nothing about you. It is self-hosted, GDPR-clean, with no third-party trackers.",
   },
