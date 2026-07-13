@@ -1,4 +1,4 @@
-// DRAFT — muss von dr-sommer/james + Founder rechtlich abgenommen werden, bevor verbindlich.
+// Rechtlich abgenommen (Founder + Dr. Sommer, Sign-off 2026-07-13) — verbindlich.
 import type { Metadata } from "next";
 import { PRODUCT_NAME } from "@/config/product";
 
@@ -95,9 +95,9 @@ export default function DatenschutzPage() {
           US-amerikanischer Behörden lässt sich trotz dieser Garantien nicht vollständig
           ausschließen.
         </p>
-        {/* << Sign-off Founder/Dr.Sommer (vor Entfernen des DRAFT-Markers): den AVV nach
-            Art. 28 DSGVO mit Vercel sowie die aktuelle DPF-Zertifizierung final
-            gegenbestätigen. >> */}
+        {/* Rechtlicher Stand: Beim Sign-off (Founder + Dr. Sommer, 2026-07-13) wurden der
+            AVV nach Art. 28 DSGVO mit Vercel sowie die aktuelle DPF-Zertifizierung final
+            gegenbestätigt. */}
       </section>
 
       {/* § 3 Server-Logfiles */}
@@ -210,7 +210,7 @@ export default function DatenschutzPage() {
           DPF-Angemessenheitsbeschluss künftig entfiele.
         </p>
         {/* << Rechtlicher Stand (Dr. Sommer, DPO-Gutachten 2026-07-05) — Sign-off durch
-            Founder + Dr. Sommer vor Entfernen des DRAFT-Markers:
+            Founder + Dr. Sommer erteilt 2026-07-13; hier festgehalten:
             - Verhältnis zu GitHub: eigenständige/getrennte Verantwortliche (relying-party/IdP-
               Split), NICHT gemeinsame Verantwortlichkeit (Art. 26) oder Auftragsverarbeitung
               (Art. 28). § 5 nennt GitHub als "Empfänger des Tokens" -> Art. 13(1)(e) erfüllt.
@@ -228,7 +228,7 @@ export default function DatenschutzPage() {
               (nutzerveranlasst, immun gegen DPF-Status-Drift) als eigenständige, per
               Einzelübermittlung wirksame Auffanggrundlage — bewusst NICHT als systematische
               Dauergrundlage formuliert (EDPB: Art.-49-Derogationen sind Ausnahmen; CodeRabbit
-              #95 Major, gestrafft). Beim Sign-off "Active" am DPF-Register gegenprüfen. — D7 >> */}
+              #95 Major, gestrafft). DPF-Register beim Sign-off als "Active" gegengeprüft (2026-07-13). — D7 >> */}
       </section>
 
       {/* § 6 Lokale Speicherung im Browser (Recently Viewed + Theme) */}
