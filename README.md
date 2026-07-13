@@ -78,15 +78,17 @@ See [`.env.example`](.env.example). Nothing is required to read reports for Open
 | `SCORECARD_RUNNER` | `auto` (default) · `fastpath` · `docker` · `binary`. |
 | `SCORECARD_ONDEMAND` | Which runner `auto` uses on a fast-path miss: `docker` (default) · `binary`. |
 | `SCORECARD_BIN` / `SCORECARD_IMAGE` | Path to the `scorecard` binary / the Docker image. |
-| `REPORT_STORE` | `file` (default, persistent locally) · `memory`. |
+| `REPORT_STORE` | `file` (default, persistent locally) · `memory` · `neon`/`postgres` (prod: cross-instance-durable, needs `DATABASE_URL`). |
+| `DATABASE_URL` | Neon Postgres connection string (pooled HTTP URL). Required when `REPORT_STORE=neon` (or `postgres`). Run `npm run db:migrate` once to create the schema. |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` / `AUTH_SECRET` | GitHub OAuth App (one-click issue filing). Optional — the fallbacks work without it. |
 
 ## Architecture
 
 - `lib/report-core/` — the **pure, framework-free** report builder (the AP-1 anchor). No I/O, no clock.
 - `lib/adapters/` — the swappable Scorecard source (fast-path → Docker/binary) + GitHub-API adapter.
-- `lib/store/` — the `ReportStore`. `memory` + `file` today (the file store is ephemeral on
-  serverless); a durable store (e.g. Postgres) is planned for production persistence.
+- `lib/store/` — the `ReportStore` behind one interface: `memory` (tests), `file` (dev), and
+  `neon` (prod — Neon Postgres, cross-instance-durable). The file store is ephemeral per-instance on
+  Fluid Compute, so prod runs `neon` (`REPORT_STORE=neon` + `DATABASE_URL`); schema in `sql/`.
 - `auth.ts` + `app/api/` — env-gated GitHub OAuth issue filing (Auth.js), with credential-free fallbacks.
 - `config/` — central product identity + config (`config/product.ts`).
 - `components/` — `SiteHeader` / `SiteFooter` / `NavMenu`, the repo `RepoForm` + `RecentRepos`, and the report UI.

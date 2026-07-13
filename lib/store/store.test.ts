@@ -2,11 +2,13 @@ import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
-import { afterAll, describe, expect, it } from "vitest";
+import { neon } from "@neondatabase/serverless";
+import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { buildReport } from "@/lib/report-core/build-report";
 import { normalizeGitHubData } from "@/lib/report-core/normalize";
 import { FileReportStore } from "./file-store";
 import { InMemoryReportStore } from "./memory-store";
+import { NeonReportStore } from "./neon-store";
 import type { ReportStore, StoredReport } from "./types";
 
 const FIXTURES = join(process.cwd(), "fixtures");
@@ -110,5 +112,64 @@ describe("FileReportStore — §5 atomic write + bounded growth", () => {
     // the two oldest (c0, c1) were evicted; the three newest remain
     expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c0" })).toBeNull();
     expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c4" })).not.toBeNull();
+  });
+});
+
+// Live-DB contract for the prod store. Gated on a DEDICATED, test-only var — NEON_TEST_DATABASE_URL,
+// NEVER the production DATABASE_URL — because this suite TRUNCATEs `reports` between tests: pointing
+// it at prod would wipe live reports. Point it at a throwaway Neon TEST branch. CI sets neither var →
+// skipped there, so green CI does NOT prove the store works — the launch DoD is running this suite
+// against a test branch + the E2E flow on the preview. Run the migration first: `npm run db:migrate`.
+const NEON_TEST_URL = process.env.NEON_TEST_DATABASE_URL;
+describe.skipIf(!NEON_TEST_URL)("NeonReportStore — ReportStore contract (live DB)", () => {
+  // Guarded: `describe.skipIf` skips the TESTS but still runs this body at collection time, so
+  // neither the store nor the driver may be constructed unconditionally (both throw on undefined).
+  const store = new NeonReportStore(NEON_TEST_URL ?? "postgres://u:p@localhost/db");
+  const sql = neon(NEON_TEST_URL ?? "postgres://u:p@localhost/db");
+
+  beforeEach(async () => {
+    // Isolation: unlike the temp-dir stores, Neon shares one table across tests.
+    await sql`TRUNCATE reports`;
+  });
+
+  it("returns null for a missing key", async () => {
+    expect(await store.get({ owner: "a", repo: "b", commit: "c" })).toBeNull();
+    expect(await store.getLatest("a", "b")).toBeNull();
+  });
+
+  it("round-trips a stored report by exact key", async () => {
+    const s = stored("aaa111", "2026-07-01T10:00:00.000Z");
+    await store.put(s);
+    const got = await store.get(s.key);
+    expect(got?.report.repo.name).toBe("fixture-repo");
+    expect(got?.fetchedAt).toBe("2026-07-01T10:00:00.000Z");
+  });
+
+  it("getLatest returns the freshest entry across commits", async () => {
+    await store.put(stored("old", "2026-07-01T08:00:00.000Z"));
+    await store.put(stored("new", "2026-07-01T12:00:00.000Z"));
+    await store.put(stored("mid", "2026-07-01T10:00:00.000Z"));
+    expect((await store.getLatest("fixture-org", "fixture-repo"))?.key.commit).toBe("new");
+  });
+
+  it("scopes getLatest to the requested repo", async () => {
+    await store.put(stored("x", "2026-07-01T09:00:00.000Z"));
+    expect(await store.getLatest("someone", "else")).toBeNull();
+  });
+
+  it("upserts on (owner, repo, commit) — the same key stays one row, newest write wins", async () => {
+    await store.put(stored("dup", "2026-07-01T08:00:00.000Z"));
+    await store.put(stored("dup", "2026-07-01T09:00:00.000Z"));
+    const got = await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "dup" });
+    expect(got?.fetchedAt).toBe("2026-07-01T09:00:00.000Z");
+  });
+
+  it("returns fetchedAt as the EXACT ISO string — TTL-safe round-trip (the 'Not assessed' bug)", async () => {
+    // timestamptz comes back as a JS Date; if the store leaked the Date through, Date.parse in the
+    // TTL check would be NaN → false cache-miss → "Not assessed". Assert the ISO contract directly.
+    await store.put(stored("iso", "2026-07-01T10:00:00.000Z"));
+    const got = await store.getLatest("fixture-org", "fixture-repo");
+    expect(got?.fetchedAt).toBe("2026-07-01T10:00:00.000Z");
+    expect(Number.isNaN(Date.parse(got?.fetchedAt ?? "x"))).toBe(false);
   });
 });
