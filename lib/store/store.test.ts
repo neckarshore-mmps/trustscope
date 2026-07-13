@@ -115,11 +115,12 @@ describe("FileReportStore — §5 atomic write + bounded growth", () => {
   });
 });
 
-// Live-DB contract for the prod store. SKIPPED unless DATABASE_URL points at a Neon TEST branch
-// (the suite TRUNCATEs `reports` between tests). CI has no DATABASE_URL → this is skipped there, so
-// green CI does NOT prove the store works — the launch DoD is running this suite + the E2E flow
-// against a real Neon DB (see the PR body). Run the migration first: `npm run db:migrate`.
-const NEON_TEST_URL = process.env.DATABASE_URL;
+// Live-DB contract for the prod store. Gated on a DEDICATED, test-only var — NEON_TEST_DATABASE_URL,
+// NEVER the production DATABASE_URL — because this suite TRUNCATEs `reports` between tests: pointing
+// it at prod would wipe live reports. Point it at a throwaway Neon TEST branch. CI sets neither var →
+// skipped there, so green CI does NOT prove the store works — the launch DoD is running this suite
+// against a test branch + the E2E flow on the preview. Run the migration first: `npm run db:migrate`.
+const NEON_TEST_URL = process.env.NEON_TEST_DATABASE_URL;
 describe.skipIf(!NEON_TEST_URL)("NeonReportStore — ReportStore contract (live DB)", () => {
   // Guarded: `describe.skipIf` skips the TESTS but still runs this body at collection time, so
   // neither the store nor the driver may be constructed unconditionally (both throw on undefined).
