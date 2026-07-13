@@ -1,5 +1,5 @@
-// DRAFT — About-Text vom Founder abzunehmen, bevor verbindlich. Keine erfundenen
-// Claims (Zahlen, Daten, Teamgröße); nur belegbare, prinzipienbasierte Aussagen.
+// About-Text vom Founder abgenommen (2026-07-13). Keine erfundenen Claims (Zahlen,
+// Daten, Teamgröße) — nur belegbare, prinzipienbasierte Aussagen.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PRODUCT_NAME, PRODUCT_ORG, PRODUCT_SUBDOMAIN } from "@/config/product";
