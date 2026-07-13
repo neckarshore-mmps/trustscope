@@ -1,4 +1,3 @@
-// DRAFT — muss von dr-sommer/james + Founder rechtlich abgenommen werden, bevor verbindlich.
 import type { Metadata } from "next";
 import { PRODUCT_NAME } from "@/config/product";
 
