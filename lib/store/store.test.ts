@@ -3,10 +3,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { afterAll, describe, expect, it } from "vitest";
+import { PGlite } from "@electric-sql/pglite";
 import { buildReport } from "@/lib/report-core/build-report";
 import { normalizeGitHubData } from "@/lib/report-core/normalize";
 import { FileReportStore } from "./file-store";
 import { InMemoryReportStore } from "./memory-store";
+import { NeonReportStore, type SqlExecutor } from "./neon-store";
 import type { ReportStore, StoredReport } from "./types";
 
 const FIXTURES = join(process.cwd(), "fixtures");
@@ -31,8 +33,10 @@ function stored(commit: string, fetchedAt: string): StoredReport {
 }
 
 const tempDirs: string[] = [];
+const pglites: PGlite[] = [];
 afterAll(async () => {
   await Promise.all(tempDirs.map((d) => rm(d, { recursive: true, force: true })));
+  await Promise.all(pglites.map((db) => db.close()));
 });
 
 async function makeFileStore(): Promise<ReportStore> {
@@ -41,9 +45,28 @@ async function makeFileStore(): Promise<ReportStore> {
   return new FileReportStore(dir);
 }
 
+// Runs the REAL SQL against an embedded Postgres (pglite, WASM) — no network, no live DB —
+// so the Neon impl passes the SAME contract in CI as memory/file. The migration under test is
+// the very file that provisions prod (sql/001_create_reports.sql), not a hand-copied schema.
+const MIGRATION = readFileSync(join(process.cwd(), "sql/001_create_reports.sql"), "utf8");
+
+async function makeNeonStore(): Promise<ReportStore> {
+  const db = new PGlite();
+  pglites.push(db);
+  await db.exec(MIGRATION);
+  const sql: SqlExecutor = async (strings, ...values) => {
+    let text = strings[0];
+    for (let i = 0; i < values.length; i++) text += `$${i + 1}` + strings[i + 1];
+    const res = await db.query(text, values as unknown[]);
+    return res.rows as Record<string, unknown>[];
+  };
+  return new NeonReportStore(sql);
+}
+
 const impls: Array<[string, () => Promise<ReportStore>]> = [
   ["InMemoryReportStore", async () => new InMemoryReportStore()],
   ["FileReportStore", makeFileStore],
+  ["NeonReportStore", makeNeonStore],
 ];
 
 describe.each(impls)("%s — ReportStore contract", (_name, make) => {
@@ -110,5 +133,20 @@ describe("FileReportStore — §5 atomic write + bounded growth", () => {
     // the two oldest (c0, c1) were evicted; the three newest remain
     expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c0" })).toBeNull();
     expect(await store.get({ owner: "fixture-org", repo: "fixture-repo", commit: "c4" })).not.toBeNull();
+  });
+});
+
+describe("NeonReportStore — Postgres upsert on the (owner, repo, commit) primary key", () => {
+  it("re-putting the same key replaces the row (no PK violation, newer fetchedAt wins)", async () => {
+    const store = await makeNeonStore();
+    const key = { owner: "fixture-org", repo: "fixture-repo", commit: "same" };
+    await store.put({ ...stored("same", "2026-07-01T08:00:00.000Z") });
+    await store.put({ ...stored("same", "2026-07-01T12:00:00.000Z") });
+    const got = await store.get(key);
+    expect(got?.fetchedAt).toBe("2026-07-01T12:00:00.000Z");
+    // getLatest still resolves the single upserted row, not a duplicate
+    const latest = await store.getLatest("fixture-org", "fixture-repo");
+    expect(latest?.key.commit).toBe("same");
+    expect(latest?.fetchedAt).toBe("2026-07-01T12:00:00.000Z");
   });
 });

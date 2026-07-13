@@ -78,7 +78,8 @@ See [`.env.example`](.env.example). Nothing is required to read reports for Open
 | `SCORECARD_RUNNER` | `auto` (default) · `fastpath` · `docker` · `binary`. |
 | `SCORECARD_ONDEMAND` | Which runner `auto` uses on a fast-path miss: `docker` (default) · `binary`. |
 | `SCORECARD_BIN` / `SCORECARD_IMAGE` | Path to the `scorecard` binary / the Docker image. |
-| `REPORT_STORE` | `file` (default, persistent locally) · `memory`. |
+| `REPORT_STORE` | `file` (default, persistent locally) · `memory` · `neon` (prod: shared cross-instance Postgres store). |
+| `DATABASE_URL` | Pooled Neon connection string. Required when `REPORT_STORE=neon`. Run `npm run db:migrate` once against it to create the `reports` table (`sql/001_create_reports.sql`). |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` / `AUTH_SECRET` | GitHub OAuth App (one-click issue filing). Optional — the fallbacks work without it. |
 
 ## Architecture
