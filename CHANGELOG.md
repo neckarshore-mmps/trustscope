@@ -74,12 +74,12 @@ the milestones a new user would notice. Prior history in git.
 
 - Meet Bodo — TrustScope’s beaver mascot now guides you from the landing page through the report and into every export.
 - A cleaner report — a fixed pillar order (Security → Trust → Community), each with its own colour, so the shape of a project reads at a glance.
-- Three pillars, clearly named — the free report assesses three pillars; Functional Quality is a Pro-only pillar, never a faked score.
+- Three pillars, clearly named — the free report assesses exactly three, and never fakes a score it can't stand behind.
 - A smoother start — a faster repository picker that fills your choice instead of jumping ahead.
 
 ### v0.1.0 — 2026-07-06
 
-- Deterministic four-pillar trust reports built on the OpenSSF Scorecard — see where a project is strong or weak, never one misleading single score.
+- Deterministic trust reports built on the OpenSSF Scorecard — see where a project is strong or weak, never one misleading single score.
 - “Show your work” — an orientation summary up front, expandable per-finding evidence, and a Due-Diligence panel that surfaces quiet signals like install-script detection.
 - A searchable repository picker with a Recently-Viewed strip — from landing to report in a couple of keystrokes.
 - File findings upstream as yourself, per pillar, each carrying a transparent “via TrustScope” attribution.

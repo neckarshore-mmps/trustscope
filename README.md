@@ -1,20 +1,19 @@
 # TrustScope
 
-Paste a public GitHub repo → get a deterministic **four-pillar trust report** with constructive,
-upstream-friendly fixes. Built on the [OpenSSF Scorecard](https://securityscorecards.dev). By
-Neckarshore AI.
+Paste a public GitHub repo → get a deterministic **three-pillar trust report** with constructive,
+upstream-friendly fixes — never a single misleading score. Built on the
+[OpenSSF Scorecard](https://securityscorecards.dev). By Neckarshore AI.
 
 TrustScope helps someone **evaluating a third-party open-source tool** decide how much to trust it —
 across security, governance, and community — and never hides the trade-offs behind a single score.
 
-## The four pillars
+## The three pillars
 
 | Pillar | Question | Source |
 |--------|----------|--------|
 | 1 — Security & Supply Chain | Is it built securely? | The full OpenSSF Scorecard. |
 | 2 — Trust & Governance | Can I trust the project behind it? | Scorecard License/Security-Policy + GitHub API (owner, contact). |
 | 3 — Community & Sustainability | Will it be here in a year? | Scorecard Maintained/Contributors + activity — a lifecycle stage, not a grade. |
-| 4 — Functional Quality | Is it well-built? | **Not assessed** — a hands-on judgement, never faked. |
 
 **No single aggregate score, by design** — each pillar answers a different question; collapsing them
 hides exactly the trade-off you are weighing.
