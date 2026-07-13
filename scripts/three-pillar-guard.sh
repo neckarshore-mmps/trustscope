@@ -77,8 +77,26 @@ fi
 # so a "four-pillar" string here is a real user-facing leak. The archival SemVer sections
 # ABOVE the marker are release history (v0.1.0 shipped four pillars) and are intentionally
 # not scanned.
-pub_matches="$(awk '/^## \[public\]/{f=1} f' CHANGELOG.md | grep -niIE "$PATTERN" || true)"
-if [ -n "$pub_matches" ]; then
+#
+# Fail CLOSED: if CHANGELOG.md is unreadable or the '## [public]' marker is gone, awk exits 2
+# and we fail — a vanished section must not silently disable this coverage. grep's no-match (1)
+# vs real-error (>1) statuses are kept distinct so a broken scan can't read as a clean tree.
+public_section="$(awk '
+  /^##[[:space:]]+\[public\][[:space:]]*$/ { found=1 }
+  found { print }
+  END { if (!found) exit 2 }
+' CHANGELOG.md)" || {
+  echo "❌ Three-pillar guard failed — CHANGELOG.md has no readable ## [public] section."
+  exit 1
+}
+
+pub_rc=0
+pub_matches="$(printf '%s\n' "$public_section" | grep -niIE "$PATTERN")" || pub_rc=$?
+if [ "$pub_rc" -gt 1 ]; then
+  echo "❌ Three-pillar guard: CHANGELOG [public] scan failed (grep exit $pub_rc)."
+  exit 1
+fi
+if [ "$pub_rc" -eq 0 ] && [ -n "$pub_matches" ]; then
   echo "❌ Three-pillar guard failed — 'four pillar' string(s) in the CHANGELOG [public] section"
   echo "   (rendered live on /changelog):"
   echo ""
