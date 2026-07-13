@@ -1,7 +1,7 @@
 # Security Policy
 
 TrustScope is an open-source trust report by Neckarshore AI — paste a public GitHub
-repository and get a deterministic four-pillar trust report, built on the
+repository and get a deterministic three-pillar trust report, built on the
 [OpenSSF Scorecard](https://securityscorecards.dev). A tool whose whole job is
 assessing the security posture of *other* projects has to hold itself to the
 same bar. This public repository holds its source.
