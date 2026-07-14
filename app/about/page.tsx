@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
 import { JsonLd } from "@/components/JsonLd";
+import { TryItCta } from "@/components/TryItCta";
 import { ABOUT_GRAPH } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -83,6 +84,7 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+      <TryItCta />
     </div>
   );
 }

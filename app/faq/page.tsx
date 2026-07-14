@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FAQ_ITEMS } from "@/config/faq";
 import { JsonLd } from "@/components/JsonLd";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { TryItCta } from "@/components/TryItCta";
 import { breadcrumb } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -25,13 +26,16 @@ const FAQ_BREADCRUMB = breadcrumb([{ name: "FAQ", path: "/faq" }]);
 
 export default function FaqPage() {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16">
-      <JsonLd data={FAQ_SCHEMA} />
-      <JsonLd data={FAQ_BREADCRUMB} />
-      <h1 className="text-3xl font-semibold tracking-tight">Frequently asked questions</h1>
-      <div className="mt-8">
-        <FaqAccordion items={FAQ_ITEMS} />
+    <>
+      <div className="mx-auto max-w-3xl px-5 py-16">
+        <JsonLd data={FAQ_SCHEMA} />
+        <JsonLd data={FAQ_BREADCRUMB} />
+        <h1 className="text-3xl font-semibold tracking-tight">Frequently asked questions</h1>
+        <div className="mt-8">
+          <FaqAccordion items={FAQ_ITEMS} />
+        </div>
       </div>
-    </div>
+      <TryItCta />
+    </>
   );
 }
