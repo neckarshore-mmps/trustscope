@@ -3,7 +3,7 @@
 > Paste a public GitHub repo and get a deterministic three-pillar trust report — security & supply chain, governance, and community — with constructive, upstream-friendly fixes and no single score. A reputation surface by Neckarshore AI, made in Germany.
 
 ## Audience
-- [Who is TrustScope for?](https://trustscope.neckarshore.ai/for): the two audiences — adopters and maintainers
+- [Who is TrustScope for?](https://trustscope.neckarshore.ai/for/adopters): the two audiences — adopters and maintainers
 - [For adopters](https://trustscope.neckarshore.ai/for/adopters): vet a third-party project before you depend on it
 - [For maintainers](https://trustscope.neckarshore.ai/for/maintainers): see and close the trust gaps adopters look for
 

@@ -35,6 +35,17 @@
   --brand-strong: #14b8a6;
 
   /*
+   * CTA gradient — intentionally theme-INDEPENDENT. The dual-role teal↔amber fade
+   * stays vivid on both grounds so a single fixed dark ink clears WCAG AA across
+   * the whole sweep. Light mode previously inherited teal-700 (--brand) as the
+   * gradient edge AND a theme-flipped near-white ink, which collapsed to 1.76:1
+   * over the amber band. These two tokens are set once and never overridden in the
+   * light block. --cta-ink mirrors the dark --background that already passed.
+   */
+  --cta-edge: #2dd4bf; /* teal-400 — bright on both themes */
+  --cta-ink: #090d13; /* fixed dark ink — ~10:1 across the gradient */
+
+  /*
    * Per-pillar ACCENT-TEXT hue — the -300/-400 shades pop on this dark ground.
    * Kept in sync with config/pillars.ts `hue` (the single source for fills/borders/
    * decorative tints). This variable governs only pillar text (labels, questions,
@@ -118,7 +129,8 @@ body {
  * adopter (evaluate) and the maintainer (improve) path. Honors reduced-motion with a static blend.
  */
 .cta-fade {
-  background: linear-gradient(90deg, var(--brand), #fbbf24, var(--brand));
+  background: linear-gradient(90deg, var(--cta-edge), #fbbf24, var(--cta-edge));
+  color: var(--cta-ink);
   background-size: 220% 100%;
   animation: cta-drift 4.5s ease-in-out infinite;
 }
@@ -136,6 +148,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .cta-fade {
     animation: none;
-    background: linear-gradient(90deg, var(--brand), #fbbf24);
+    background: linear-gradient(90deg, var(--cta-edge), #fbbf24);
   }
 }
