@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Don't advertise the framework — drops the X-Powered-By: Next.js response header.
+  poweredByHeader: false,
   // Bundle the fetched scorecard binary into the /report server function so the on-demand
   // (binary) runner works on Vercel (§7 #4 — Vercel-native, no Docker). The binary is fetched
   // at build by the `prebuild` step into ./bin/scorecard.
