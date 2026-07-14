@@ -19,8 +19,10 @@ each release links the pull requests it contains.
   action, a sibling-report block, and a copy-to-README trust badge. ([#96](https://github.com/neckarshore-mmps/trustscope/pull/96))
 - **An install-scripts due-diligence Q&A** on the FAQ — what it means when a package
   runs its own code during `npm install`, and how to inspect it first. ([#94](https://github.com/neckarshore-mmps/trustscope/pull/94))
-- **`NeonReportStore`** — a cross-instance report store, so a shared report link
-  resolves on any instance instead of rendering "Not assessed". ([#100](https://github.com/neckarshore-mmps/trustscope/pull/100))
+- **`NeonReportStore`** — a shared Postgres report store, so a shared link's
+  Open-Graph card renders the real scores instead of three "Not assessed" tiles
+  (`/report` writes and `/report/og` reads no longer land on different, ephemeral
+  Fluid-Compute instances). ([#100](https://github.com/neckarshore-mmps/trustscope/pull/100))
 - **A rotating, loss-framed landing headline** — ten CTAs alternating between the
   adopter and maintainer sides of the table. ([#106](https://github.com/neckarshore-mmps/trustscope/pull/106), [#107](https://github.com/neckarshore-mmps/trustscope/pull/107))
 - **Bodo as the favicon and on the social-preview + report OG cards** — the last
@@ -41,7 +43,7 @@ each release links the pull requests it contains.
 - **Pillar 4 is absent from every user-facing surface**, and a CI grep-gate now holds
   that line against regressions. ([#85](https://github.com/neckarshore-mmps/trustscope/pull/85), [#99](https://github.com/neckarshore-mmps/trustscope/pull/99))
 - Toolchain, CI and dependency upkeep — including a guard that fails the build when an
-  HTML entity collapses the space out of a rendered word. ([#67](https://github.com/neckarshore-mmps/trustscope/pull/67), [#87](https://github.com/neckarshore-mmps/trustscope/pull/87), [#88](https://github.com/neckarshore-mmps/trustscope/pull/88), [#89](https://github.com/neckarshore-mmps/trustscope/pull/89), [#90](https://github.com/neckarshore-mmps/trustscope/pull/90), [#93](https://github.com/neckarshore-mmps/trustscope/pull/93), [#114](https://github.com/neckarshore-mmps/trustscope/pull/114))
+  HTML entity collapses the space out of a rendered word. ([#65](https://github.com/neckarshore-mmps/trustscope/pull/65), [#67](https://github.com/neckarshore-mmps/trustscope/pull/67), [#87](https://github.com/neckarshore-mmps/trustscope/pull/87), [#88](https://github.com/neckarshore-mmps/trustscope/pull/88), [#89](https://github.com/neckarshore-mmps/trustscope/pull/89), [#90](https://github.com/neckarshore-mmps/trustscope/pull/90), [#93](https://github.com/neckarshore-mmps/trustscope/pull/93), [#114](https://github.com/neckarshore-mmps/trustscope/pull/114))
 
 ### Fixed
 
@@ -124,7 +126,7 @@ the milestones a new user would notice. Prior history in git.
 
 - Light and dark mode — TrustScope follows your system theme, and a toggle in the header lets you override it.
 - Share a report in one click — every report now has its own preview card, a share action, and a badge you can paste into your README.
-- Shared report links open the real report, wherever they are opened from, instead of an empty one.
+- A shared report link now previews the real scores wherever you paste it, instead of coming up empty.
 - A new side-by-side page shows how TrustScope differs from the OpenSSF Scorecard it is built on.
 - Easier to read in bright light — a contrast pass across the landing pages and the whole report.
 - A new FAQ answer on install scripts: what it means when a package runs its own code during installation, and how to look before you adopt.
