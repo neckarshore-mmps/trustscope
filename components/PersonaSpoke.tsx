@@ -81,9 +81,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
 
       <section className="mx-auto max-w-2xl px-5 py-10">
         {/* Who does what — and why */}
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Who does what — and why
-        </p>
+        </h2>
         <div className="relative mt-4 pl-8">
           <span
             className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-[color-mix(in_srgb,var(--accent)_60%,transparent)]"
@@ -106,9 +106,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         </div>
 
         {/* How TrustScope helps — pillars + verdict light */}
-        <p className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
           How TrustScope helps
-        </p>
+        </h2>
         <p className="mt-2 max-w-[52ch] text-sm text-muted">{s.helpsSub}</p>
         {/* Free product = three pillars; Functional Quality (Pillar 4) is Pro-only. The persona's
             own pillar list drives the count — meta (title/hue) is zipped in by index. */}
@@ -127,7 +127,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                 >
                   Pillar {meta.id}
                 </span>
-                <h4 className="mt-2.5 text-sm font-semibold">{meta.title}</h4>
+                <h3 className="mt-2.5 text-sm font-semibold">{meta.title}</h3>
                 <div className="text-xs" style={{ color: meta.hueText }}>
                   {p.q}
                 </div>
@@ -155,9 +155,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         </div>
 
         {/* FAQ */}
-        <p className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
           Frequently asked
-        </p>
+        </h2>
         <div className="mt-4">
           <FaqAccordion items={s.faqs} accent="var(--accent)" />
         </div>
