@@ -18,15 +18,15 @@ type Line = { persona: Persona; pre: string; hi: string; post: string };
 
 const LINES: Line[] = [
   { persona: "adopter", pre: `Don't build on code `, hi: `you haven't vetted`, post: `.` },
-  { persona: "adopter", pre: `That dependency could be your `, hi: `next breach`, post: `.` },
+  { persona: "adopter", pre: `That dependency will be a `, hi: `fatal next breach`, post: `.` },
   { persona: "adopter", pre: `Stars won't stop a `, hi: `supply-chain attack`, post: `.` },
   { persona: "adopter", pre: `You're one install from a `, hi: `hidden backdoor`, post: `.` },
-  { persona: "adopter", pre: `You're trusting a stranger's `, hi: `weekend project`, post: `.` },
+  { persona: "adopter", pre: `You're trusting a `, hi: `stranger's weekend project`, post: `.` },
   { persona: "adopter", pre: `Ship it unvetted and `, hi: `get f***ed`, post: `.` },
   { persona: "maintainer", pre: `Your repo has gaps you `, hi: `haven't found yet`, post: `.` },
-  { persona: "maintainer", pre: `Without proof, adopters assume `, hi: `the worst`, post: `.` },
+  { persona: "maintainer", pre: `Without proof, adopters `, hi: `assume the worst`, post: `.` },
   { persona: "maintainer", pre: `"Trust me" isn't a `, hi: `security posture`, post: `.` },
-  { persona: "maintainer", pre: `Find your supply-chain gaps `, hi: `before attackers do`, post: `.` },
+  { persona: "maintainer", pre: `Find your supply-chain `, hi: `gaps before attackers`, post: ` do.` },
   { persona: "maintainer", pre: `Silence looks like `, hi: `something to hide`, post: `.` },
   { persona: "maintainer", pre: `Ignore the gaps and `, hi: `get f***ed`, post: `.` },
 ];
