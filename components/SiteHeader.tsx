@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/config/product";
 import { NAV_ITEMS } from "@/config/nav";
+import { BODO_ART_SCALE, BODO_BACKDROPS } from "@/config/bodo";
 import { NavMenu } from "@/components/NavMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -10,17 +11,23 @@ export function SiteHeader() {
     <header className="border-b border-border/70 bg-surface/40 backdrop-blur">
       <div className="relative mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
         <Link href="/" className="group flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand/15 text-brand ring-1 ring-brand/30">
-            <ShieldIcon />
+          {/* Bodo on a light disc — the mascot art is cyan + navy on a transparent
+              canvas, so it needs a light backdrop to read fully on the dark theme
+              (see config/bodo.ts). Gray echoes the landing hero. */}
+          <span
+            className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-black/5"
+            style={{ backgroundColor: BODO_BACKDROPS.gray.hex }}
+          >
+            <Image
+              src="/bodo.svg"
+              alt="Bodo, the TrustScope mascot"
+              width={28}
+              height={28}
+              priority
+              className="h-full w-full"
+              style={{ transform: `scale(${BODO_ART_SCALE})` }}
+            />
           </span>
-          <Image
-            src="/bodo.svg"
-            alt="Bodo, the TrustScope mascot"
-            width={28}
-            height={28}
-            priority
-            className="h-7 w-7"
-          />
           <span className="text-[15px] font-semibold tracking-tight">
             {PRODUCT_NAME}
           </span>
@@ -31,24 +38,5 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
   );
 }
