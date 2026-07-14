@@ -7,6 +7,7 @@ const ROUTES = [
   "/for/adopters",
   "/for/maintainers",
   "/how-it-works",
+  "/vs/openssf-scorecard",
   "/about",
   "/changelog",
   "/faq",

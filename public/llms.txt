@@ -6,6 +6,7 @@
 - [What is TrustScope?](https://trustscope.neckarshore.ai/faq): a deterministic, three-pillar trust report for any public GitHub repository — Security & Supply Chain, Trust & Governance, Community & Sustainability — with no misleading single score
 - [How it works](https://trustscope.neckarshore.ai/how-it-works): paste a repo; TrustScope runs the full OpenSSF Scorecard plus public GitHub governance and lifecycle signals, and returns a per-pillar verdict, never averaged into one number
 - [Why no single score?](https://trustscope.neckarshore.ai/how-it-works): collapsing security, governance and community into one number hides the exact trade-off an adopter is trying to weigh
+- [TrustScope vs the OpenSSF Scorecard](https://trustscope.neckarshore.ai/vs/openssf-scorecard): TrustScope is built on the Scorecard and adds governance + community, reporting a verdict per pillar instead of one 0–10 number
 
 ## Audience
 - [For adopters](https://trustscope.neckarshore.ai/for/adopters): vet a third-party open-source project before you depend on it
