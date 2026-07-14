@@ -149,7 +149,7 @@ export default function Home() {
                 <div className="flex items-baseline gap-2">
                   <span
                     className="text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: meta.hue }}
+                    style={{ color: meta.hueText }}
                   >
                     Pillar {p.id}
                   </span>

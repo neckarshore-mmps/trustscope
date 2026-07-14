@@ -33,6 +33,18 @@
   --muted: #90a1b6;
   --brand: #2dd4bf;
   --brand-strong: #14b8a6;
+
+  /*
+   * Per-pillar ACCENT-TEXT hue — the -300/-400 shades pop on this dark ground.
+   * Kept in sync with config/pillars.ts `hue` (the single source for fills/borders/
+   * decorative tints). This variable governs only pillar text (labels, questions,
+   * report tile/header numerals) so it can deepen to an AA-passing sibling in light
+   * mode without dimming the vivid decorative tints. Referenced via pillarHueText().
+   */
+  --pillar-text-1: #6ee7b7; /* emerald-300 */
+  --pillar-text-2: #7dd3fc; /* sky-300 */
+  --pillar-text-3: #fcd34d; /* amber-300 */
+  --pillar-text-4: #94a3b8; /* slate-400 */
 }
 
 /*
@@ -53,6 +65,19 @@
   --muted: #5f6975;
   --brand: #0f766e;
   --brand-strong: #0d9488;
+
+  /*
+   * Light-mode pillar accent TEXT — the -300/-400 shades fail WCAG AA as text on
+   * a light ground (~1.4–1.6:1), so each deepens to its -700/-600 sibling of the
+   * SAME hue family (AA-passing, still clearly the pillar's colour). Same principle
+   * as --brand teal-700 above; matches the already-shipped `light:text-*-700`
+   * accent overrides (PersonaSpoke Adopt/Proceed badges). Decorative fills/borders
+   * keep the vivid -300 hue (config/pillars.ts), which needs no text contrast.
+   */
+  --pillar-text-1: #047857; /* emerald-700 */
+  --pillar-text-2: #0369a1; /* sky-700 */
+  --pillar-text-3: #b45309; /* amber-700 */
+  --pillar-text-4: #475569; /* slate-600 */
 }
 
 @theme inline {

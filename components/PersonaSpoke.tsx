@@ -120,7 +120,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                 <span
                   className="rounded border px-1.5 py-0.5 font-mono text-[10.5px]"
                   style={{
-                    color: meta.hue,
+                    color: meta.hueText,
                     borderColor: `color-mix(in srgb, ${meta.hue} 40%, transparent)`,
                     background: `color-mix(in srgb, ${meta.hue} 10%, transparent)`,
                   }}
@@ -128,7 +128,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                   Pillar {meta.id}
                 </span>
                 <h4 className="mt-2.5 text-sm font-semibold">{meta.title}</h4>
-                <div className="text-xs" style={{ color: meta.hue }}>
+                <div className="text-xs" style={{ color: meta.hueText }}>
                   {p.q}
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">{p.blurb}</p>
@@ -139,13 +139,13 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         <div className="mt-3.5 rounded-xl border border-dashed border-border bg-surface-2 p-4">
           <p className="text-[13.5px] font-semibold text-foreground">{s.nsaHeading}</p>
           <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400 light:text-emerald-700">
+            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400 light:text-emerald-800">
               Adopt
             </span>
-            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400 light:text-amber-700">
+            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400 light:text-amber-800">
               Proceed
             </span>
-            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400 light:text-rose-700">
+            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400 light:text-rose-800">
               Avoid
             </span>
           </div>

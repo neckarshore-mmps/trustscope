@@ -36,7 +36,7 @@ export function SiteFooter() {
             Every visitor to any tool discovers the other two. md-viewer = live web twin;
             OVA = the neckarshore.ai product page; TrustScope self-links home. */}
         <div className="w-full max-w-2xl border-t border-border/40 pt-6">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted/70">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted/70 light:text-muted">
             More Neckarshore tooling
           </p>
           <nav
@@ -49,7 +49,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
             >
-              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+              <span className="text-xs uppercase tracking-wide text-muted/60 light:text-muted group-hover:text-brand">
                 Read
               </span>
               md-viewer
@@ -60,7 +60,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
             >
-              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+              <span className="text-xs uppercase tracking-wide text-muted/60 light:text-muted group-hover:text-brand">
                 Maintain
               </span>
               Vault Autopilot
@@ -69,7 +69,7 @@ export function SiteFooter() {
               className="group inline-flex items-baseline gap-1.5 transition-colors hover:text-foreground"
               href="/"
             >
-              <span className="text-xs uppercase tracking-wide text-muted/60 group-hover:text-brand">
+              <span className="text-xs uppercase tracking-wide text-muted/60 light:text-muted group-hover:text-brand">
                 Trust
               </span>
               {PRODUCT_NAME}
@@ -97,7 +97,7 @@ export function SiteFooter() {
 
         {/* Version status line — uniform AD-42 variant A: product · version · commit-linked SHA · Changelog.
             Content is uniform across the estate; TrustScope's position/styling stays its own. */}
-        <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/70">
+        <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted/70 light:text-muted">
           <span className="font-mono">
             {PRODUCT_NAME} v{APP_VERSION}
           </span>
@@ -109,12 +109,12 @@ export function SiteFooter() {
                   href={COMMIT_URL}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80 transition-colors hover:text-foreground"
+                  className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80 light:text-muted transition-colors hover:text-foreground"
                 >
                   {GIT_SHA}
                 </a>
               ) : (
-                <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80">
+                <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-muted/80 light:text-muted">
                   {GIT_SHA}
                 </code>
               )}
