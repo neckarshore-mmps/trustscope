@@ -48,11 +48,27 @@ import { fileURLToPath } from "node:url";
 // the current tree: the broad form produces zero false positives across all 13 pages.
 // \p{L}/\p{N} keep this correct for umlauts without depending on the shell locale — the
 // reason this is Node and not a bash grep.
-const GLUE_RE = /[\p{L}\p{N}]{2,}<!-- -->[\p{L}\p{N}][\p{L}\p{N}]*/gu;
+const MARKER = "<!-- -->";
+const GLUE_RE = /([\p{L}\p{N}]{2,})<!-- -->([\p{L}\p{N}][\p{L}\p{N}]*)/gu;
 
-/** Return every glued word pair in a prerendered HTML string. */
+/**
+ * Return every glued word pair in a prerendered HTML string.
+ *
+ * Two expressions in a row (`{A} {B} word`) glue into a CHAIN —
+ * `TrustScope<!-- -->grew<!-- -->fast`. A plain non-overlapping scan
+ * (String.match) consumes the whole first match, so the second link would stay
+ * invisible until the first was fixed and the build re-run. Re-scanning from the
+ * RIGHT word of each hit reports every link in one pass. (CodeRabbit, PR #114.)
+ */
 export function findGluedWords(html) {
-  return html.match(GLUE_RE) ?? [];
+  const found = [];
+  GLUE_RE.lastIndex = 0;
+  let match;
+  while ((match = GLUE_RE.exec(html)) !== null) {
+    found.push(match[0]);
+    GLUE_RE.lastIndex = match.index + match[1].length + MARKER.length;
+  }
+  return found;
 }
 
 /** Recursively collect every prerendered .html file under dir. */

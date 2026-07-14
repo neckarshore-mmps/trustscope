@@ -34,6 +34,16 @@ describe("findGluedWords", () => {
     expect(findGluedWords(html)).toEqual(["TrustScope<!-- -->runs", "TrustScope<!-- -->keeps"]);
   });
 
+  // Two expressions in a row (`{A} {B} word`) glue into a CHAIN. A plain non-overlapping
+  // scan consumes the whole first match and would report only the first link, so the second
+  // stays invisible until the first is fixed and the build re-run. Report every link at once.
+  it("reports every link of a chained glue, not just the first", () => {
+    expect(findGluedWords("<p>TrustScope<!-- -->grew<!-- -->fast</p>")).toEqual([
+      "TrustScope<!-- -->grew",
+      "grew<!-- -->fast",
+    ]);
+  });
+
   it("accepts an explicit space node — the {\" \"} fix", () => {
     expect(findGluedWords("<p>TrustScope<!-- --> <!-- -->grew out</p>")).toEqual([]);
   });
