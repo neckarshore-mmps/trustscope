@@ -42,8 +42,26 @@ describe("findGluedWords", () => {
     expect(findGluedWords("<p>built by TrustScope<!-- -->. Next question.</p>")).toEqual([]);
   });
 
-  it("accepts a boundary followed by an uppercase word — a new sentence, not a glue", () => {
-    expect(findGluedWords("<p>TrustScope<!-- -->Berlin</p>")).toEqual([]);
+  // German capitalises every noun, so `{PRODUCT_NAME} Daten` — the single most common
+  // shape on /datenschutz, the biggest entity surface in the app — glues to an UPPERCASE
+  // word. Requiring a lowercase letter after the boundary would blind the guard to exactly
+  // the copy it exists for.
+  it("catches a glued German noun (capitalised after the boundary)", () => {
+    expect(findGluedWords("<p>TrustScope<!-- -->Daten werden nicht</p>")).toEqual([
+      "TrustScope<!-- -->Daten",
+    ]);
+  });
+
+  it("catches a glued number", () => {
+    expect(findGluedWords("<p>TrustScope<!-- -->2024 erschienen</p>")).toEqual([
+      "TrustScope<!-- -->2024",
+    ]);
+  });
+
+  // A real sentence boundary is excluded by the LEFT side (punctuation, not a word
+  // character), which is why the guard needs no uppercase exclusion on the right.
+  it("accepts a sentence boundary — punctuation before the marker", () => {
+    expect(findGluedWords("<p>you can trust.<!-- -->TrustScope ist offen</p>")).toEqual([]);
   });
 });
 

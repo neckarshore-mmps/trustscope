@@ -37,11 +37,18 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // A word character on BOTH sides of React's text-node separator, with no space:
-// `TrustScope<!-- -->grew`. A lowercase letter after the marker means a word was cut
-// in half; punctuation (`<!-- -->.`) or an uppercase letter (a new sentence) is normal
-// React output and must not fire. \p{Ll}/\p{L} keep this correct for German copy
-// (überträgt) without depending on the shell locale — the reason this is Node, not grep.
-const GLUE_RE = /[\p{L}\p{N}]{2,}<!-- -->\p{Ll}[\p{L}]*/gu;
+// `TrustScope<!-- -->grew`. Both sides matter, and the LEFT side is what excludes a
+// normal sentence boundary — there the marker follows punctuation (`trust.<!-- -->TrustScope`),
+// not a word character, so it cannot fire.
+//
+// The right side deliberately accepts ANY letter or digit, not just lowercase: German
+// capitalises every noun, so `{PRODUCT_NAME} Daten` glues to an uppercase word, and
+// /datenschutz — the biggest entity surface in the app — is full of exactly that shape.
+// A lowercase-only rule would blind the guard to the copy it exists for. Verified against
+// the current tree: the broad form produces zero false positives across all 13 pages.
+// \p{L}/\p{N} keep this correct for umlauts without depending on the shell locale — the
+// reason this is Node and not a bash grep.
+const GLUE_RE = /[\p{L}\p{N}]{2,}<!-- -->[\p{L}\p{N}][\p{L}\p{N}]*/gu;
 
 /** Return every glued word pair in a prerendered HTML string. */
 export function findGluedWords(html) {
