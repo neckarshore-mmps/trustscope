@@ -1,0 +1,47 @@
+# JSX whitespace guard — fails if a prerendered page glues two words into one
+# ("TrustScopegrew"). A JSX text node containing an HTML entity (&amp;, &apos;, …)
+# makes SWC drop the leading space of the text run after an expression container;
+# the fix is an explicit {" "}. Root cause + why this scans the BUILD OUTPUT rather
+# than the .tsx source: see the header of scripts/jsx-whitespace-guard.mjs.
+#
+# This needs its own build: the e2e workflow runs `npm run dev` (Playwright webServer),
+# so no other job produces the prerendered .next/server/app tree this guard reads.
+name: JSX whitespace guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default token — this workflow only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: No glued words in rendered output
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Plain `next build` on purpose (not vercel-build): the marketing pages this guard
+      # scans prerender with no env and no network, so the scorecard binary fetch would
+      # be dead weight here.
+      - name: Build
+        run: npm run build
+
+      - name: Run JSX whitespace guard
+        run: npm run guard:whitespace

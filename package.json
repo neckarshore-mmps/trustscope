@@ -10,6 +10,7 @@
     "indexnow": "node scripts/indexnow.mjs",
     "start": "next start",
     "lint": "eslint",
+    "guard:whitespace": "node scripts/jsx-whitespace-guard.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
