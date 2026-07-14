@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Rotating hero headline. Twelve loss-framed CTAs — six for adopters (evaluating a
  * tool, teal accent) and six for maintainers (maintaining one, amber accent) —
- * swap every 5s with a calm opacity crossfade. Order alternates adopter <-> maintainer,
+ * swap every 15s with a calm opacity crossfade. Order alternates adopter <-> maintainer,
  * random within each pool, never repeating the last line of that pool.
  *
  * SSR renders the deterministic anchor (index 0) so the H1 is stable for crawlers and
@@ -32,7 +32,7 @@ const LINES: Line[] = [
 ];
 
 const ANCHOR = 0;
-const HOLD_MS = 5000;
+const HOLD_MS = 15000;
 const FADE_MS = 700;
 
 function accent(persona: Persona): string {
