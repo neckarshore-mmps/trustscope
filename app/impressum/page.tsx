@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Impressum",
   description: `Anbieterkennzeichnung nach § 5 DDG für ${PRODUCT_NAME} — eine Reputationsoberfläche von ${PRODUCT_ORG}.`,
   robots: { index: true, follow: true },
+  alternates: { canonical: "/impressum" },
 };
 
 const LINK =

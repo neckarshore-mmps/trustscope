@@ -1,12 +1,17 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumb } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "How it works",
   description:
     "TrustScope turns a public GitHub repo into a deterministic three-pillar trust report — security & supply chain, governance, and community — with constructive, upstream-friendly fixes and no misleading single score.",
+  alternates: { canonical: "/how-it-works" },
 };
+
+const HIW_BREADCRUMB = breadcrumb([{ name: "How it works", path: "/how-it-works" }]);
 
 const PILLARS = [
   {
@@ -60,6 +65,7 @@ const STEPS = [
 export default function AboutPage() {
   return (
     <div>
+      <JsonLd data={HIW_BREADCRUMB} />
       {/* Hero */}
       <section className="hero-glow">
         <div className="mx-auto max-w-3xl px-5 pb-8 pt-20 text-center sm:pt-28">

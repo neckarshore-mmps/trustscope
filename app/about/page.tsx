@@ -2,34 +2,20 @@
 // Daten, Teamgröße) — nur belegbare, prinzipienbasierte Aussagen.
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PRODUCT_NAME, PRODUCT_ORG, PRODUCT_SUBDOMAIN } from "@/config/product";
+import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
 import { JsonLd } from "@/components/JsonLd";
+import { ABOUT_GRAPH } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "About",
   description: `${PRODUCT_NAME} is an open-source trust report by ${PRODUCT_ORG} — made in Germany, GDPR-clean, open source. Who is behind it and why.`,
+  alternates: { canonical: "/about" },
 };
-
-const ORG_SCHEMA = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: PRODUCT_ORG,
-  url: "https://neckarshore.ai",
-  founder: {
-    "@type": "Person",
-    name: "German Rauhut",
-  },
-  subOrganization: {
-    "@type": "SoftwareApplication",
-    name: PRODUCT_NAME,
-    url: `https://${PRODUCT_SUBDOMAIN}`,
-  },
-} as const;
 
 export default function AboutPage() {
   return (
     <div>
-      <JsonLd data={ORG_SCHEMA} />
+      <JsonLd data={ABOUT_GRAPH} />
       <section className="hero-glow">
         <div className="mx-auto max-w-3xl px-5 pb-6 pt-20 text-center sm:pt-28">
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
