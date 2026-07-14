@@ -27,17 +27,17 @@ function FindingRow({ finding }: { finding: Finding }) {
             <span className={`text-xs font-semibold tabular-nums ${m.text}`}>{finding.score}/10</span>
           )}
           <span className="text-sm font-medium text-foreground">{finding.label}</span>
-          <span className="text-[11px] uppercase tracking-wide text-muted/70">{finding.source}</span>
+          <span className="text-[11px] uppercase tracking-wide text-muted/70 light:text-muted">{finding.source}</span>
           <InfoIcon label={finding.label} />
         </div>
         <p className="mt-0.5 text-sm leading-relaxed text-muted">{finding.reason}</p>
         {findingHasEvidence(finding) && (
           <details data-testid="finding-evidence" className="mt-1.5">
-            <summary className="cursor-pointer text-xs text-muted/80 hover:text-foreground">
+            <summary className="cursor-pointer text-xs text-muted/80 light:text-muted hover:text-foreground">
               Details / evidence
             </summary>
             <div className="mt-1.5 rounded-md border border-border/60 bg-surface-2/50 p-2.5">
-              <p className="font-mono text-[11px] text-muted/70">
+              <p className="font-mono text-[11px] text-muted/70 light:text-muted">
                 check: {finding.check} · source: {finding.source}
               </p>
               {finding.details && finding.details.length > 0 && (
@@ -154,7 +154,7 @@ export function PillarCard({
 
           {shown.length > 0 && (
             <>
-              <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-muted/70 light:text-muted">
                 {shownConcerns > 0 ? `Worth addressing · ${shownConcerns}` : "Checks"}
               </p>
               <ul className="mt-1 divide-y divide-border/60">
