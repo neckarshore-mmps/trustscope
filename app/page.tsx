@@ -1,6 +1,7 @@
 import { BodoBadge } from "@/components/BodoBadge";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
+import { RotatingHeadline } from "@/components/RotatingHeadline";
 import { LANDING_BODO_BACKDROP } from "@/config/bodo";
 import { PILLARS_META } from "@/config/pillars";
 
@@ -87,9 +88,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="mx-auto max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">
-            Don&apos;t build on code you haven&apos;t <span className="text-brand">vetted</span>.
-          </h1>
+          <RotatingHeadline />
 
           <div className="mx-auto mt-7 max-w-5xl rounded-2xl border border-border bg-surface p-4 shadow-[0_12px_40px_rgba(0,0,0,0.4)] sm:p-5">
             <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-sm font-semibold">
