@@ -38,7 +38,7 @@ function CopyIcon() {
 }
 
 const FILE_CLS =
-  "inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/[0.16] disabled:opacity-60";
+  "inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand light:text-teal-800 transition-colors hover:bg-brand/[0.16] disabled:opacity-60";
 const COPY_CLS =
   "inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-brand/40";
 
@@ -140,7 +140,7 @@ export function PillarIssueButton({
       {error && <p className="mt-2 text-xs text-rose-300 light:text-rose-700">{error}</p>}
 
       <details className="mt-2.5" data-testid="pillar-filing-hint">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted/85 marker:hidden [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted/85 light:text-muted marker:hidden [&::-webkit-details-marker]:hidden">
           <span className="text-[10px]" aria-hidden>
             ▸
           </span>

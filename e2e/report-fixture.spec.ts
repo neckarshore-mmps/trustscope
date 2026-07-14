@@ -28,6 +28,15 @@ test("shows Bodo in the report masthead, disc tinted to the TL;DR band", async (
 });
 
 test("renders pillars in fixed order P1 → P2 → P3, with identity hues", async ({ page }) => {
+  // Pin dark so the theme-aware eyebrow colour is deterministic (CI's system theme
+  // must not decide it). The no-FOUC script in app/layout.tsx reads this before paint.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("ts-mode", "dark");
+    } catch {
+      /* storage unavailable — the script falls back to system pref */
+    }
+  });
   await page.goto("/report?repo=fixture-org/fixture-repo");
   // Fixed order: the pillar section headings appear P1, P2, P3 regardless of score.
   const pillarHeadings = page
@@ -38,9 +47,11 @@ test("renders pillars in fixed order P1 → P2 → P3, with identity hues", asyn
   await expect(pillarHeadings.nth(2)).toHaveText("Community & Sustainability");
   // Functional Quality is Pro-only — never on the free report.
   await expect(page.getByRole("heading", { name: "Functional Quality" })).toHaveCount(0);
-  // Identity hue on the P1 eyebrow — the landing green #6ee7b7 = rgb(110, 231, 183).
-  await expect(page.getByText("Pillar 1", { exact: true }).first()).toHaveCSS(
-    "color",
-    "rgb(110, 231, 183)",
-  );
+  const p1 = page.getByText("Pillar 1", { exact: true }).first();
+  // Dark (base): the P1 eyebrow shows the vivid identity hue #6ee7b7 = rgb(110, 231, 183).
+  await expect(p1).toHaveCSS("color", "rgb(110, 231, 183)");
+  // Light deepens the SAME hue to its AA-passing sibling emerald-700 #047857 = rgb(4, 120, 87)
+  // (a11y contrast fix) — driven by the --pillar-text-1 var, so the accent never drifts hue.
+  await page.evaluate(() => document.documentElement.setAttribute("data-mode", "light"));
+  await expect(p1).toHaveCSS("color", "rgb(4, 120, 87)");
 });

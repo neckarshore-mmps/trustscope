@@ -11,19 +11,19 @@ import { reportSynthesis } from "@/lib/report-summary";
 const BAND_STYLE: Record<Band, { box: string; chip: string; divider: string; label: string }> = {
   concern: {
     box: "border-rose-400/30 bg-rose-400/[0.06]",
-    chip: "bg-rose-400/[0.14] text-rose-300 light:text-rose-700",
+    chip: "bg-rose-400/[0.14] text-rose-300 light:text-rose-800",
     divider: "border-rose-400/25",
     label: "Worth a closer look",
   },
   moderate: {
     box: "border-amber-400/30 bg-amber-400/[0.06]",
-    chip: "bg-amber-400/[0.12] text-amber-300 light:text-amber-700",
+    chip: "bg-amber-400/[0.12] text-amber-300 light:text-amber-800",
     divider: "border-amber-400/25",
     label: "Mixed — worth a look",
   },
   strong: {
     box: "border-emerald-400/30 bg-emerald-400/[0.06]",
-    chip: "bg-emerald-400/[0.12] text-emerald-300 light:text-emerald-700",
+    chip: "bg-emerald-400/[0.12] text-emerald-300 light:text-emerald-800",
     divider: "border-emerald-400/25",
     label: "Looks solid",
   },

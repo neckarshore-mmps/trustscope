@@ -81,9 +81,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
 
       <section className="mx-auto max-w-2xl px-5 py-10">
         {/* Who does what — and why */}
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Who does what — and why
-        </p>
+        </h2>
         <div className="relative mt-4 pl-8">
           <span
             className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-[color-mix(in_srgb,var(--accent)_60%,transparent)]"
@@ -106,9 +106,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         </div>
 
         {/* How TrustScope helps — pillars + verdict light */}
-        <p className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
           How TrustScope helps
-        </p>
+        </h2>
         <p className="mt-2 max-w-[52ch] text-sm text-muted">{s.helpsSub}</p>
         {/* Free product = three pillars; Functional Quality (Pillar 4) is Pro-only. The persona's
             own pillar list drives the count — meta (title/hue) is zipped in by index. */}
@@ -120,15 +120,15 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
                 <span
                   className="rounded border px-1.5 py-0.5 font-mono text-[10.5px]"
                   style={{
-                    color: meta.hue,
+                    color: meta.hueText,
                     borderColor: `color-mix(in srgb, ${meta.hue} 40%, transparent)`,
                     background: `color-mix(in srgb, ${meta.hue} 10%, transparent)`,
                   }}
                 >
                   Pillar {meta.id}
                 </span>
-                <h4 className="mt-2.5 text-sm font-semibold">{meta.title}</h4>
-                <div className="text-xs" style={{ color: meta.hue }}>
+                <h3 className="mt-2.5 text-sm font-semibold">{meta.title}</h3>
+                <div className="text-xs" style={{ color: meta.hueText }}>
                   {p.q}
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">{p.blurb}</p>
@@ -139,13 +139,13 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         <div className="mt-3.5 rounded-xl border border-dashed border-border bg-surface-2 p-4">
           <p className="text-[13.5px] font-semibold text-foreground">{s.nsaHeading}</p>
           <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400 light:text-emerald-700">
+            <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 py-1.5 text-emerald-400 light:text-emerald-800">
               Adopt
             </span>
-            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400 light:text-amber-700">
+            <span className="rounded-full border border-amber-400/40 bg-amber-400/10 py-1.5 text-amber-400 light:text-amber-800">
               Proceed
             </span>
-            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400 light:text-rose-700">
+            <span className="rounded-full border border-rose-400/40 bg-rose-400/10 py-1.5 text-rose-400 light:text-rose-800">
               Avoid
             </span>
           </div>
@@ -155,9 +155,9 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
         </div>
 
         {/* FAQ */}
-        <p className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
+        <h2 className="mt-10 text-xs font-semibold uppercase tracking-widest text-muted">
           Frequently asked
-        </p>
+        </h2>
         <div className="mt-4">
           <FaqAccordion items={s.faqs} accent="var(--accent)" />
         </div>

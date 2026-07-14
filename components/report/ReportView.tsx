@@ -104,7 +104,7 @@ export function ReportView({
       {/* B4: README trust badge + copy-snippet (dogfood + cross-sell) */}
       <BadgeSnippet owner={report.repo.owner} repo={report.repo.name} />
 
-      <p className="mt-8 text-center text-xs text-muted/70">
+      <p className="mt-8 text-center text-xs text-muted/70 light:text-muted">
         Report generated {fmtDate(report.generatedAt)} · commit{" "}
         <code className="font-mono">{report.repo.commit?.slice(0, 7) ?? "unknown"}</code>
       </p>

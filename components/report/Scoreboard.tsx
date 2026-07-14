@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { pillarHue } from "@/config/pillars";
+import { pillarHueText } from "@/config/pillars";
 import type { Pillar, ReportModel } from "@/lib/report-core/types";
 import { displayPillars, scoreboardFill } from "@/lib/report-display";
 import { scoreBar, scoreColor } from "@/lib/ui";
@@ -21,7 +21,7 @@ function Tile({ pillar }: { pillar: Pillar }) {
     >
       <span
         className="text-[11px] font-semibold uppercase tracking-wider"
-        style={{ color: pillarHue(pillar.id) }}
+        style={{ color: pillarHueText(pillar.id) }}
       >
         Pillar {pillar.id}
       </span>
