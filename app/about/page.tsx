@@ -54,7 +54,7 @@ export default function AboutPage() {
           <span className="font-medium text-foreground/90">Why {PRODUCT_NAME}.</span>{" "}
           Deciding whether to adopt a third-party open-source dependency usually means
           guessing — a star count, a gut feeling, or a single number that hides the
-          trade-off you actually care about. {PRODUCT_NAME} grew out of a Product Trust
+          trade-off you actually care about. {PRODUCT_NAME}{" "}grew out of a Product Trust
           &amp; Quality Framework: turn the public signals a project already emits into a
           calm, three-pillar read on how much you can trust it — and never fake the
           fourth (Functional Quality), the one only a human can judge.

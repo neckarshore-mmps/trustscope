@@ -104,7 +104,7 @@ export default function Home() {
             <div className="mt-3.5">
               <RepoForm
                 autoFocus
-                submitClassName="cta-fade text-background transition-[filter] hover:brightness-105 sm:min-w-[11rem]"
+                submitClassName="cta-fade transition-[filter] hover:brightness-105 sm:min-w-[11rem]"
                 submitLabel="Run the report →"
                 placeholder="owner/repo  ·  or your/repo"
               />
