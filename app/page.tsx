@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { BodoBadge } from "@/components/BodoBadge";
+import { JsonLd } from "@/components/JsonLd";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
 import { RotatingHeadline } from "@/components/RotatingHeadline";
 import { LANDING_BODO_BACKDROP } from "@/config/bodo";
 import { PILLARS_META } from "@/config/pillars";
+import { HOME_GRAPH, SITE } from "@/lib/schema";
+
+export const metadata: Metadata = {
+  alternates: { canonical: SITE },
+};
 
 /** Adopter path — evaluating someone else's code. */
 function SearchIcon() {
@@ -77,6 +84,7 @@ const STEPS = [
 export default function Home() {
   return (
     <div>
+      <JsonLd data={HOME_GRAPH} />
       {/* Hero — one picker, both roles; the try-box sits high, the hook right on top of it */}
       <section className="hero-glow">
         <div className="mx-auto max-w-5xl px-5 pb-10 pt-10 text-center sm:pt-14">

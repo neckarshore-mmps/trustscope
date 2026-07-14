@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "TrustScope for adopters",
   description:
     "Vet a third-party open-source project before you depend on it — security, governance and community, with the trade-offs kept visible.",
+  alternates: { canonical: "/for/adopters" },
 };
 
 export default function AdoptersPage() {

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Datenschutz",
   description: `Wie ${PRODUCT_NAME} personenbezogene Daten verarbeitet — anonyme Nutzung, öffentliche GitHub-Daten, Hosting bei Vercel, optionaler GitHub-Login. Kein Tracking.`,
   robots: { index: true, follow: true },
+  alternates: { canonical: "/datenschutz" },
 };
 
 const LINK =

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "TrustScope for maintainers",
   description:
     "See — and close — the trust gaps adopters look for in your own project, with constructive rule-based fixes you can file yourself.",
+  alternates: { canonical: "/for/maintainers" },
 };
 
 export default function MaintainersPage() {
