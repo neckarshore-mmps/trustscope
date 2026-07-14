@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { RecentRepos } from "@/components/RecentRepos";
 import { RepoForm } from "@/components/RepoForm";
 import { RotatingHeadline } from "@/components/RotatingHeadline";
+import { TrustStrip } from "@/components/TrustStrip";
 import { LANDING_BODO_BACKDROP } from "@/config/bodo";
 import { PILLARS_META } from "@/config/pillars";
 import { HOME_GRAPH, SITE } from "@/lib/schema";
@@ -129,6 +130,8 @@ export default function Home() {
               </span>
             </div>
           </div>
+
+          <TrustStrip className="mt-5" />
 
           <p className="mt-4 text-xs text-muted/70">
             Try <span className="font-mono text-muted">ossf/scorecard</span> or{" "}

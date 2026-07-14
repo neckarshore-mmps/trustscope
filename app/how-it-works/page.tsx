@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { PRODUCT_NAME, PRODUCT_ORG } from "@/config/product";
 import { JsonLd } from "@/components/JsonLd";
+import { TryItCta } from "@/components/TryItCta";
 import { breadcrumb } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -210,6 +211,7 @@ export default function AboutPage() {
           </a>
         </div>
       </section>
+      <TryItCta />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { PILLARS_META } from "@/config/pillars";
 import { JsonLd } from "@/components/JsonLd";
 import { RepoForm } from "@/components/RepoForm";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { TrustStrip } from "@/components/TrustStrip";
 
 /**
  * Shared persona subpage template (2026-07-06 redesign). One layout, two
@@ -76,6 +77,7 @@ export function PersonaSpoke({ persona, other }: { persona: Persona; other: Pers
               {other.spoke.title}
             </Link>
           </p>
+          <TrustStrip className="mt-5" />
         </div>
       </section>
 
