@@ -9,6 +9,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: "Changelog",
   description: `What changed in TrustScope, newest first. Current version v${APP_VERSION}.`,
+  alternates: { canonical: "/changelog" },
 };
 
 function fmtDate(iso: string): string {

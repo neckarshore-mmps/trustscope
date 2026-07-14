@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Feedback",
   description: "Ideas, bugs, or a thank-you for TrustScope.",
+  alternates: { canonical: "/feedback" },
 };
 
 export default function FeedbackPage() {
