@@ -3,6 +3,7 @@ import { parseRepoInput } from "@/lib/parse-repo-input";
 import { getReportStore } from "@/lib/store";
 import { CACHE_TTL_MS } from "@/lib/resolve-report";
 import { buildOgCardData, type OgPillarCell } from "@/lib/og-card";
+import { BODO_DISC_GRAY_DATA_URI } from "@/lib/bodo-og";
 import type { ReportModel } from "@/lib/report-core/types";
 import { PRODUCT_NAME } from "@/config/product";
 
@@ -19,7 +20,6 @@ const SURFACE = "#0f1620";
 const BORDER = "#223041";
 const FG = "#e6edf3";
 const MUTED = "#90a1b6";
-const BRAND = "#2dd4bf";
 
 // Label-only tiles (the three free pillars, no scores) when there is no valid repo — derived
 // from the same helper so hues/order can't drift from the scored path.
@@ -64,14 +64,15 @@ export async function GET(req: Request): Promise<Response> {
       >
         {/* Brand row */}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 22,
-              height: 22,
-              borderRadius: 7,
-              backgroundColor: BRAND,
-              display: "flex",
-            }}
+          {/* Bodo on the gray brand disc — same mark as header / favicon / social card.
+              Satori (@vercel/og) renders raw <img>, not the DOM — next/image N/A here. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={BODO_DISC_GRAY_DATA_URI}
+            width={40}
+            height={40}
+            alt=""
+            style={{ display: "flex" }}
           />
           <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: FG }}>
             {PRODUCT_NAME}
