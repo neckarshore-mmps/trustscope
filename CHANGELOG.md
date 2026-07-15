@@ -8,6 +8,58 @@ each release links the pull requests it contains.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-07-14
+
+### Added
+
+- **Light and dark mode.** The site follows your system preference; a header toggle
+  overrides it and the choice persists (`ts-mode`), applied before first paint so
+  there is no flash. ([#86](https://github.com/neckarshore-mmps/trustscope/pull/86))
+- **Share and embed any report** — a per-report Open-Graph card, a one-click share
+  action, a sibling-report block, and a copy-to-README trust badge. ([#96](https://github.com/neckarshore-mmps/trustscope/pull/96))
+- **An install-scripts due-diligence Q&A** on the FAQ — what it means when a package
+  runs its own code during `npm install`, and how to inspect it first. ([#94](https://github.com/neckarshore-mmps/trustscope/pull/94))
+- **`NeonReportStore`** — a shared Postgres report store, so a shared link's
+  Open-Graph card renders the real scores instead of three "Not assessed" tiles
+  (`/report` writes and `/report/og` reads no longer land on different, ephemeral
+  Fluid-Compute instances). ([#100](https://github.com/neckarshore-mmps/trustscope/pull/100))
+- **A rotating, loss-framed landing headline** — ten CTAs alternating between the
+  adopter and maintainer sides of the table. ([#106](https://github.com/neckarshore-mmps/trustscope/pull/106), [#107](https://github.com/neckarshore-mmps/trustscope/pull/107))
+- **Bodo as the favicon and on the social-preview + report OG cards** — the last
+  shields retired. ([#103](https://github.com/neckarshore-mmps/trustscope/pull/103), [#104](https://github.com/neckarshore-mmps/trustscope/pull/104))
+- **A `/vs/openssf-scorecard` comparison page** — how TrustScope differs from the
+  Scorecard it is built on. ([#113](https://github.com/neckarshore-mmps/trustscope/pull/113))
+- **An AI-crawler surface** — a rewritten `llms.txt` plus a new `llms-full.txt` of
+  quotable prose, and a trust strip above the fold. ([#109](https://github.com/neckarshore-mmps/trustscope/pull/109), [#113](https://github.com/neckarshore-mmps/trustscope/pull/113))
+- **SEO metadata** — canonicals on every route, an `@id`-linked
+  Organization/WebSite/SoftwareApplication `@graph`, breadcrumbs, `/changelog` in the
+  sitemap, and IndexNow submission. ([#113](https://github.com/neckarshore-mmps/trustscope/pull/113))
+
+### Changed
+
+- **Impressum, Datenschutz and About are binding** — the DRAFT markers are gone. ([#101](https://github.com/neckarshore-mmps/trustscope/pull/101))
+- **Legal disclosures** — the stored theme preference (`ts-mode`) disclosed under §6;
+  the Art. 45 DPF adequacy decision made the primary transfer basis under §5. ([#95](https://github.com/neckarshore-mmps/trustscope/pull/95))
+- **Pillar 4 is absent from every user-facing surface**, and a CI grep-gate now holds
+  that line against regressions. ([#85](https://github.com/neckarshore-mmps/trustscope/pull/85), [#99](https://github.com/neckarshore-mmps/trustscope/pull/99))
+- Toolchain, CI and dependency upkeep — including a guard that fails the build when an
+  HTML entity collapses the space out of a rendered word. ([#65](https://github.com/neckarshore-mmps/trustscope/pull/65), [#67](https://github.com/neckarshore-mmps/trustscope/pull/67), [#87](https://github.com/neckarshore-mmps/trustscope/pull/87), [#88](https://github.com/neckarshore-mmps/trustscope/pull/88), [#89](https://github.com/neckarshore-mmps/trustscope/pull/89), [#90](https://github.com/neckarshore-mmps/trustscope/pull/90), [#93](https://github.com/neckarshore-mmps/trustscope/pull/93), [#114](https://github.com/neckarshore-mmps/trustscope/pull/114))
+
+### Fixed
+
+- **WCAG-AA contrast in light mode** across the marketing and report pages — pillar
+  accents, status pills, muted text and heading order. ([#108](https://github.com/neckarshore-mmps/trustscope/pull/108))
+- Three live defects: a 404 link inside `llms.txt`, a glued "TrustScopegrew" on
+  `/about`, and a light-mode CTA at 1.76:1 contrast. ([#109](https://github.com/neckarshore-mmps/trustscope/pull/109))
+- The favicon backdrop, for browser-tab contrast. ([#105](https://github.com/neckarshore-mmps/trustscope/pull/105))
+
+### Security
+
+- **Six response headers** (CSP `frame-ancestors`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`, hardened HSTS) plus
+  `poweredByHeader: false`. ([#113](https://github.com/neckarshore-mmps/trustscope/pull/113))
+- The `emit-stats` write token is scoped to the push step. ([#92](https://github.com/neckarshore-mmps/trustscope/pull/92))
+
 ## [0.2.0] — 2026-07-11
 
 ### Added
@@ -69,6 +121,16 @@ the milestones a new user would notice. Prior history in git.
   Format the parser expects, per release: "### v<x.y.z> — <YYYY-MM-DD>" followed by
   "- " bullets in plain prose (no PR links, no markdown emphasis — rendered as text).
 -->
+
+### v0.3.0 — 2026-07-14
+
+- Light and dark mode — TrustScope follows your system theme, and a toggle in the header lets you override it.
+- Share a report in one click — every report now has its own preview card, a share action, and a badge you can paste into your README.
+- A shared report link now previews the real scores wherever you paste it, instead of coming up empty.
+- A new side-by-side page shows how TrustScope differs from the OpenSSF Scorecard it is built on.
+- Easier to read in bright light — a contrast pass across the landing pages and the whole report.
+- A new FAQ answer on install scripts: what it means when a package runs its own code during installation, and how to look before you adopt.
+- Plus the smaller things — Bodo on your browser tab, a reworked landing headline, binding Impressum and Datenschutz, and the usual upkeep.
 
 ### v0.2.0 — 2026-07-11
 
