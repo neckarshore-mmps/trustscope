@@ -127,6 +127,15 @@ export function SiteFooter() {
           >
             Changelog
           </Link>
+          {/* Internal design-system reference — discreet on purpose. noindex, not in
+              the sitemap; this footer link is the only way in. */}
+          <span aria-hidden="true">·</span>
+          <Link
+            href="/style-guide"
+            className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
+          >
+            Style Guide
+          </Link>
         </div>
       </div>
     </footer>
