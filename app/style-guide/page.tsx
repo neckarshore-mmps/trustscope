@@ -152,7 +152,7 @@ export default function StyleGuidePage() {
           </div>
           <div>
             <p className="mb-1 font-mono text-xs text-muted">h3 · text-xl · font-semibold</p>
-            <p className="text-xl font-semibold text-foreground">Four pillars of maintenance</p>
+            <p className="text-xl font-semibold text-foreground">Backed by the OpenSSF Scorecard</p>
           </div>
           <div>
             <p className="mb-1 font-mono text-xs text-muted">Body · text-lg · leading-relaxed · text-muted</p>
