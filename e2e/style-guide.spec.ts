@@ -9,7 +9,7 @@ test.describe("Style Guide (internal, noindex)", () => {
     await expect(page.getByRole("heading", { level: 1, name: /^Style Guide$/ })).toBeVisible();
     await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute(
       "content",
-      /noindex/,
+      /(?=.*\bnoindex\b)(?=.*\bnofollow\b)/,
     );
   });
 

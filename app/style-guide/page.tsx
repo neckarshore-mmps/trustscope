@@ -37,11 +37,13 @@ const CORE: Swatch[] = [
   { name: "Brand Strong", token: "--brand-strong", dark: "#14b8a6", light: "#0d9488", usage: "Emphasis, hover fills" },
 ];
 
+// The three FREE pillars only. P4 Functional Quality (--pillar-text-4, slate) is
+// Pro-only and dropped from every public surface — DECISIONS.md §9. config/pillars.ts
+// keeps all four for the Pro seam; this public reference deliberately shows three.
 const PILLARS: { name: string; token: string; dark: string; light: string }[] = [
   { name: "Pillar 1 · Emerald", token: "--pillar-text-1", dark: "#6ee7b7", light: "#047857" },
   { name: "Pillar 2 · Sky", token: "--pillar-text-2", dark: "#7dd3fc", light: "#0369a1" },
   { name: "Pillar 3 · Amber", token: "--pillar-text-3", dark: "#fcd34d", light: "#b45309" },
-  { name: "Pillar 4 · Slate", token: "--pillar-text-4", dark: "#94a3b8", light: "#475569" },
 ];
 
 function SwatchCard({ s }: { s: Swatch }) {
@@ -112,7 +114,7 @@ export default function StyleGuidePage() {
         <h3 className="mt-10 mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted">
           Pillar accent text · dark / light
         </h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PILLARS.map((p) => (
             <div key={p.token} className="rounded-lg border border-border bg-surface p-4">
               <div className="flex items-center gap-3">
