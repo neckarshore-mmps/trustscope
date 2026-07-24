@@ -146,15 +146,28 @@ describe("resolveReport", () => {
     }
   });
 
-  it("generic error -> 'Couldn't generate the report', surfacing the message", async () => {
+  it("generic error -> 'Couldn't generate the report' WITHOUT leaking the internal message (claude-security F2/F3)", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    // The adapter's real failure text embeds the command line, the GITHUB_AUTH_TOKEN env-var
+    // name, and raw subprocess stderr. The anonymous /report page renders outcome.message, so
+    // the catch-all must NOT surface any of it.
+    const internal =
+      "Scorecard run failed and produced no report (docker). ... use a classic PAT. " +
+      "Cause: Command failed: docker run -e GITHUB_AUTH_TOKEN ... \n401 Bad credentials";
     const generateReport = vi.fn(async () => {
-      throw new Error("boom");
+      throw new Error(internal);
     });
     const r = await resolveReport(PARSED, { store: fakeStore(), generateReport, now: () => NOW });
     expect(r.kind).toBe("error");
     if (r.kind === "error") {
       expect(r.title).toMatch(/generate the report/i);
-      expect(r.message).toBe("boom");
+      // The internal detail must not cross the trust boundary...
+      expect(r.message).not.toMatch(/GITHUB_AUTH_TOKEN|Command failed|classic PAT|Bad credentials|docker/i);
+      // ...but it MUST still be logged server-side for operators (no debugging blackout).
+      expect(errSpy).toHaveBeenCalled();
+      const logged = errSpy.mock.calls.flat().some((a) => a instanceof Error && a.message === internal);
+      expect(logged).toBe(true);
     }
+    errSpy.mockRestore();
   });
 });
