@@ -127,10 +127,18 @@ export async function resolveReport(
         message: `We’re running several reports right now and couldn’t start a new one for ${parsed.owner}/${parsed.repo}. Please try again in a minute — reports we’ve already run stay instant.`,
       };
     }
+    // Trust-boundary seal (claude-security F2/F3, 2026-07-24): the /report page is
+    // anonymous-by-design, so `outcome.message` is rendered to unauthenticated visitors.
+    // The unmapped-error path used to forward `err.message` verbatim — and the on-demand
+    // Scorecard adapter builds that message from `Command failed: <full argv>\n<stderr>`
+    // plus operator hints (the GITHUB_AUTH_TOKEN env-var name, "use a classic PAT",
+    // GitHub-API auth stderr). That is internal configuration/state, never the user's to
+    // see. Log the full error server-side; return a fixed, generic message to the client.
+    console.error("[resolve-report] unmapped generation failure:", err);
     return {
       kind: "error",
       title: "Couldn’t generate the report",
-      message: err instanceof Error ? err.message : "Unexpected error.",
+      message: "Something went wrong generating this report. Please try again in a little while.",
     };
   }
 }
