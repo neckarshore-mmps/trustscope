@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -104,7 +104,7 @@ jobs:
       # persist-credentials:false — belt for the read job too: keep even the read-scoped token out
       # of .git/config so npm-ci lifecycle scripts can't read it. The real defence is that this job
       # has ONLY contents:read; the WRITE token lives exclusively on publish-stats below.
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -227,7 +227,7 @@ jobs:
       # ONLY on the final `git push` via http.extraheader below. The interim reads (git fetch/show
       # of origin/stats-data) are anonymous over https — trustscope is PUBLIC, so read needs no
       # credential; only the push does.
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
