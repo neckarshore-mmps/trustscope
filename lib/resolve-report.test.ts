@@ -157,17 +157,23 @@ describe("resolveReport", () => {
     const generateReport = vi.fn(async () => {
       throw new Error(internal);
     });
-    const r = await resolveReport(PARSED, { store: fakeStore(), generateReport, now: () => NOW });
-    expect(r.kind).toBe("error");
-    if (r.kind === "error") {
-      expect(r.title).toMatch(/generate the report/i);
-      // The internal detail must not cross the trust boundary...
-      expect(r.message).not.toMatch(/GITHUB_AUTH_TOKEN|Command failed|classic PAT|Bad credentials|docker/i);
-      // ...but it MUST still be logged server-side for operators (no debugging blackout).
-      expect(errSpy).toHaveBeenCalled();
-      const logged = errSpy.mock.calls.flat().some((a) => a instanceof Error && a.message === internal);
-      expect(logged).toBe(true);
+    // try/finally, not a trailing call: vitest.config.ts sets neither `restoreMocks` nor
+    // `clearMocks`, so if any assertion below throws, console.error stays mocked for the rest
+    // of this worker and silently swallows output in every later test that shares it.
+    try {
+      const r = await resolveReport(PARSED, { store: fakeStore(), generateReport, now: () => NOW });
+      expect(r.kind).toBe("error");
+      if (r.kind === "error") {
+        expect(r.title).toMatch(/generate the report/i);
+        // The internal detail must not cross the trust boundary...
+        expect(r.message).not.toMatch(/GITHUB_AUTH_TOKEN|Command failed|classic PAT|Bad credentials|docker/i);
+        // ...but it MUST still be logged server-side for operators (no debugging blackout).
+        expect(errSpy).toHaveBeenCalled();
+        const logged = errSpy.mock.calls.flat().some((a) => a instanceof Error && a.message === internal);
+        expect(logged).toBe(true);
+      }
+    } finally {
+      errSpy.mockRestore();
     }
-    errSpy.mockRestore();
   });
 });
