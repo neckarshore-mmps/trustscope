@@ -4,21 +4,29 @@ name: Dependabot auto-merge
 # Policy: neckarshore-planning/docs/specs/dependabot-auto-merge-policy.md (ADOPTED 2026-07-10).
 #
 # `on: pull_request` (NOT pull_request_target) — GitHub's official auto-merge pattern.
-# For first-party Dependabot PRs the elevated `permissions:` block grants the built-in
+# For first-party Dependabot PRs the JOB-level `permissions:` block grants the built-in
 # GITHUB_TOKEN the write scope `gh pr merge --auto` needs. The job never checks out or
 # runs PR code, so there is no untrusted-code execution surface. pull_request_target is
 # unnecessary here and would needlessly expose the base-branch secret context — avoided
 # by design (least-privilege, #270 spirit).
 on: pull_request
 
-# Least-privilege: exactly the two scopes `gh pr merge --auto` requires (#270 §3.1).
+# Least-privilege, and it is load-bearing for more than style: the workflow DEFAULT is
+# read-only, and the two write scopes `gh pr merge --auto` needs live on the one job that
+# needs them (#270 §3.1). A top-level write here caps OpenSSF Scorecard's Token-Permissions
+# check at 0 for the WHOLE repository — that is what happened between 2026-07-10 (PR #64)
+# and today. Measured at scorecard v5.1.1-45-g40bbc9c9: 0 before this shape, 10 after.
+# Do not hoist these two scopes back to the top level.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   dependabot-auto-merge:
     runs-on: ubuntu-latest
+    # The elevated scopes live here, not at workflow level (see the note above).
+    permissions:
+      contents: write
+      pull-requests: write
     # Guard: only ever act on first-party Dependabot PRs.
     if: github.actor == 'dependabot[bot]'
     steps:
