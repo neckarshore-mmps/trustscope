@@ -1,6 +1,6 @@
 {
   "repo": "neckarshore-mmps/trustscope",
-  "audited_sha": "eef58ca2e76b8931669f44c7695630ba13b4676f",
+  "audited_sha": "f0528d5b1b63c6f71ea15992881c42f4208c2c56",
   "red": false,
   "red_detail": null,
   "tests": {
@@ -12,5 +12,5 @@
     "declared": {},
     "lenses": {}
   },
-  "updatedAt": "2026-10-30T18:19:04Z"
+  "updatedAt": "2026-11-07T16:25:43Z"
 }
