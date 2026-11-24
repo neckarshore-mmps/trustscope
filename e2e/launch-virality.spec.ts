@@ -85,3 +85,14 @@ test.describe("B5 — robots.txt", () => {
     expect(body).toMatch(/User-Agent:\s*\*/i);
   });
 });
+
+test("home snippet names the product as open-source trust reports, og:url set (agent-bridge #30)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/^TrustScope: .*open-source/);
+  const desc = await page.locator('meta[name="description"]').getAttribute("content");
+  expect(desc).toContain("OpenSSF Scorecard");
+  expect(await page.locator('meta[property="og:url"]').getAttribute("content")).toBe(
+    "https://trustscope.neckarshore.ai",
+  );
+  expect(await page.locator('meta[property="og:image"]').getAttribute("content")).toBeTruthy();
+});

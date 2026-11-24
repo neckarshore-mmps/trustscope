@@ -9,8 +9,31 @@ import { LANDING_BODO_BACKDROP } from "@/config/bodo";
 import { PILLARS_META } from "@/config/pillars";
 import { HOME_GRAPH, SITE } from "@/lib/schema";
 
+// agent-bridge #29/#30 (Search Console 2026-08-21..11-21): "trustscope" ranked
+// ~4.7 with 0 clicks, and a different product of the same name (pen-test
+// scoping) shares the query. The home snippet therefore names what this is:
+// open source, OpenSSF Scorecard, the three pillars. Proposal for the
+// Founder's look; the layout default stays for every other route.
+const HOME_TITLE = "TrustScope: trust reports for open-source projects";
+const HOME_DESCRIPTION =
+  "Paste a public GitHub repository and read a trust report built on the OpenSSF Scorecard: security, governance and sustainability. No sign-in. By Neckarshore AI.";
+
 export const metadata: Metadata = {
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   alternates: { canonical: SITE },
+  openGraph: {
+    type: "website",
+    url: SITE,
+    siteName: "TrustScope",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  },
 };
 
 /** Adopter path — evaluating someone else's code. */
